@@ -1,2 +1,2 @@
 # CMPUT404Project
-# Team members:\nanthony3\nmalhar\nmfdavies\nshah4
+# Team members:<br />-anthony3<br />-malhar<br />-mfdavies<br />-shah4
