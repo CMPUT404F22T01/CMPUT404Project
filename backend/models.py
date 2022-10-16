@@ -5,15 +5,16 @@ from uuid import uuid4
 
 
 class AuthorUserManager(BaseUserManager):
-    def create_user(self, username, password=None,  **other_fields):
+    def create_user(self, username, password=None, display_name=None, github_url=None, **other_fields):
+        print("cretae user called")
         if not username:
             raise ValueError('username must not be empty')
         
         if not password:
             raise ValueError('password must not be empty')
-        
+        # if not id:
         id = "http://127.0.0.1:8000/"+"authors/"+str(uuid4())
-        user = self.model(username=username, id=id, **other_fields)
+        user = self.model(username=username, id=id, display_name=display_name, github_url=github_url, **other_fields)
         user.set_password(password)
         user.save()
 
@@ -34,7 +35,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     profile_image = models.ImageField(null=True, blank=True)
     host = models.CharField(max_length=255, blank=True, default='/')
     profile_url = models.URLField(max_length=255, blank=True)
-    github_url = models.URLField(max_length=255)
+    github_url = models.URLField(max_length=255, blank=True, null=True)
     display_name = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
