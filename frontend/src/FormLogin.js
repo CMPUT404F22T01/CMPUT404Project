@@ -36,6 +36,7 @@ const FormLogin = () => {
             'password': passwordRef.current.value
 
         }).then((response) => {
+          console.log(response.data);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             navigation("/", response.data)

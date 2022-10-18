@@ -11,9 +11,18 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import './UserProfile.css';
+import axios from 'axios'
 
 const UserProfile = ( ) => {
-     
+    const url = 'http://127.0.0.1:8000/mainDB/user/data/'
+    const config = {
+        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+    };
+
+    axios.get(url, config)
+    .then(response => {
+        console.log(response.data);
+    })
     return(
         <>
             <Box color="primary" className="box">

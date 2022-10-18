@@ -3,7 +3,7 @@ from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import Author
 from .serializer import AuthorRegisterSerializer,GetAuthorSerializer
-
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 class AuthorCreate(
     generics.CreateAPIView
@@ -21,9 +21,12 @@ class AuthorCreate(
 
 class GetAuthorData(generics.ListAPIView):
 
-    serializer_class = GetAuthorSerializer
-
+    queryset = Author.objects.all()
+    serializer_class = GetAuthorSerializer 
+    permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
-        pass
-        
+        queryset = self.get_queryset()
+        serializer = GetAuthorSerializer(queryset, many=True)
+
+        return response.Response(serializer.data)
