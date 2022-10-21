@@ -1,6 +1,7 @@
-import { useRef } from 'react';
-import { useNavigate } from "react-router-dom";
-import axios from 'axios'
+import { useRef, useState, useEffect } from 'react';
+import { useNavigate, Link } from "react-router-dom";
+ 
+import axiosInstance from './Refresh'
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -9,9 +10,10 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+// import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
+import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
@@ -23,6 +25,19 @@ const FormLogin = () => {
     const passwordRef = useRef(null);
     const url = 'http://127.0.0.1:8000/mainDB/user/login/'
 
+    const [loginFail, setLoginFail] = useState(false);
+
+    // triggers warning for 5 secs.. on incorrect password or username
+    useEffect(() => {
+      const t = setTimeout(() => {
+         setLoginFail(false);
+      }, 5000)
+
+      return () => {
+        clearTimeout(t)
+      }
+    }, [loginFail])
+
     const onSubmitChangeToSignUp = (e) => {
          
     }
@@ -31,18 +46,19 @@ const FormLogin = () => {
 
         e.preventDefault();
         
-        axios.post(url, {
+        axiosInstance.post('login/', {
             'username': usernameRef.current.value,
             'password': passwordRef.current.value
 
         }).then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigation("/", response.data)
+            navigation("/", {state:{response: response.data}})
 
         }).catch((err) => {
-            console.error(err)
+            setLoginFail(true);
+             // console.error(err)
         })
     } 
     function Copyright(props) {
@@ -95,6 +111,7 @@ const FormLogin = () => {
                   Sign in
                 </Typography>
                 <Box component="form" noValidate onSubmit={onSubmitHandler} sx={{ mt: 1 }}>
+                  {loginFail ? <Alert severity='error'>Incorrect Password or Username.</Alert> : ""} 
                   <TextField
                     margin="normal"
                     required

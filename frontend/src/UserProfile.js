@@ -1,37 +1,74 @@
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import './UserProfile.css';
-import axios from 'axios'
+import { useState } from 'react';
+import { useLocation } from "react-router-dom";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  Avatar,
+  Typography,
+  TextField
+} from '@mui/material';
+ 
+import './UserProfile.css'
+import axiosInstance from './Refresh'
 
-const UserProfile = ( ) => {
-    const url = 'http://127.0.0.1:8000/mainDB/user/data/'
-    const config = {
-        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
-    };
+const UserProfile = () => {
+     const location = useLocation()
+     const [data, setData] = useState(null)
+     
+    // const url = 'http://127.0.0.1:8000/mainDB/user/data/'
+    // const config = {
+    //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
+    // };
 
-    axios.get(url, config)
-    .then(response => {
-        console.log(response.data);
+    axiosInstance.get('data/')
+    .then(response => { 
+         console.log(response.data)
+    }).catch(err => {
+        console.log(err)
     })
-    return(
+
+ 
+    
+    return (
         <>
-            <Box color="primary" className="box">
-                <Avatar height="150px" width="150px">NP</Avatar>
-                <h3 className="username add-padding">Display Name</h3>
-                <h4 className="user_github add-padding">Github Url</h4>
-            </Box> 
+        <Card className="user-profile-card"> 
+            <CardContent> 
+                    <Avatar src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"  className="profile-img" sx={{width:100, height:100}}/>
+                    <Typography variant="h5" component="h2" className="user-name">
+                    {location.state.response.display_name}
+                    </Typography>
+                    <Typography variant="h6" component="h2" className="user-name">
+                    {location.state.response.username}
+                    </Typography>
+                    <Typography variant="h6" component="h2" className="user-name">
+                    {location.state.response.github_url}
+                    </Typography>
+                    <div className="fcontainer"> 
+                        <p>10</p>
+                        <p>20</p>
+                        <p>10</p>
+                    </div>
+                    <div className="fcontainer"> 
+                        
+                        <Box className="fbox">Follwers</Box>
+                        
+                        <Box className="fbox">Following</Box>
+                         
+                        <Box className="fbox">Bff</Box>
+                    </div>
+                  
+            </CardContent>
+            </Card>
         </>
-    )
-}
+
+    );
+
+ 
+};
 
 export default UserProfile

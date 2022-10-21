@@ -18,7 +18,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 import axios from 'axios'
- 
+import axiosInstance from './Refresh'
 
 
 const FormCreate = () => {
@@ -38,7 +38,7 @@ const FormCreate = () => {
     const [passwordNotMatchError, setPasswordMatchError] = useState(false);
 
     //post url
-    const url = 'http://127.0.0.1:8000/mainDB/user/register/'
+    // const url = 'http://127.0.0.1:8000/mainDB/user/register/'
 
     // for password show on and off handler
     const visibilityOnClick = (e) => {
@@ -53,7 +53,7 @@ const FormCreate = () => {
         }
         
         else{
-          axios.post(url, { 
+          axiosInstance.post('register/', { 
             'username': usernameRef.current.value,
             'password': passwordRef.current.value,
             'display_name': display_nameRef.current.value,

@@ -1,17 +1,30 @@
 
-.box{
-    width: 100%;
-    height: 40vh;
+.user-profile-card{
+ 
     background-color: grey;
-    padding-left: 10px;
+    margin: 10px;
+     
 }
 
-.box Avatar{
-     height: 150px;
-     width: 150px;
-     background-image: red;
+.profile-img{
+    margin: 0 auto;
+}
+.user-name{
+    text-align: center;
 }
 
-.add-padding{
-    padding-left: 20px;
+.fbox{
+    width: 130px;
+    height: 25px;
+    background-color: rgb(172, 159, 159);
+    text-align: center;
+    padding-top: 10px;
+    border-radius: 5px;
+}
+.fcontainer{
+    width: 500px;
+    display: grid;
+    grid-template-columns: 33% 33% 33%;
+    justify-items: center;
+    margin: 0 auto;
 }

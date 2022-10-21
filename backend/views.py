@@ -21,8 +21,8 @@ class AuthorCreate(
 
 class GetAuthorData(generics.ListAPIView):
 
-    queryset = Author.objects.all()
-    serializer_class = GetAuthorSerializer 
+    queryset = Author.objects.filter()
+    # serializer_class = GetAuthorSerializer 
     permission_classes = [IsAuthenticated]
 
     def list(self, request, *args, **kwargs):
