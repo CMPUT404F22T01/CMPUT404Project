@@ -16,12 +16,15 @@ import Alert from '@mui/material/Alert';
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import  { useNavigate } from 'react-router-dom'
 
 import axios from 'axios'
-import axiosInstance from './Refresh'
+ 
 
 
 const FormCreate = () => {
+    const navigate = useNavigate()
+
     //for getting user input 
     const display_nameRef = useRef(null);
     const usernameRef = useRef(null);
@@ -38,7 +41,7 @@ const FormCreate = () => {
     const [passwordNotMatchError, setPasswordMatchError] = useState(false);
 
     //post url
-    // const url = 'http://127.0.0.1:8000/mainDB/user/register/'
+    const url = 'http://127.0.0.1:8000/mainDB/user/register/'
 
     // for password show on and off handler
     const visibilityOnClick = (e) => {
@@ -53,7 +56,7 @@ const FormCreate = () => {
         }
         
         else{
-          axiosInstance.post('register/', { 
+          axios.post(url, { 
             'username': usernameRef.current.value,
             'password': passwordRef.current.value,
             'display_name': display_nameRef.current.value,
@@ -61,6 +64,7 @@ const FormCreate = () => {
         }).then((response) => {
             console.log(response.data);
             //if successful route to different page
+            navigate("../login/")
         }).catch((err) => {
             console.error(err.response.data)
             if (err.response.data.username){

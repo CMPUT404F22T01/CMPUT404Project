@@ -12,7 +12,7 @@ const axiosInstance = axios.create({
 		Authorization: localStorage.getItem('access_token')
 			? `Bearer ${localStorage.getItem('access_token')}`
 			: null,
-		'Content-Type': 'application/json',
+		 
 	}
 })
 
@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use(
 							'Bearer ' + response.data.access;
 						originalRequest.headers['Authorization'] =
 							'Bearer ' + response.data.access; 
-							 
+							console.log(originalRequest)
 							 return axiosInstance(originalRequest);
 					}).catch((error) => {
 						console.log(error);
