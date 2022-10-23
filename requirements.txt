@@ -2,3 +2,6 @@ Django==4.1.2
 djangorestframework-simplejwt
 django-cors-headers  
 djoser
+Pillow==9.2.0
+djangorestframework==3.14.0
+drf-nested-routers
