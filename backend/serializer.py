@@ -30,8 +30,13 @@ class LoginSerializer(TokenObtainPairSerializer):
         return data
 
 class GetAuthorSerializer(serializers.ModelSerializer):
+    type = serializers.CharField()
+    url = serializers.CharField()
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ["type","id","host","display_name","url","github_url","profile_image"]
    
-   
+class PostAuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = "__all__"
