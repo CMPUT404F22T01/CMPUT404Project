@@ -16,5 +16,7 @@ urlpatterns = [
     path('authors/<uuid:uuidOfAuthor>', views.getSingleAuthor),
     # Follower routes!
     path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),
+    path('authors/<uuid:uuidOfFollower>/followers/<uuid:uuidOfFollowing>', views.handleSingleFollow),
+    
     *router.urls,
 ]

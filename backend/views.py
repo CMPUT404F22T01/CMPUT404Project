@@ -1,5 +1,6 @@
 from functools import partial
 from re import A
+import re
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import Author, Follower
@@ -69,3 +70,20 @@ def getAllFollowers(request, uuidOfAuthor):
         "items": [obj["follower"] for obj in serializer.data]
     }
     return response.Response(resp)
+
+@api_view(["GET","PUT","DELETE"])
+def handleSingleFollow(request, uuidOfFollower, uuidOfFollowing):
+    
+    if request.method == "GET":
+        try:
+            followObject = Follower.objects.get(follower__id=uuidOfFollower, following__id = uuidOfFollowing)
+            return response.Response({ "message": "Following relationship exists!"}, 200)
+        except:
+            return response.Response({ "message": "Following relationship does not exists!"}, 404)
+    
+    if request.method == "PUT":
+        pass
+
+    if request.method == "DELETE":
+        pass
+
