@@ -2,8 +2,8 @@ from functools import partial
 from re import A
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
-from .models import Author
-from . serializer import AuthorRegisterSerializer, GetAuthorSerializer, PostAuthorSerializer
+from .models import Author, Follower
+from . serializer import AuthorRegisterSerializer, GetAuthorSerializer, PostAuthorSerializer, FollowerSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view
 
@@ -57,3 +57,15 @@ def getSingleAuthor(request, uuidOfAuthor):
         if serializer.is_valid():
             serializer.save()
         return response.Response(serializer.data)
+
+
+@api_view(["GET"])
+def getAllFollowers(request, uuidOfAuthor):
+    # Get multiple follower objects
+    allFollowers = Follower.objects.filter(following__id=uuidOfAuthor)
+    serializer = FollowerSerializer(allFollowers, many=True)
+    resp = {
+        "type": "followers",
+        "items": [obj["follower"] for obj in serializer.data]
+    }
+    return response.Response(resp)

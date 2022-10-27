@@ -1,6 +1,6 @@
 from re import A
 from rest_framework import serializers
-from .models import Author
+from . models import Author, Follower
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -40,3 +40,10 @@ class PostAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = "__all__"
+
+class FollowerSerializer(serializers.ModelSerializer):
+
+    follower = GetAuthorSerializer()
+    class Meta:
+        model = Follower
+        fields = ["follower"]
