@@ -5,8 +5,8 @@ from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import Author, Follower
 from . serializer import AuthorRegisterSerializer, GetAuthorSerializer, PostAuthorSerializer, FollowerSerializer
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from rest_framework.decorators import api_view
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.decorators import api_view, permission_classes
 
 class AuthorCreate(
     generics.CreateAPIView
@@ -72,18 +72,35 @@ def getAllFollowers(request, uuidOfAuthor):
     return response.Response(resp)
 
 @api_view(["GET","PUT","DELETE"])
-def handleSingleFollow(request, uuidOfFollower, uuidOfFollowing):
+def handleSingleFollow(request, authorID, foreignAuthor):
     
     if request.method == "GET":
         try:
-            followObject = Follower.objects.get(follower__id=uuidOfFollower, following__id = uuidOfFollowing)
+            followObject = Follower.objects.get(follower__id=foreignAuthor, following__id=authorID)
             return response.Response({ "message": "Following relationship exists!"}, 200)
         except:
             return response.Response({ "message": "Following relationship does not exists!"}, 404)
     
     if request.method == "PUT":
-        pass
-
+        if not request.user.is_authenticated:
+            return response.Response(None, status.HTTP_401_UNAUTHORIZED)
+        try:
+            newFollowObj = Follower.objects.get_or_create(follower_id=foreignAuthor, following_id=authorID)
+            return response.Response(status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return response.Response(None)
+    
     if request.method == "DELETE":
-        pass
+        try:
+            followObj = Follower.objects.filter(follower__id=foreignAuthor, following__id=authorID).delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@api_view(["GET","PUT","POST","DELETE"])
+@permission_classes([AllowAny])
+def testAuth(request):
+    print(request.method)
+    print(request.user)
+    print(request.user.is_authenticated)
+    return response.Response(status=status.HTTP_200_OK)

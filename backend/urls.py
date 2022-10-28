@@ -11,12 +11,13 @@ router.register(r'refresh', RefreshTokenViewSet, basename='auth_refresh')
 
 urlpatterns = [
     path('register/', views.AuthorCreate.as_view()),
+    path('data/', views.testAuth),
     # Author routes!
     path('authors/', views.getAllAuthors), # TODO add pagination
     path('authors/<uuid:uuidOfAuthor>', views.getSingleAuthor),
     # Follower routes!
     path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),
-    path('authors/<uuid:uuidOfFollower>/followers/<uuid:uuidOfFollowing>', views.handleSingleFollow),
+    path('authors/<uuid:authorID>/followers/<uuid:foreignAuthor>', views.handleSingleFollow),
     
     *router.urls,
 ]
