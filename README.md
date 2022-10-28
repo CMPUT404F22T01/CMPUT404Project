@@ -1,4 +1,4 @@
 # CMPUT404Project()
 Team members:<br />- anthony3<br />- malhar<br />- mfdavies<br />- moxil<br />- shah4
 
-(https://whimsical.com/404-TunZA8YZQgrG3Bjj9wz3UU "Our Wireframes and planning") 
+[Our Wireframes and planning](https://whimsical.com/404-TunZA8YZQgrG3Bjj9wz3UU) 
