@@ -1,6 +1,6 @@
 from re import A
 from rest_framework import serializers
-from .models import Author
+from . models import Author, Follower
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -11,7 +11,7 @@ class AuthorRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ('username', 'password', 'display_name', 'github_url')
+        fields = ('username', 'password', 'displayName', 'github')
          
     def create(self, validated_data):
         return Author.objects.create_user(**validated_data)
@@ -24,14 +24,26 @@ class LoginSerializer(TokenObtainPairSerializer):
 
         data['username'] = self.user.username
         data['id'] = self.user.id
-        data['github_url'] = self.user.github_url
-        data['display_name'] = self.user.display_name
+        data['github'] = self.user.github
+        data['displayName'] = self.user.displayName
  
         return data
 
 class GetAuthorSerializer(serializers.ModelSerializer):
+    type = serializers.CharField()
+    url = serializers.CharField()
     class Meta:
         model = Author
-        fields = '__all__'
+        fields = ["type","id","host","displayName","url","github","profileImage"]
    
-   
+class PostAuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = "__all__"
+
+class FollowerSerializer(serializers.ModelSerializer):
+
+    follower = GetAuthorSerializer()
+    class Meta:
+        model = Follower
+        fields = ["follower"]

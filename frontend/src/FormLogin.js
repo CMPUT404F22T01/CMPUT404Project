@@ -23,7 +23,7 @@ const FormLogin = () => {
     let navigation = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
-    const url = 'http://127.0.0.1:8000/mainDB/user/login/'
+    const url = 'http://127.0.0.1:8000//service/login/'
 
     const [loginFail, setLoginFail] = useState(false);
 
@@ -46,7 +46,7 @@ const FormLogin = () => {
 
         e.preventDefault();
         
-        axiosInstance.post('login/', {
+        axiosInstance.post(url, {
             'username': usernameRef.current.value,
             'password': passwordRef.current.value
 

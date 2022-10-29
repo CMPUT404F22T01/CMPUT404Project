@@ -1,5 +1,5 @@
 from django.urls import path 
-from .views import AuthorCreate, GetAuthorData
+from . import views
 from .viewsets import LoginViewSet, RefreshTokenViewSet
 from rest_framework_nested import routers
 
@@ -10,8 +10,14 @@ router.register(r'login', LoginViewSet, basename='auth_login')
 router.register(r'refresh', RefreshTokenViewSet, basename='auth_refresh')
 
 urlpatterns = [
-    path('register/', AuthorCreate.as_view()),
-    path('data/', GetAuthorData.as_view()),
+    path('register/', views.AuthorCreate.as_view()),
+    path('data/', views.testAuth),
+    # Author routes!
+    path('authors/', views.getAllAuthors), # TODO add pagination
+    path('authors/<uuid:uuidOfAuthor>', views.getSingleAuthor),
+    # Follower routes!
+    path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),
+    path('authors/<uuid:authorID>/followers/<uuid:foreignAuthor>', views.handleSingleFollow),
     
     *router.urls,
 ]
