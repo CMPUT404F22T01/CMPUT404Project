@@ -83,7 +83,7 @@ def handleSingleFollow(request, authorID, foreignAuthor):
     
     if request.method == "PUT":
         if not request.user.is_authenticated:
-            return response.Response(None, status.HTTP_401_UNAUTHORIZED)
+            return response.Response({"message":"Unauthorized"}, status.HTTP_401_UNAUTHORIZED)
         try:
             newFollowObj = Follower.objects.get_or_create(follower_id=foreignAuthor, following_id=authorID)
             return response.Response(status=status.HTTP_201_CREATED)

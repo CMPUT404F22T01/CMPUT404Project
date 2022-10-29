@@ -11,7 +11,7 @@ class AuthorRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Author
-        fields = ('username', 'password', 'display_name', 'github_url')
+        fields = ('username', 'password', 'displayName', 'github')
          
     def create(self, validated_data):
         return Author.objects.create_user(**validated_data)
@@ -24,8 +24,8 @@ class LoginSerializer(TokenObtainPairSerializer):
 
         data['username'] = self.user.username
         data['id'] = self.user.id
-        data['github_url'] = self.user.github_url
-        data['display_name'] = self.user.display_name
+        data['github'] = self.user.github
+        data['displayName'] = self.user.displayName
  
         return data
 
@@ -34,7 +34,7 @@ class GetAuthorSerializer(serializers.ModelSerializer):
     url = serializers.CharField()
     class Meta:
         model = Author
-        fields = ["type","id","host","display_name","url","github_url","profile_image"]
+        fields = ["type","id","host","displayName","url","github","profileImage"]
    
 class PostAuthorSerializer(serializers.ModelSerializer):
     class Meta:

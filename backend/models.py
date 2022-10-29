@@ -27,14 +27,14 @@ class AuthorUserManager(BaseUserManager):
 
 
 class Author(AbstractBaseUser, PermissionsMixin):
-    username = models.CharField(max_length=30, unique=True) 
+    username = models.CharField(max_length=30, unique=True)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     join_date = models.DateTimeField(auto_now_add=True)
-    profile_image = models.ImageField(null=True, blank=True)
+    profileImage = models.ImageField(null=True, blank=True)
     host = models.CharField(max_length=255, blank=True, default='http://127.0.0.1:8000/')
     profile_url = models.URLField(max_length=255, blank=True)
-    github_url = models.URLField(max_length=255, blank=True, null=True)
-    display_name = models.CharField(max_length=255, null=True, blank=True)
+    github = models.URLField(max_length=255, blank=True, null=True)
+    displayName = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     
@@ -75,10 +75,11 @@ class POST(models.Model):
     origin = models.URLField(null=True, blank=True)
     description = models.CharField(max_length=500, blank=True, null=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/plain')
+    content = models.TextField(blank=True, null=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     image_url = models.URLField(null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
-    comment_count = models.IntegerField(default=0)
+    count = models.IntegerField(default=0)
     published = models.DateTimeField(auto_now=True)
     visibility = models.CharField(max_length=15, choices=VISIBILITY_CHOICES, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
