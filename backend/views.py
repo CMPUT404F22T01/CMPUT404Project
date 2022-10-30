@@ -3,8 +3,8 @@ from re import A
 import re
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
-from .models import Author, Follower, POST, Comment
-from . serializer import AuthorRegisterSerializer, CommentSerializer, GetAuthorSerializer, PostAuthorSerializer, FollowerSerializer
+from .models import *
+from . serializer import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
@@ -63,16 +63,65 @@ def getSingleAuthor(request, uuidOfAuthor):
 def getAllComments(request, uuidOfAuthor, uuidOfPost):
     # Get all comments of that post
     allComments = Comment.objects.filter(post__id=uuidOfPost)
-    serializerComments = CommentSerializer(allComments, many=True)  
+    serializer = CommentSerializer(allComments, many=True)  
     ####### add post and id later ########
     resp = {
         "type": "comments",
-        "comments": serializerComments.data,
+        "comments": serializer.data,
     }
     return response.Response(resp)
 
-    
+@api_view(["GET"])
+def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
+    # Get all likes of that post
+    allLikes = Like.objects.filter(object_id=uuidOfPost)
+    serializer = LikeSerializer(allLikes, many=True)  
 
+    itemArray = []
+    
+    for obj in serializer.data:
+        itemArray.append({ 
+                    "summary": obj["author"]['displayName'] + " Likes your post",
+                    "type": "Like",
+                    "author" : obj["author"],
+                    "object" : str(request)}) ####### idk how to fix this - Moxil
+        
+    resp = {"items" : itemArray}  
+    return response.Response(resp)
+
+@api_view(["GET"])    
+def getAllCommentLikes(request, uuidOfAuthor, uuidOfPost, uuidOfComment):
+    # Get all likes of that comment
+    allLikes = Like.objects.filter(object_id=uuidOfComment)
+    serializer = LikeSerializer(allLikes, many=True)  
+    itemArray = []
+    
+    for obj in serializer.data:
+        itemArray.append({ 
+                    "summary": obj["author"]['displayName'] + " Likes your comment",
+                    "type": "Like",
+                    "author" : obj["author"],
+                    "object" : str(request)}) ####### idk how to fix this - Moxil
+        
+    resp = {"items" : itemArray}  
+    return response.Response(resp)
+
+@api_view(["GET"])
+def getAllAuthorLiked(request, uuidOfAuthor):
+    # Get everything that author liked
+    allLikes = Like.objects.filter(author=uuidOfAuthor)
+    serializer = LikeSerializer(allLikes, many=True)  
+    itemArray = []
+    
+    for obj in serializer.data:
+        itemArray.append({ 
+                    "summary": obj["author"]['displayName'] + " Likes your "+ obj["object_type"],
+                    "type": "Like",
+                    "author" : obj["author"],
+                    "object" : str(request)}) ####### idk how to fix this - Moxil
+        
+    resp = {"type":"liked", "items" : itemArray}  
+    return response.Response(resp)
 
 @api_view(["GET"])
 def getAllFollowers(request, uuidOfAuthor):

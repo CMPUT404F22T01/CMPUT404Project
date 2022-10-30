@@ -1,6 +1,6 @@
 from re import A
 from rest_framework import serializers
-from . models import Author, Follower, Comment
+from . models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -53,3 +53,9 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["type", "author", "comment", "contentType", "published", "id"]
+        
+class LikeSerializer(serializers.ModelSerializer):
+    author = GetAuthorSerializer("author")
+    class Meta:
+        model = Like
+        fields = ["type", "author", "object_type"]
