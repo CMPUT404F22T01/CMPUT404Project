@@ -3,8 +3,8 @@ from re import A
 import re
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
-from .models import Author, Follower
-from . serializer import AuthorRegisterSerializer, GetAuthorSerializer, PostAuthorSerializer, FollowerSerializer
+from .models import Author, Follower, POST, Comment
+from . serializer import AuthorRegisterSerializer, CommentSerializer, GetAuthorSerializer, PostAuthorSerializer, FollowerSerializer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 
@@ -58,6 +58,20 @@ def getSingleAuthor(request, uuidOfAuthor):
         if serializer.is_valid():
             serializer.save()
         return response.Response(serializer.data)
+
+@api_view(["GET"])
+def getAllComments(request, uuidOfAuthor, uuidOfPost):
+    # Get all comments of that post
+    allComments = Comment.objects.filter(post__id=uuidOfPost)
+    serializerComments = CommentSerializer(allComments, many=True)  
+    ####### add post and id later ########
+    resp = {
+        "type": "comments",
+        "comments": serializerComments.data,
+    }
+    return response.Response(resp)
+
+    
 
 
 @api_view(["GET"])
