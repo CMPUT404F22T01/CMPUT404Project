@@ -6,14 +6,14 @@ from uuid import uuid4
 
 
 class AuthorUserManager(BaseUserManager):
-    def create_user(self, username, password=None, display_name=None, github_url=None, **other_fields):
+    def create_user(self, username, password=None, displayName=None, github=None, **other_fields):
         print("create user called")
         if not username:
             raise ValueError('username must not be empty')
         
         if not password:
             raise ValueError('password must not be empty')
-        user = self.model(username=username, display_name=display_name, github_url=github_url, **other_fields)
+        user = self.model(username=username, displayName=displayName, github=github, **other_fields)
         user.set_password(password)
         user.save()
         return user
@@ -96,13 +96,18 @@ class POST(models.Model):
         return 'post'
 
 class Comment(models.Model):
+    CONTENT_TYPE = (
+        ('text/markdown', 'text/markdown'),
+        ('text/plain','text/plain')
+    )
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     post = models.ForeignKey(POST, on_delete=models.CASCADE, null=True)
     comment = models.CharField(max_length=255)
     published = models.DateTimeField(auto_now_add=True)
-
+    contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/markdown')
+ 
     class Meta:
         ordering = ['-published']
     
