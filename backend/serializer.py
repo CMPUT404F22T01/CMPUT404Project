@@ -47,7 +47,17 @@ class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower
         fields = ["follower"]
-        
+
+
+class PostSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(read_only=True)
+    id = serializers.CharField(source="get_id", read_only=True)
+
+    class Meta:
+        model = POST
+        fields = ["type", "id", "description"]
+
+
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author")
     class Meta:

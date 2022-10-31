@@ -23,9 +23,13 @@ urlpatterns = [
 
 
     # Follow Request routes! (This is not specified in the description)
-    ## path('authors/<uuid:sender>/followers/<uuid:reciever>', views.handleFollowRequest), -- This should send a follow req to reciever from sender. Also put in inbox!
+    path('authors/<uuid:sender>/followers/<uuid:receiver>', views.handleFollowRequest), # TODO put in inbox
 
     # Post routes!
+    path("posts/", views.getAllPosts), # Gets all posts (not required)
+ 
+
+    path("authors/<uuid:authorID>/posts/<uuid:postID>", views.handleUUIDPostRequest),
     # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
     #     GET [local, remote] get the public post whose id is POST_ID
     #     POST [local] update the post whose id is POST_ID (must be authenticated)

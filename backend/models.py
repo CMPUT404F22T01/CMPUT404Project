@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 from uuid import uuid4
 
+from mainDB.settings import HOSTNAME
+
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None, displayName=None, github=None, **other_fields):
@@ -65,18 +67,19 @@ class POST(models.Model):
     )
 
     VISIBILITY_CHOICES = (
-        ('PUBLIC','PUBLIC'),
+        ("PUBLIC","PUBLIC"),
         ("FRIENDS","FRIENDS")
     )
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True)
     source = models.URLField(null=True, blank=True)
-    origin = models.URLField(null=True, blank=True)
+    origin = models.URLField(default=HOSTNAME)
     description = models.CharField(max_length=500, blank=True, null=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/plain')
     content = models.TextField(blank=True, null=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    categories = models.TextField(default='[]', null=True)
     image_url = models.URLField(null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
     count = models.IntegerField(default=0)
@@ -84,6 +87,15 @@ class POST(models.Model):
     visibility = models.CharField(max_length=15, choices=VISIBILITY_CHOICES, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
 
+    def get_id(self):
+        return self.origin + "authors/" + str(self.author.id) + "/posts/" + str(self.id)
+
+    def get_source(self):
+        source = str(self.source) if self.source is not None else HOSTNAME
+        return source + "posts/" + str(self.id)
+
+    def get_origin(self):
+        return str(self.origin) + "posts/" + str(self.id)
 
     class Meta:
         ordering = ['-published']

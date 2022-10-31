@@ -1,4 +1,5 @@
 from functools import partial
+import json
 from re import A
 import re
 from django.shortcuts import render
@@ -58,6 +59,78 @@ def getSingleAuthor(request, uuidOfAuthor):
         if serializer.is_valid():
             serializer.save()
         return response.Response(serializer.data)
+
+
+@api_view(["GET","PUT","DELETE"])
+def handleSingleFollow(request, authorID, foreignAuthor):
+    
+    if request.method == "GET":
+        try:
+            followObject = Follower.objects.get(follower__id=foreignAuthor, following__id=authorID)
+            return response.Response({ "message": "Following relationship exists!"}, 200)
+        except:
+            return response.Response({ "message": "Following relationship does not exists!"}, 404)
+    
+    if request.method == "PUT":
+        if not request.user.is_authenticated:
+            return response.Response({"message":"Unauthorized"}, status.HTTP_401_UNAUTHORIZED)
+        try:
+            newFollowObj = Follower.objects.get_or_create(follower_id=foreignAuthor, following_id=authorID)
+            return response.Response(status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return response.Response(None)
+    
+    if request.method == "DELETE":
+        try:
+            followObj = Follower.objects.filter(follower__id=foreignAuthor, following__id=authorID).delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET","PUT","DELETE"])
+def handleFollowRequest(request, sender, receiver):
+    # Ensure that there is a follow request from sender to reciever
+    if request.method == "GET":
+        try:
+            followReqObj = FollowRequest.objects.get(sender__id=sender, reciever__id=receiver)
+            return response.Response({ "message": "Following relationship exists!"}, 200)
+        except:
+            return response.Response({ "message": "Following relationship does not exists!"}, 404)
+    
+    # Add follow request from sender to reciever
+    if request.method == "PUT":
+        try:
+            newFollowReqObj = FollowRequest.objects.get_or_create(sender__id=sender, reciever__id=receiver)
+            return response.Response(status=status.HTTP_201_CREATED)
+        except:
+            return response.Response(None)
+
+    # Delete follow request from sender to reciever:
+    if request.method == "DELETE":
+        try:
+            FollowRequest.objects.filter(sender__id=sender, reciever__id=receiver).delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["GET"])
+def getAllPosts(request):
+    posts = POST.objects.all()
+    jsonData = PostSerializer(posts, many=True)
+    return response.Response(jsonData.data, 200)
+
+@api_view(["GET","POST","PUT","DELETE"])
+def handleUUIDPostRequest(request, authorID, postID):
+    # Get post
+    if request.method == "GET":
+        try:
+            postObj = POST.objects.get(author__id=authorID, id=postID)
+            jsonPost = PostSerializer(postObj)
+            return response.Response(jsonPost.data, 200)
+        except:
+            return response.Response({ "message":"Post not found!"}, status.HTTP_404_NOT_FOUND)
+
 
 @api_view(["GET"])
 def getAllComments(request, uuidOfAuthor, uuidOfPost):
@@ -134,31 +207,7 @@ def getAllFollowers(request, uuidOfAuthor):
     }
     return response.Response(resp)
 
-@api_view(["GET","PUT","DELETE"])
-def handleSingleFollow(request, authorID, foreignAuthor):
-    
-    if request.method == "GET":
-        try:
-            followObject = Follower.objects.get(follower__id=foreignAuthor, following__id=authorID)
-            return response.Response({ "message": "Following relationship exists!"}, 200)
-        except:
-            return response.Response({ "message": "Following relationship does not exists!"}, 404)
-    
-    if request.method == "PUT":
-        if not request.user.is_authenticated:
-            return response.Response({"message":"Unauthorized"}, status.HTTP_401_UNAUTHORIZED)
-        try:
-            newFollowObj = Follower.objects.get_or_create(follower_id=foreignAuthor, following_id=authorID)
-            return response.Response(status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return response.Response(None)
-    
-    if request.method == "DELETE":
-        try:
-            followObj = Follower.objects.filter(follower__id=foreignAuthor, following__id=authorID).delete()
-            return response.Response(status=status.HTTP_204_NO_CONTENT)
-        except:
-            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(["GET","PUT","POST","DELETE"])
 @permission_classes([AllowAny])
