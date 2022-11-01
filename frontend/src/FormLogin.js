@@ -23,7 +23,7 @@ const FormLogin = () => {
     let navigation = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
-    const url = 'http://127.0.0.1:8000//service/login/'
+    const url = 'http://127.0.0.1:8000/service/login/'
 
     const [loginFail, setLoginFail] = useState(false);
 
@@ -51,7 +51,7 @@ const FormLogin = () => {
             'password': passwordRef.current.value
 
         }).then((response) => {
-          // console.log(response.data);
+          console.log(response.data);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             navigation("/", {state:{response: response.data}})

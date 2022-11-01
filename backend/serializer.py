@@ -1,6 +1,8 @@
+from ast import mod
+from pyexpat import model
 from re import A
 from rest_framework import serializers
-from . models import *
+from .models import *
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 
@@ -49,13 +51,38 @@ class FollowerSerializer(serializers.ModelSerializer):
         fields = ["follower"]
         
 class CommentSerializer(serializers.ModelSerializer):
-    author = GetAuthorSerializer("author")
+    author = GetAuthorSerializer("author", read_only=True)
     class Meta:
         model = Comment
         fields = ["type", "author", "comment", "contentType", "published", "id"]
         
 class LikeSerializer(serializers.ModelSerializer):
-    author = GetAuthorSerializer("author")
+    author = GetAuthorSerializer("author", read_only=True)
     class Meta:
         model = Like
         fields = ["type", "author", "object_type"]
+
+
+class PostSerializer(serializers.ModelSerializer):
+    # read_only equals to true becoz we don't want users to edit the author data while changing post data
+    author = GetAuthorSerializer("author", read_only=True) 
+    class Meta:
+        model = POST
+        fields = "__all__"
+    
+    def create(self, validated_data):
+       validated_data['author'] = self.context.get('author')
+       return super().create(validated_data)
+
+
+class PostCreateSerializer(serializers.ModelSerializer):
+    author = GetAuthorSerializer("author", read_only=True) 
+    class Meta:
+        model = POST
+        fields = "__all__"
+    
+
+    def create(self, validated_data):
+        validated_data['author'] = self.context.get('author')
+        return super().create(validated_data)
+ 

@@ -7,7 +7,7 @@ from uuid import uuid4
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None, displayName=None, github=None, **other_fields):
-        print("create user called")
+       
         if not username:
             raise ValueError('username must not be empty')
         

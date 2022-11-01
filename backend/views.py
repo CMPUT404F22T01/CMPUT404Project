@@ -7,6 +7,7 @@ from .models import *
 from . serializer import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
 
 class AuthorCreate(
     generics.CreateAPIView
@@ -167,3 +168,56 @@ def testAuth(request):
     print(request.user)
     print(request.user.is_authenticated)
     return response.Response(status=status.HTTP_200_OK)
+
+
+
+class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
+
+    queryset = POST.objects.all()
+    serializer_class = PostSerializer
+
+    def get(self, request, *args, **kwargs): 
+        queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
+        serializer = self.serializer_class(queryset, many=False) 
+        return Response(serializer.data)
+
+    def post(self, request, *args, **kwargs): 
+        queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
+        serializer =  self.serializer_class(queryset, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    def delete(self, request, *args, **kwargs):
+        print(request.method)
+    
+
+     
+
+class PostMutipleDetailView(generics.ListCreateAPIView):
+
+    queryset = POST.objects.all()
+    serializer_class = PostSerializer
+
+    def get(self, request, *args, **kwargs):
+        #author__ becoz the author is named author in the post model and serializer
+        queryset = POST.objects.filter(author__id=kwargs['uuidOfAuthor'])
+        serializer = self.serializer_class(queryset, many=True)
+        return Response(serializer.data)
+    
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.request.method == 'POST':
+             context['author'] = Author.objects.filter(id=self.kwargs['uuidOfAuthor']).first()
+        return context
+
+    def post(self, request, *args, **kwargs):  
+        return self.create(request, *args, **kwargs)
+        
+
+        
+
+class PostImageView(generics.ListAPIView):
+    pass
