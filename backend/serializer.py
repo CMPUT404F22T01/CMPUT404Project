@@ -75,14 +75,4 @@ class PostSerializer(serializers.ModelSerializer):
        return super().create(validated_data)
 
 
-class PostCreateSerializer(serializers.ModelSerializer):
-    author = GetAuthorSerializer("author", read_only=True) 
-    class Meta:
-        model = POST
-        fields = "__all__"
-    
-
-    def create(self, validated_data):
-        validated_data['author'] = self.context.get('author')
-        return super().create(validated_data)
  
