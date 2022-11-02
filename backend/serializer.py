@@ -71,6 +71,7 @@ class PostSerializer(serializers.ModelSerializer):
         fields = "__all__"
     
     def create(self, validated_data):
+       #geeting author from the context we added it and adding to validated_data
        validated_data['author'] = self.context.get('author')
        return super().create(validated_data)
 

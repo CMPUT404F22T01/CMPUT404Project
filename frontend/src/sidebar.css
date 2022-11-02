@@ -1,0 +1,41 @@
+.mainBox{
+    background-color: #152238;
+}
+
+.listArea{
+     
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    justify-content: flex-end;
+}
+
+.listArea-color{
+    background-color:#23395d;
+    color: whitesmoke;
+}
+
+.icon-color{
+    color: white;
+    font-size: 1.5em;
+    
+}
+
+.app-name{
+      width: 100%;
+      color: whitesmoke;
+      font-weight: bold;
+}
+ 
+
+.userProfile-Box{ 
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     color: whitesmoke;
+}
+
+.toolbar-color{
+    background-color: #23395d;
+}
