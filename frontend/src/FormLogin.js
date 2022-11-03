@@ -1,15 +1,13 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
  
-import axiosInstance from './Refresh'
+import axiosInstance from './axiosInstance'
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField'; 
 // import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -51,7 +49,8 @@ const FormLogin = () => {
             'password': passwordRef.current.value
 
         }).then((response) => {
-          console.log(response.data);
+            //temp need to save user id
+            localStorage.setItem('id', response.data.id);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             navigation("/", {state:{response: response.data}})
@@ -134,10 +133,7 @@ const FormLogin = () => {
                     autoComplete="current-password" 
                     inputRef={passwordRef}
                   />
-                  <FormControlLabel
-                    control={<Checkbox value="remember" color="primary" />}
-                    label="Remember me"
-                  />
+                
                   <Button
                     type="submit"
                     fullWidth
@@ -148,11 +144,11 @@ const FormLogin = () => {
                     Sign In
                   </Button>
                   <Grid container>
-                    <Grid item xs>
+                    {/* <Grid item xs>
                       <Link href="#" variant="body2">
                         Forgot password?
                       </Link>
-                    </Grid>
+                    </Grid> */}
                     <Grid item>
                       <Link href="#" variant="body2" onClick={onSubmitChangeToSignUp}>
                         {"Don't have an account? Sign Up"}

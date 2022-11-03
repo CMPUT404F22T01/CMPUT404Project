@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
  
 import './UserProfile.css'
-import axiosInstance from './Refresh'
+import axiosInstance from './axiosInstance'
 
 const UserProfile = () => {
      const location = useLocation()

@@ -202,7 +202,7 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
 
     queryset = POST.objects.all()
     serializer_class = PostSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    # parser_classes = [MultiPartParser, FormParser]
 
 
     def get(self, request, *args, **kwargs):
