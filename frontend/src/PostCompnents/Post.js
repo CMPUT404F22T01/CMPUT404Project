@@ -61,6 +61,11 @@ export default function Post() {
     return setPostEdit((prevState)=>!prevState);
   }
 
+  //how to handle a like??
+  const onClickLikeHandler = (index) => {
+    // axiosInstance.post(``)
+  }
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -69,6 +74,7 @@ export default function Post() {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/`)
       .then((response) => {
+        console.log(response.data)
         setPost(response.data);
       })
       .catch((error) => {
@@ -109,7 +115,7 @@ export default function Post() {
           </CardContent>
           <CardActions disableSpacing>
             <IconButton aria-label="add to favorites">
-              <FavoriteIcon />
+              <FavoriteIcon onClick={() => onClickLikeHandler(index)}/>
             </IconButton>
             <IconButton aria-label="share">
               <CommentIcon />

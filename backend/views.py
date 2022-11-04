@@ -62,17 +62,17 @@ def getSingleAuthor(request, uuidOfAuthor):
             serializer.save()
         return response.Response(serializer.data)
 
-@api_view(["GET"])
-def getAllComments(request, uuidOfAuthor, uuidOfPost):
-    # Get all comments of that post
-    allComments = Comment.objects.filter(post__id=uuidOfPost)
-    serializer = CommentSerializer(allComments, many=True)  
-    ####### add post and id later ########
-    resp = {
-        "type": "comments",
-        "comments": serializer.data,
-    }
-    return response.Response(resp)
+# @api_view(["GET"])
+# def getAllComments(request, uuidOfAuthor, uuidOfPost):
+#     # Get all comments of that post
+#     allComments = Comment.objects.filter(post__id=uuidOfPost)
+#     serializer = CommentSerializer(allComments, many=True)  
+#     ####### add post and id later ########
+#     resp = {
+#         "type": "comments",
+#         "comments": serializer.data,
+#     }
+#     return response.Response(resp)
 
 @api_view(["GET"])
 def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
@@ -178,7 +178,8 @@ class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.Creat
     queryset = POST.objects.all()
     serializer_class = PostSerializer 
 
-     # adding extra data to context object becoz we need to author to create the post
+     # adding extra data to context object becoz we need author(finding the correct author by uuid) to create the post
+     # and we take in the user inputed uuid
     def get_serializer_context(self):
         context = super().get_serializer_context()
         if self.request.method == 'PUT':
@@ -204,6 +205,9 @@ class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.Creat
         else:
             return Response({"Error: Follower and Following relatioship does not exists"}, status=status.HTTP_400_BAD_REQUEST)
 
+    '''
+        Method says it is post but does the work of editing the post (no by choice but needed by requirements)
+    '''
     def post(self, request, *args, **kwargs): 
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
         serializer =  self.serializer_class(queryset, data=request.data)
@@ -212,9 +216,15 @@ class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.Creat
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    '''
+        Creating new post based on uuid for post provided by the user
+    '''
     def put(self, request, *args, **kwargs):
          return self.create(request, *args, **kwargs)
     
+    '''
+        Deleting a specified post
+    '''
     def delete(self, request, *args, **kwargs):
          queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
          if queryset.author.id == kwargs['uuidOfAuthor']:
@@ -276,3 +286,41 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
 
 class PostImageView(generics.ListAPIView):
     pass
+
+
+class CommentPostView(generics.ListCreateAPIView):
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+
+    '''
+        get the author object who will comment and pass it to serializer used later for creating comment object
+        get the post object on which author will comment and pass it to serializer used later for creating comment object
+        becoz comment has ForeignKey on both post and author therefore required feilds
+    '''
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.request.method == 'POST':
+            context['author'] = Author.objects.filter(id=self.kwargs['uuidOfAuthor']).first()
+            context['post'] = POST.objects.filter(id=self.kwargs.get('uuidOfPost')).first()
+
+        return context
+
+    '''
+        stuff before the return self.create is only for incrementing the count in the post object by 1 becoz count is 
+        number of comments on a particular post object
+    '''
+    def post(self, request, *args, **kwargs):
+        queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
+        data = {'count' : queryset.count + 1} 
+        serializer =  PostSerializer(queryset, data=data)
+        if serializer.is_valid():
+            serializer.save()
+             
+        return self.create(request, *args, **kwargs)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(author__id=kwargs['uuidOfAuthor'], post__id=kwargs['uuidOfPost'])
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+        
