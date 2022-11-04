@@ -176,24 +176,53 @@ def testAuth(request):
 class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
 
     queryset = POST.objects.all()
-    serializer_class = PostSerializer
+    serializer_class = PostSerializer 
 
+     # adding extra data to context object becoz we need to author to create the post
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        if self.request.method == 'PUT':
+            #can also do get_object_or_404..
+            context['author'] = Author.objects.filter(id=self.kwargs['uuidOfAuthor']).first()
+            context['id'] = self.kwargs['uuidOfPost']
+        return context
+
+    '''
+        Check if the current user is allowed to access that individual post
+        check 1 if it is the post made by same author then return it or the post is public post
+        check 2 if the author who made the request is the follower of the author who made the post
+    '''
     def get(self, request, *args, **kwargs): 
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
-        serializer = self.serializer_class(queryset, many=False) 
-        return Response(serializer.data)
+        print(queryset.author.id, kwargs['uuidOfAuthor'])
+        if  (kwargs['uuidOfAuthor'] == queryset.author.id) or queryset.visibility == 'PUBLIC':
+            serializer = self.serializer_class(queryset, many=False)  
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        elif  (queryset.visibility == 'FRIENDS') and bool(Follower.objects.filter(follower__id=kwargs['uuidOfAuthor'], following__id=queryset.author.id)): 
+            serializer = self.serializer_class(queryset, many=False)  
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"Error: Follower and Following relatioship does not exists"}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request, *args, **kwargs): 
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
         serializer =  self.serializer_class(queryset, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def put(self, request, *args, **kwargs):
+         return self.create(request, *args, **kwargs)
     
     def delete(self, request, *args, **kwargs):
-        print(request.method)
+         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
+         if queryset.author.id == kwargs['uuidOfAuthor']:
+            queryset.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+         else:
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+         
     
 
      
@@ -205,22 +234,42 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
 
 
+    '''
+        Sends all the public post and post in which a relation of follower and follwoing exists between the authors
+        all_post_objects has a list of all public and friend post after filtering the unlisted post
+    '''
     def get(self, request, *args, **kwargs):
         #author__ becoz the author is named author in the post model and serializer
-        queryset = POST.objects.filter(author__id=kwargs['uuidOfAuthor'])
-        serializer = self.serializer_class(queryset, many=True)
+        # to get all author posts
+        #author__id=kwargs['uuidOfAuthor']
+        
+        all_post_objects = []
+        queryset = POST.objects.all().exclude(unlisted=True) 
+        for obj in queryset:
+             # adding  the all public post objects anf author self create post
+            if (kwargs.get('uuidOfAuthor')) == obj.author.id or obj.visibility == 'PUBLIC':
+                all_post_objects.append(obj)
+            # if the connection does not exist then it is false or else true (so we add to post when connection exists)
+            elif obj.visibility == 'FRIENDS' and bool(Follower.objects.filter(follower__id=kwargs['uuidOfAuthor'], following__id=obj.author.id)):
+                all_post_objects.append(obj)
+            
+             
+            
+        serializer = self.serializer_class(all_post_objects, many=True)
         return Response(serializer.data)
     
     # adding extra data to context object becoz we need to author to create the post
     def get_serializer_context(self):
         context = super().get_serializer_context()
         if self.request.method == 'POST':
-            #can also do get_obkect_or_404..
+            #can also do get_object_or_404..
             context['author'] = Author.objects.filter(id=self.kwargs['uuidOfAuthor']).first()
+       
         return context
-
-    def post(self, request, format=None, *args, **kwargs):  
-        return self.create(request, *args, **kwargs)
+    
+    # by default does the same as this
+    # def post(self, request, format=None, *args, **kwargs):  
+    #     return self.create(request, *args, **kwargs) 
         
 
         

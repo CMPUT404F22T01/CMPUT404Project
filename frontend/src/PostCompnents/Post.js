@@ -17,8 +17,14 @@ import Box from "@mui/material/Box";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
 import { useEffect, useState } from "react";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../axiosInstance";
+import PostEdit from './PostEdit'
 
+
+/**
+ * The edit part appears on the very top of the page need to deal with it too 
+ * Deal with images
+ */
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -42,6 +48,19 @@ const ExpandMore = styled((props) => {
 export default function Post() {
   const [expanded, setExpanded] = React.useState(false);
   const [post, setPost] = useState([]);
+
+  //this two are for the editPost and PostEdit prop 
+  //indexToEdit is used to get the index clicked happened and pass post at that index as prop to the PostEdit
+  const [postEdit, setPostEdit] = useState(false);
+  const [indexToEdit, setIndexToEdit] = useState(false);
+
+
+  //handler for the edit button click
+  const onClickPostEditHandler = (index_to_edit) => {
+    setIndexToEdit(index_to_edit);
+    return setPostEdit((prevState)=>!prevState);
+  }
+
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
@@ -57,7 +76,7 @@ export default function Post() {
       });
   }, []);
 
-  const allPost = post.map((data) => {
+  const allPost = post.map((data, index) => {
     return (
       <Typography paragraph className="card-container">
         <Card sx={{ maxWidth: 1000 }} className="card-view">
@@ -69,12 +88,14 @@ export default function Post() {
             }
             action={
               <IconButton aria-label="settings">
-                <MoreVertIcon />
+                {/* to allow author to edit its own post */}
+                {data.author.id === localStorage.getItem("id") ? <MoreVertIcon onClick={() => onClickPostEditHandler(index)}/> : ""}
               </IconButton>
             }
             title={data.title}
             subheader={data.published}
           />
+        
           {/* <CardMedia
       component="img"
       height="394"
@@ -147,7 +168,8 @@ export default function Post() {
       sx={{ flexGrow: 1, p:3 }} 
     >
       <DrawerHeader />
-      {allPost}
+      {allPost} 
+      {postEdit ? <PostEdit onClickPostEditHandler={onClickPostEditHandler} data={post[indexToEdit]}/> : ""}
     </Box>
   );
 }

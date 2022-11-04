@@ -28,3 +28,8 @@
     justify-items: center;
     margin: 0 auto;
 }
+
+.post{
+    display: flex;
+    flex-direction: column;
+}

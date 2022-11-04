@@ -10,10 +10,18 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 import { makeStyles } from "@mui/styles";
 import "./postcreate.css";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../axiosInstance";
 
 import { useRef } from "react";
 
+
+
+/**
+ * Issues
+ * Need to deal with image parts 
+ * The blur in UI is out of range
+ * The edit part appears on the very top of the page need to deal with it too
+ */
 const useStyles = makeStyles({
   submit_btn: {
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
@@ -53,13 +61,15 @@ const useStyles = makeStyles({
  
 });
 
-const PostCreate = ({ onClickCreatePostHandler }) => {
+const PostEdit = ({onClickPostEditHandler, data}) => {
   //material ui styles
   const styleClasses = useStyles();
 
+  console.log(data)
+
   //react
   const titleRef = useRef(null);
-  const descriptionRef = useRef(null);
+  const contentRef = useRef(null);
   const contentTypeRef = useRef(null);
   const unlistedRef = useRef(null);
   const visibilityRef = useRef(null);
@@ -70,10 +80,11 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
+    //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/`, {
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/`, {
         title: titleRef.current.value,
-        description: descriptionRef.current.value,
+        content: contentRef.current.value,
         contentType: contentTypeRef.current.value,
         visibility: visibilityRef.current.value,
         unlisted: unlistedRef.current.value,
@@ -88,7 +99,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
         console.error(err);
       });
 
-    onClickCreatePostHandler();
+    onClickPostEditHandler();
   };
 
   return (
@@ -97,7 +108,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
         <CloseIcon
           sx={{ size: "large" }}
           className="close-tab"
-          onClick={() => onClickCreatePostHandler()}
+          onClick={() => onClickPostEditHandler()}
         />
 
         <Card className="card-view" style={{ backgroundColor: "#15172b" }}>
@@ -115,7 +126,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
                  color: "white",
                  
              }}}
-              defaultValue={"text/plain"}
+              defaultValue={data.contentType}
               inputRef={contentTypeRef}
               inputProps={{
                 name: "Content-Type",
@@ -132,6 +143,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
           </FormControl>
           <br />
           <TextField
+            defaultValue={data.title}
             id="outlined-basic"
             label="Title"
             variant="outlined"
@@ -146,11 +158,12 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
           />
           <br />
           <TextareaAutosize
+            defaultValue={data.content}
             aria-label="Content"
             minRows={10}
             style={{ width: "100%" }}
             placeholder="content"
-            ref={descriptionRef}
+            ref={contentRef}
             className={styleClasses.textfields}
             
           />
@@ -168,7 +181,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
              "& .MuiSvgIcon-root": {
                  color: "white",
              }}}
-              defaultValue={"PUBLIC"}
+              defaultValue={data.visibility}
               inputProps={{
                 name: "visibility",
                 id: "uncontrolled-native",
@@ -189,7 +202,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               Unlisted
             </InputLabel>
             <Select 
-              defaultValue={"False"}
+              defaultValue={data.unlisted}
               inputProps={{
                 name: "unlisted",
                 id: "uncontrolled-native",
@@ -201,8 +214,8 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               }}}
               inputRef={unlistedRef}
             >
-              <MenuItem value={"False"}>false</MenuItem>
-              <MenuItem value={"True"}>true</MenuItem>
+              <MenuItem value={"false"}>false</MenuItem>
+              <MenuItem value={"true"}>true</MenuItem>
             </Select>
           </FormControl>
           <br />
@@ -228,6 +241,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
           </label>
           <br />
           <TextField
+            defaultValue={data.source}
             id="outlined-basic"
             label="Source"
             variant="outlined"
@@ -242,6 +256,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
           />
           <br />
           <TextField
+            defaultValue={data.origin}
             id="outlined-basic"
             label="Origin"
             variant="outlined"
@@ -267,4 +282,4 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   );
 };
 
-export default PostCreate;
+export default PostEdit;

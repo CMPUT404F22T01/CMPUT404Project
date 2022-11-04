@@ -24,8 +24,8 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import "./sidebar.css";
 
-import Post from './Post'
-import PostCreate from './PostCreate';
+import Post from './PostCompnents/Post'
+import PostCreate from './PostCompnents/PostCreate';
  
 
 const drawerWidth = 240;

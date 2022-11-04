@@ -14,7 +14,7 @@ function App() {
             <Route element={<Main/>} path="/" />
             <Route element={<FormLogin/>} path="/login" />
             <Route element={<FormCreate/>} path="/register" /> 
-            <Route element={<UserProfile/>} path="/" />
+            <Route element={<UserProfile/>} path="/profile" />
          </Routes>
         </BrowserRouter>
      </>

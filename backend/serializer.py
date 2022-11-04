@@ -72,6 +72,10 @@ class PostSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
        #geeting author from the context we added it and adding to validated_data
+    #    print("Creaey syper called")
+       if self.context.get('id') is not None:
+            print("hello")
+            validated_data['id'] = self.context.get('id')
        validated_data['author'] = self.context.get('author')
        return super().create(validated_data)
 
