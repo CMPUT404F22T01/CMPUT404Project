@@ -2,7 +2,7 @@ import axios from 'axios'
 import jwt_decode from "jwt-decode";
 import { useNavigate } from 'react-router-dom';
 
-const baseURL = 'http://127.0.0.1:8000//service/';
+const baseURL = 'http://127.0.0.1:8000/service/';
 
 
 const axiosInstance = axios.create({

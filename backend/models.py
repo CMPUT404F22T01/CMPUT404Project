@@ -6,10 +6,12 @@ from uuid import uuid4
 
 from mainDB.settings import HOSTNAME
 
+def post_upload_to(instance, filename):
+    return 'posts/{filename}'.format(filename=filename)
 
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None, displayName=None, github=None, **other_fields):
-        print("create user called")
+       
         if not username:
             raise ValueError('username must not be empty')
         
@@ -34,7 +36,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     join_date = models.DateTimeField(auto_now_add=True)
     profileImage = models.ImageField(null=True, blank=True)
     host = models.CharField(max_length=255, blank=True, default='http://127.0.0.1:8000/')
-    profile_url = models.URLField(max_length=255, blank=True)
+    url = models.URLField(max_length=255, blank=True)
     github = models.URLField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -72,7 +74,7 @@ class POST(models.Model):
     )
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    title = models.CharField(max_length=255, blank=True, null=True)
+    title = models.CharField(max_length=255, blank=True, null=True, default='No Title')
     source = models.URLField(null=True, blank=True)
     origin = models.URLField(default=HOSTNAME)
     description = models.CharField(max_length=500, blank=True, null=True)
@@ -81,7 +83,8 @@ class POST(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     categories = models.TextField(default='[]', null=True)
     image_url = models.URLField(null=True, blank=True)
-    image = models.ImageField(null=True, blank=True)
+    #upload_to is a function
+    image = models.ImageField(upload_to=post_upload_to, null=True, blank=True)
     count = models.IntegerField(default=0)
     published = models.DateTimeField(auto_now=True)
     visibility = models.CharField(max_length=15, choices=VISIBILITY_CHOICES, default="PUBLIC")

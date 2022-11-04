@@ -5,4 +5,8 @@ class User{
         this.display_name = display_name;
         this.githun_url = githun_url;
     }
+
+    setUserData(){
+        
+    }
 }

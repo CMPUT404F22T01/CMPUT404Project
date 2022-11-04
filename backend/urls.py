@@ -35,17 +35,27 @@ urlpatterns = [
     #     POST [local] update the post whose id is POST_ID (must be authenticated)
     #     DELETE [local] remove the post whose id is POST_ID
     #     PUT [local] create a post where its id is POST_ID
+    #
+    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/', views.PostSingleDetailView.as_view()),
+ 
     # Creation URL ://service/authors/{AUTHOR_ID}/posts/
     #     GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
     #     POST [local] create a new post but generate a new id
+    #recent posts by the author
+    path('authors/<uuid:uuidOfAuthor>/posts/', views.PostMutipleDetailView.as_view()),
 
     # Image Posts!
     # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
     #     GET [local, remote] get the public post converted to binary as an iamge
     #     return 404 if not an image
+    #
+    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),
 
     # Comment routes!
-    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments', views.getAllComments), # TODO handle POST request
+    #     URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
+    # GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
+    # POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
+    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments', views.CommentPostView.as_view()), # TODO handle POST request
 
     # Like routes!
     # TODO double check moxils work here as he was confused on the objectIDs

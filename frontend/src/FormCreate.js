@@ -41,7 +41,7 @@ const FormCreate = () => {
     const [passwordNotMatchError, setPasswordMatchError] = useState(false);
 
     //post url
-    const url = 'http://127.0.0.1:8000/mainDB/user/register/'
+    const url = 'http://127.0.0.1:8000/service/register/'
 
     // for password show on and off handler
     const visibilityOnClick = (e) => {
