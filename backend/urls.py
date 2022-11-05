@@ -69,14 +69,6 @@ urlpatterns = [
     
     # Inbox routes!
     path("authors/<uuid:author_id>/inbox", views.handleInboxRequests),
-    # URL: ://service/authors/{AUTHOR_ID}/inbox
-    #     GET [local]: if authenticated get a list of posts sent to AUTHOR_ID (paginated)
-    #     POST [local, remote]: send a post to the author
-    #         if the type is “post” then add that post to AUTHOR_ID’s inbox
-    #         if the type is “follow” then add that follow is added to AUTHOR_ID’s inbox to approve later
-    #         if the type is “like” then add that like to AUTHOR_ID’s inbox
-    #         if the type is “comment” then add that comment to AUTHOR_ID’s inbox
-    #     DELETE [local]: clear the inbox
 
     *router.urls,
 ]
