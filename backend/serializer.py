@@ -105,5 +105,5 @@ class PostSerializer(serializers.ModelSerializer):
        validated_data['author'] = self.context.get('author')
        return super().create(validated_data)
 
-
- 
+class InboxSerializer(serializers.ModelSerializer):
+    pass

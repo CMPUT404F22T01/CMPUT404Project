@@ -51,7 +51,6 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def type(self):
         return 'author' 
 
-    @property
     def url(self):
         return self.host + "authors/" + str(self.id)
 

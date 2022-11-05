@@ -29,7 +29,7 @@ urlpatterns = [
     path("posts/", views.getAllPosts), # Gets all posts (not required)
  
 
-    path("authors/<uuid:authorID>/posts/<uuid:postID>", views.handleUUIDPostRequest),
+    # path("authors/<uuid:authorID>/posts/<uuid:postID>", views.handleUUIDPostRequest),
     # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
     #     GET [local, remote] get the public post whose id is POST_ID
     #     POST [local] update the post whose id is POST_ID (must be authenticated)
@@ -68,6 +68,7 @@ urlpatterns = [
     path('authors/<uuid:uuidOfAuthor>/liked', views.getAllAuthorLiked),
     
     # Inbox routes!
+    path("authors/<uuid:author_id>/inbox", views.handleInboxRequests),
     # URL: ://service/authors/{AUTHOR_ID}/inbox
     #     GET [local]: if authenticated get a list of posts sent to AUTHOR_ID (paginated)
     #     POST [local, remote]: send a post to the author

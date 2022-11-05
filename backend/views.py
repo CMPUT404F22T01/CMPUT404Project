@@ -2,6 +2,7 @@ from functools import partial
 import json
 from re import A
 import re
+from . import utils
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import *
@@ -122,18 +123,6 @@ def getAllPosts(request):
     posts = POST.objects.all()
     jsonData = PostSerializer(posts, many=True)
     return response.Response(jsonData.data, 200)
-
-@api_view(["GET","POST","PUT","DELETE"])
-def handleUUIDPostRequest(request, authorID, postID):
-    # Get post
-    if request.method == "GET":
-        try:
-            postObj = POST.objects.get(author__id=authorID, id=postID)
-            jsonPost = PostSerializer(postObj)
-            return response.Response(jsonPost.data, 200)
-        except:
-            return response.Response({ "message":"Post not found!"}, status.HTTP_404_NOT_FOUND)
-
 
 @api_view(["GET"])
 def getAllComments(request, uuidOfAuthor, uuidOfPost):
@@ -372,4 +361,45 @@ class CommentPostView(generics.ListCreateAPIView):
         queryset = self.get_queryset().filter(author__id=kwargs['uuidOfAuthor'], post__id=kwargs['uuidOfPost'])
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
+@api_view(["GET","POST","DELETE"])
+def handleInboxRequests(request, author_id):
+    if request.method == "GET":
+        try:
+            # Auth check
+            if not request.user.is_authenticated or request.user.id != author_id:
+                return response.Response({"message":"Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
+            # Retrieve all posts
+            allPostIDsInThisAuthorsInbox = Inbox.objects.filter(author__id=author_id, object_type="post")
+            setOfIds = set([ o.object_id for o in allPostIDsInThisAuthorsInbox])
+            allPosts = POST.objects.filter(id__in=setOfIds)
+            items = PostSerializer(allPosts, many=True)
+            resp = {
+                "type":"inbox",
+                "author": request.user.url(),
+                "items":items.data
+            }
+            return response.Response(resp, 200)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == "POST":
+        try:
+            try:
+                postType = request.data["type"]
+                idOfItem = utils.getUUID(request.data["id"])
+                if not postType in {"post","comment","like","follow"}:
+                    raise KeyError("Invalid post type!")
+                Inbox.objects.create(author_id = author_id, object_type=postType, object_id = idOfItem)
+                return response.Response({"message":"Added to inbox!"}, status.HTTP_201_CREATED)
+            except KeyError as e:
+                return response.Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == "DELETE":
+        try:
+            Inbox.objects.filter(author__id=author_id).delete()
+            return response.Response({ "message": "Inbox cleared!"}, status.HTTP_200_OK)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
