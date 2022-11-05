@@ -141,52 +141,21 @@ def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
     # Get all likes of that post
     allLikes = Like.objects.filter(object_id=uuidOfPost)
     serializer = LikeSerializer(allLikes, many=True)  
-
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your post",
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"items" : itemArray}  
-    return response.Response(resp)
+    return response.Response(serializer.data)
 
 @api_view(["GET"])    
 def getAllCommentLikes(request, uuidOfAuthor, uuidOfPost, uuidOfComment):
     # Get all likes of that comment
     allLikes = Like.objects.filter(object_id=uuidOfComment)
     serializer = LikeSerializer(allLikes, many=True)  
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your comment",
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"items" : itemArray}  
-    return response.Response(resp)
+    return response.Response(serializer.data)
 
 @api_view(["GET"])
 def getAllAuthorLiked(request, uuidOfAuthor):
     # Get everything that author liked
-    allLikes = Like.objects.filter(author=uuidOfAuthor)
+    allLikes = Like.objects.filter(author__id=uuidOfAuthor)
     serializer = LikeSerializer(allLikes, many=True)  
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your "+ obj["object_type"],
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"type":"liked", "items" : itemArray}  
-    return response.Response(resp)
+    return response.Response(serializer.data)
 
 @api_view(["GET"])
 def getAllFollowers(request, uuidOfAuthor):

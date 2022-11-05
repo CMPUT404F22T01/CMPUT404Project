@@ -73,10 +73,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
         
 class LikeSerializer(serializers.ModelSerializer):
+    summary = serializers.CharField(read_only=True)
+    type = serializers.CharField(read_only=True)
     author = GetAuthorSerializer("author", read_only=True)
+    object = serializers.CharField(source="object_url")
     class Meta:
         model = Like
-        fields = ["type", "author", "object_type"]
+        fields = ["summary","type", "author", "object"]
 
 
 class PostSerializer(serializers.ModelSerializer):

@@ -131,6 +131,9 @@ class Comment(models.Model):
     @property
     def type(self):
         return 'comment'
+    
+    def get_id(self):
+        return self.post.origin + "authors/" + str(self.author.id) + "/posts/" + str(self.post.id) + "/comments/" + str(self.id)
 
 class Like(models.Model):
 
@@ -146,7 +149,16 @@ class Like(models.Model):
 
     @property
     def type(self):
-        return 'like'
+        return 'Like'
+
+    def summary(self):
+        return self.author.displayName + " Likes your " + self.object_type
+
+    def object_url(self):
+        if self.object_type == "post":
+            return POST.objects.get(id=self.object_id).get_id()
+        elif self.object_type == "comment":
+            return Comment.objects.get(id=self.object_id).get_id()
 
 class Follower(models.Model):
     #sender

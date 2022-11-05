@@ -52,15 +52,9 @@ urlpatterns = [
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),
 
     # Comment routes!
-    #     URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
-    # GET [local, remote] get the list of comments of the post whose id is POST_ID (paginated)
-    # POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
-    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments', views.CommentPostView.as_view()), # TODO handle POST request
+    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments', views.CommentPostView.as_view()),
 
     # Like routes!
-    # TODO double check moxils work here as he was confused on the objectIDs
-    # URL: ://service/authors/{AUTHOR_ID}/inbox/
-    #   POST [local, remote]: send a like object to AUTHOR_ID
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/likes', views.getAllPostLikes),
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments/<uuid:uuidOfComment>/likes', views.getAllCommentLikes),
 
