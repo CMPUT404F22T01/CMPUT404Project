@@ -108,7 +108,7 @@ def handleFollowRequest(request, sender, receiver):
             newFollowReqObj = FollowRequest.objects.get_or_create(sender__id=sender, reciever__id=receiver)
             return response.Response(status=status.HTTP_201_CREATED)
         except:
-            return response.Response(None)
+            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     # Delete follow request from sender to reciever:
     if request.method == "DELETE":
