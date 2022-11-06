@@ -4,6 +4,8 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseU
 from django.utils import timezone
 from uuid import uuid4
 
+from mainDB.settings import HOSTNAME
+
 def post_upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
@@ -52,7 +54,6 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def type(self):
         return 'author' 
 
-    @property
     def url(self):
         return self.host + "authors/" + str(self.id)
 
@@ -70,18 +71,19 @@ class POST(models.Model):
     )
 
     VISIBILITY_CHOICES = (
-        ('PUBLIC','PUBLIC'),
+        ("PUBLIC","PUBLIC"),
         ("FRIENDS","FRIENDS")
     )
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True, default='No Title')
     source = models.URLField(null=True, blank=True)
-    origin = models.URLField(null=True, blank=True)
+    origin = models.URLField(default=HOSTNAME)
     description = models.CharField(max_length=500, blank=True, null=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/plain')
     content = models.TextField(blank=True, null=True)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    categories = models.TextField(default='[]', null=True)
     image_url = models.URLField(null=True, blank=True)
     #upload_to is a function
     image = models.ImageField(upload_to=post_upload_to, null=True, blank=True)
@@ -90,6 +92,15 @@ class POST(models.Model):
     visibility = models.CharField(max_length=15, choices=VISIBILITY_CHOICES, default="PUBLIC")
     unlisted = models.BooleanField(default=False)
 
+    def get_id(self):
+        return self.origin + "authors/" + str(self.author.id) + "/posts/" + str(self.id)
+
+    def get_source(self):
+        source = str(self.source) if self.source is not None else HOSTNAME
+        return source + "posts/" + str(self.id)
+
+    def get_origin(self):
+        return str(self.origin) + "posts/" + str(self.id)
 
     class Meta:
         ordering = ['-published']
@@ -123,6 +134,9 @@ class Comment(models.Model):
     @property
     def type(self):
         return 'comment'
+    
+    def get_id(self):
+        return self.post.origin + "authors/" + str(self.author.id) + "/posts/" + str(self.post.id) + "/comments/" + str(self.id)
 
 class Like(models.Model):
 
@@ -138,7 +152,16 @@ class Like(models.Model):
 
     @property
     def type(self):
-        return 'like'
+        return 'Like'
+
+    def summary(self):
+        return self.author.displayName + " Likes your " + self.object_type
+
+    def object_url(self):
+        if self.object_type == "post":
+            return POST.objects.get(id=self.object_id).get_id()
+        elif self.object_type == "comment":
+            return Comment.objects.get(id=self.object_id).get_id()
 
 class Follower(models.Model):
     #sender

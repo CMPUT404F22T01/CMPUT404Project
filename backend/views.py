@@ -1,6 +1,8 @@
 from functools import partial
+import json
 from re import A
 import re
+from . import utils
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import *
@@ -62,80 +64,6 @@ def getSingleAuthor(request, uuidOfAuthor):
             serializer.save()
         return response.Response(serializer.data)
 
-# @api_view(["GET"])
-# def getAllComments(request, uuidOfAuthor, uuidOfPost):
-#     # Get all comments of that post
-#     allComments = Comment.objects.filter(post__id=uuidOfPost)
-#     serializer = CommentSerializer(allComments, many=True)  
-#     ####### add post and id later ########
-#     resp = {
-#         "type": "comments",
-#         "comments": serializer.data,
-#     }
-#     return response.Response(resp)
-
-@api_view(["GET"])
-def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
-    # Get all likes of that post
-    allLikes = Like.objects.filter(object_id=uuidOfPost)
-    serializer = LikeSerializer(allLikes, many=True)  
-
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your post",
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"items" : itemArray}  
-    return response.Response(resp)
-
-@api_view(["GET"])    
-def getAllCommentLikes(request, uuidOfAuthor, uuidOfPost, uuidOfComment):
-    # Get all likes of that comment
-    allLikes = Like.objects.filter(object_id=uuidOfComment)
-    serializer = LikeSerializer(allLikes, many=True)  
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your comment",
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"items" : itemArray}  
-    return response.Response(resp)
-
-@api_view(["GET"])
-def getAllAuthorLiked(request, uuidOfAuthor):
-    # Get everything that author liked
-    allLikes = Like.objects.filter(author=uuidOfAuthor)
-    serializer = LikeSerializer(allLikes, many=True)  
-    itemArray = []
-    
-    for obj in serializer.data:
-        itemArray.append({ 
-                    "summary": obj["author"]['displayName'] + " Likes your "+ obj["object_type"],
-                    "type": "Like",
-                    "author" : obj["author"],
-                    "object" : str(request)}) ####### idk how to fix this - Moxil
-        
-    resp = {"type":"liked", "items" : itemArray}  
-    return response.Response(resp)
-
-@api_view(["GET"])
-def getAllFollowers(request, uuidOfAuthor):
-    # Get multiple follower objects
-    allFollowers = Follower.objects.filter(following__id=uuidOfAuthor)
-    serializer = FollowerSerializer(allFollowers, many=True)
-    resp = {
-        "type": "followers",
-        "items": [obj["follower"] for obj in serializer.data]
-    }
-    return response.Response(resp)
 
 @api_view(["GET","PUT","DELETE"])
 def handleSingleFollow(request, authorID, foreignAuthor):
@@ -162,6 +90,85 @@ def handleSingleFollow(request, authorID, foreignAuthor):
             return response.Response(status=status.HTTP_204_NO_CONTENT)
         except:
             return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(["GET","PUT","DELETE"])
+def handleFollowRequest(request, sender, receiver):
+    # Ensure that there is a follow request from sender to reciever
+    if request.method == "GET":
+        try:
+            followReqObj = FollowRequest.objects.get(sender__id=sender, reciever__id=receiver)
+            return response.Response({ "message": "Following relationship exists!"}, 200)
+        except:
+            return response.Response({ "message": "Following relationship does not exists!"}, 404)
+    
+    # Add follow request from sender to reciever
+    if request.method == "PUT":
+        try:
+            newFollowReqObj = FollowRequest.objects.get_or_create(sender__id=sender, reciever__id=receiver)
+            return response.Response(status=status.HTTP_201_CREATED)
+        except:
+            return response.Response(None)
+
+    # Delete follow request from sender to reciever:
+    if request.method == "DELETE":
+        try:
+            FollowRequest.objects.filter(sender__id=sender, reciever__id=receiver).delete()
+            return response.Response(status=status.HTTP_204_NO_CONTENT)
+        except:
+            return response.Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["GET"])
+def getAllPosts(request):
+    posts = POST.objects.all()
+    jsonData = PostSerializer(posts, many=True)
+    return response.Response(jsonData.data, 200)
+
+@api_view(["GET"])
+def getAllComments(request, uuidOfAuthor, uuidOfPost):
+    # Get all comments of that post
+    allComments = Comment.objects.filter(post__id=uuidOfPost)
+    serializer = CommentSerializer(allComments, many=True)  
+    ####### add post and id later ########
+    resp = {
+        "type": "comments",
+        "comments": serializer.data,
+    }
+    return response.Response(resp)
+
+@api_view(["GET"])
+def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
+    # Get all likes of that post
+    allLikes = Like.objects.filter(object_id=uuidOfPost)
+    serializer = LikeSerializer(allLikes, many=True)  
+    return response.Response(serializer.data)
+
+@api_view(["GET"])    
+def getAllCommentLikes(request, uuidOfAuthor, uuidOfPost, uuidOfComment):
+    # Get all likes of that comment
+    allLikes = Like.objects.filter(object_id=uuidOfComment)
+    serializer = LikeSerializer(allLikes, many=True)  
+    return response.Response(serializer.data)
+
+@api_view(["GET"])
+def getAllAuthorLiked(request, uuidOfAuthor):
+    # Get everything that author liked
+    allLikes = Like.objects.filter(author__id=uuidOfAuthor)
+    serializer = LikeSerializer(allLikes, many=True)  
+    return response.Response(serializer.data)
+
+@api_view(["GET"])
+def getAllFollowers(request, uuidOfAuthor):
+    # Get multiple follower objects
+    allFollowers = Follower.objects.filter(following__id=uuidOfAuthor)
+    serializer = FollowerSerializer(allFollowers, many=True)
+    resp = {
+        "type": "followers",
+        "items": [obj["follower"] for obj in serializer.data]
+    }
+    return response.Response(resp)
+
+
 
 @api_view(["GET","PUT","POST","DELETE"])
 @permission_classes([AllowAny])
@@ -329,4 +336,45 @@ class CommentPostView(generics.ListCreateAPIView):
         queryset = self.get_queryset().filter(author__id=kwargs['uuidOfAuthor'], post__id=kwargs['uuidOfPost'])
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-        
+
+@api_view(["GET","POST","DELETE"])
+def handleInboxRequests(request, author_id):
+    if request.method == "GET":
+        try:
+            # Auth check
+            if not request.user.is_authenticated or request.user.id != author_id:
+                return response.Response({"message":"Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
+            # Retrieve all posts
+            allPostIDsInThisAuthorsInbox = Inbox.objects.filter(author__id=author_id, object_type="post")
+            setOfIds = set([ o.object_id for o in allPostIDsInThisAuthorsInbox])
+            allPosts = POST.objects.filter(id__in=setOfIds)
+            items = PostSerializer(allPosts, many=True)
+            resp = {
+                "type":"inbox",
+                "author": request.user.url(),
+                "items":items.data
+            }
+            return response.Response(resp, 200)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == "POST":
+        try:
+            try:
+                postType = request.data["type"]
+                idOfItem = utils.getUUID(request.data["id"])
+                if not postType in {"post","comment","like","follow"}:
+                    raise KeyError("Invalid post type!")
+                Inbox.objects.create(author_id = author_id, object_type=postType, object_id = idOfItem)
+                return response.Response({"message":"Added to inbox!"}, status.HTTP_201_CREATED)
+            except KeyError as e:
+                return response.Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == "DELETE":
+        try:
+            Inbox.objects.filter(author__id=author_id).delete()
+            return response.Response({ "message": "Inbox cleared!"}, status.HTTP_200_OK)
+        except:
+            return response.Response({"message":"Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)

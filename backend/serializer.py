@@ -49,7 +49,17 @@ class FollowerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Follower
         fields = ["follower"]
-        
+
+
+class PostSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(read_only=True)
+    id = serializers.CharField(source="get_id", read_only=True)
+
+    class Meta:
+        model = POST
+        fields = ["type", "id", "description"]
+
+
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)
     class Meta:
@@ -63,10 +73,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
         
 class LikeSerializer(serializers.ModelSerializer):
+    summary = serializers.CharField(read_only=True)
+    type = serializers.CharField(read_only=True)
     author = GetAuthorSerializer("author", read_only=True)
+    object = serializers.CharField(source="object_url")
     class Meta:
         model = Like
-        fields = ["type", "author", "object_type"]
+        fields = ["summary","type", "author", "object"]
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -95,5 +108,5 @@ class PostSerializer(serializers.ModelSerializer):
        validated_data['author'] = self.context.get('author')
        return super().create(validated_data)
 
-
- 
+class InboxSerializer(serializers.ModelSerializer):
+    pass

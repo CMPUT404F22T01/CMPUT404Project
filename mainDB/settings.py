@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 from datetime import timedelta
+import socket
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,6 +30,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
+PORT = 8000
+try:
+    HOSTNAME = socket.gethostbyname(socket.gethostname())
+except:
+    HOSTNAME = "127.0.0.1"
+
+HOSTNAME = "https://{}:{}/".format(HOSTNAME, PORT)
 
 # Application definition
 
