@@ -23,19 +23,14 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import "./sidebar.css";
+import { useNavigate } from "react-router-dom";
+
 
 import Post from './PostCompnents/Post'
 import PostCreate from './PostCompnents/PostCreate';
  
 
 const drawerWidth = 240;
-
-const iconData = [
-  <PersonSearchIcon className="icon-color" />,
-  <AccountCircleIcon className="icon-color" />,
-  <InboxIcon className="icon-color" />,
-];
-
  
 
 const openedMixin = (theme) => ({
@@ -107,6 +102,14 @@ const Drawer = styled(MuiDrawer, {
 
 
 const SideBar = () => {
+
+  let navigate = useNavigate();
+  const iconData = [
+    <PersonSearchIcon className="icon-color" />,
+    <AccountCircleIcon className="icon-color" onClick={() =>  navigate("/profile")}/>,
+    <InboxIcon className="icon-color" />,
+  ];
+  
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [createPost, setCreatePost] = React.useState(false);
@@ -175,7 +178,7 @@ const SideBar = () => {
           }}
         >
           <Avatar
-            alt="Remy Sharp"
+            alt="User's Profile Picture"
             src="https://miro.medium.com/max/775/0*rZecOAy_WVr16810"
             sx={{ 
               width: open ? 90 : 40, 
@@ -196,6 +199,7 @@ const SideBar = () => {
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
+                 
               >
                 <ListItemIcon
                   sx={{
