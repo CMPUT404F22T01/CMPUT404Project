@@ -9,6 +9,7 @@ import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
@@ -16,13 +17,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../axiosInstance";
-import PostEdit from './PostEdit'
-
+import PostEdit from "./PostEdit";
+import Comment from "./Comment";
+import { Button } from "@mui/material";
+import { makeStyles } from "@mui/styles";
 
 /**
- * The edit part appears on the very top of the page need to deal with it too 
+ * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
  */
 const DrawerHeader = styled("div")(({ theme }) => ({
@@ -45,26 +48,88 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
+
+const useStyles = makeStyles({
+  container: {
+    borderRadius: 100,
+    width: "100%",
+    //for reference remove it later
+    backgroundColor: "#303245",
+  },
+  cardContainer: {
+    margin: '0 auto',
+    backgroundColor: "#333",
+    borderRadius: 10,
+  },
+  cardHeader: {
+    backgroundColor: "#333",
+  },
+  commentContainer: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-evenly",
+  }, 
+  commentTextField: {
+    height: 40,
+    width: "50%",
+  }, 
+  commentButton: {
+     width: "20%",
+     height: 40,
+     borderRadius: 10,
+   
+     '&:hover':{
+      backgroundImage:     "linear-gradient( to right,  #E7484F, #E7484F 16.65%,  #F68B1D 16.65%,     #F68B1D 33.3%,     #FCED00 33.3%,      #FCED00 49.95%,      #009E4F 49.95%,       #009E4F 66.6%,       #00AAC3 66.6%,   #00AAC3 83.25%,   #732982 83.25%,  #732982 100%,  #E7484F 100% )",
+      animation:'slidebg 2s linear infinite'
+     }
+  }
+});
+
 export default function Post() {
+
+  const styleClasses = useStyles()
+
   const [expanded, setExpanded] = React.useState(false);
   const [post, setPost] = useState([]);
+  const commentRef = useRef("")
+  const [comment, setComment] = useState(null);
+   
 
-  //this two are for the editPost and PostEdit prop 
+  //this two are for the editPost and PostEdit prop
   //indexToEdit is used to get the index clicked happened and pass post at that index as prop to the PostEdit
   const [postEdit, setPostEdit] = useState(false);
   const [indexToEdit, setIndexToEdit] = useState(false);
 
+  const onChangeCommentHandler = (e) => {
+    setComment(e.target.value);
+  }
+
+  const onClickCreateCommentHandler = (data) => {
+    console.log(commentRef.current);
+    // doubt why does the useRef gives an empty value and why the ... warning
+    console.log(commentRef.current.value);
+    axiosInstance
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/comments`, {
+        'comment': comment, 
+      })
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   //handler for the edit button click
   const onClickPostEditHandler = (index_to_edit) => {
     setIndexToEdit(index_to_edit);
-    return setPostEdit((prevState)=>!prevState);
-  }
+    return setPostEdit((prevState) => !prevState);
+  };
 
   //how to handle a like??
   const onClickLikeHandler = (index) => {
     // axiosInstance.post(``)
-  }
+  };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -74,7 +139,6 @@ export default function Post() {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/`)
       .then((response) => {
-        console.log(response.data)
         setPost(response.data);
       })
       .catch((error) => {
@@ -84,9 +148,10 @@ export default function Post() {
 
   const allPost = post.map((data, index) => {
     return (
-      <Typography paragraph className="card-container">
-        <Card sx={{ maxWidth: 1000 }} className="card-view">
+      <Typography paragraph className={styleClasses.container}>
+        <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
+            className={styleClasses.cardHeader}
             avatar={
               <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
                 R
@@ -95,19 +160,29 @@ export default function Post() {
             action={
               <IconButton aria-label="settings">
                 {/* to allow author to edit its own post */}
-                {data.author.id === localStorage.getItem("id") ? <MoreVertIcon onClick={() => onClickPostEditHandler(index)}/> : ""}
+                {data.author.id === localStorage.getItem("id") ? (
+                  <MoreVertIcon onClick={() => onClickPostEditHandler(index)} />
+                ) : (
+                  ""
+                )}
               </IconButton>
             }
             title={data.title}
             subheader={data.published}
           />
-        
-          {/* <CardMedia
-      component="img"
-      height="394"
-      image="https://mui.com/static/images/cards/paella.jpg"
-      alt="Paella dish"
-    /> */}
+          {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
+          {data.image ? (
+            <CardMedia
+              component="img"
+               
+              image={"http://localhost:8000" + data.image}
+              
+              alt="User Image"
+            />
+          ) : (
+            ""
+          )}
+
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               {data.content}
@@ -115,51 +190,31 @@ export default function Post() {
           </CardContent>
           <CardActions disableSpacing>
             <IconButton aria-label="add to favorites">
-              <FavoriteIcon onClick={() => onClickLikeHandler(index)}/>
+              <FavoriteIcon onClick={() => onClickLikeHandler(index)} />
             </IconButton>
             <IconButton aria-label="share">
-              <CommentIcon />
+              <ExpandMore
+                expand={expanded}
+                onClick={handleExpandClick}
+                aria-expanded={expanded}
+                aria-label="show more"
+              >
+                <CommentIcon />
+              </ExpandMore>
             </IconButton>
-            <ExpandMore
-              expand={expanded}
-              onClick={handleExpandClick}
-              aria-expanded={expanded}
-              aria-label="show more"
-            >
-              <ExpandMoreIcon />
-            </ExpandMore>
           </CardActions>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
             <CardContent>
-              <Typography paragraph>Method:</Typography>
-              <Typography paragraph>
-                Heat 1/2 cup of the broth in a pot until simmering, add saffron
-                and set aside for 10 minutes.
-              </Typography>
-              <Typography paragraph>
-                Heat oil in a (14- to 16-inch) paella pan or a large, deep
-                skillet over medium-high heat. Add chicken, shrimp and chorizo,
-                and cook, stirring occasionally until lightly browned, 6 to 8
-                minutes. Transfer shrimp to a large plate and set aside, leaving
-                chicken and chorizo in the pan. Add pimentón, bay leaves,
-                garlic, tomatoes, onion, salt and pepper, and cook, stirring
-                often until thickened and fragrant, about 10 minutes. Add
-                saffron broth and remaining 4 1/2 cups chicken broth; bring to a
-                boil.
-              </Typography>
-              <Typography paragraph>
-                Add rice and stir very gently to distribute. Top with artichokes
-                and peppers, and cook without stirring, until most of the liquid
-                is absorbed, 15 to 18 minutes. Reduce heat to medium-low, add
-                reserved shrimp and mussels, tucking them down into the rice,
-                and cook again without stirring, until mussels have opened and
-                rice is just tender, 5 to 7 minutes more. (Discard any mussels
-                that don&apos;t open.)
-              </Typography>
-              <Typography>
-                Set aside off of the heat to let rest for 10 minutes, and then
-                serve.
-              </Typography>
+              <Box className={styleClasses.commentContainer}>
+                {/* commentRef does not work */}
+                <TextField inputRef={commentRef} size="small" label="comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
+                /> 
+               
+                <Button onClick={() => {
+                  onClickCreateCommentHandler(data);
+                }} className={styleClasses.commentButton}>Post</Button>
+              </Box>
+              <Comment postData={data} />
             </CardContent>
           </Collapse>
         </Card>
@@ -171,11 +226,18 @@ export default function Post() {
     <Box
       component="main"
       //p padding pt padding top ...pb
-      sx={{ flexGrow: 1, p:3 }} 
+      sx={{ flexGrow: 1, p: 3 }}
     >
       <DrawerHeader />
-      {allPost} 
-      {postEdit ? <PostEdit onClickPostEditHandler={onClickPostEditHandler} data={post[indexToEdit]}/> : ""}
+      {allPost}
+      {postEdit ? (
+        <PostEdit
+          onClickPostEditHandler={onClickPostEditHandler}
+          data={post[indexToEdit]}
+        />
+      ) : (
+        ""
+      )}
     </Box>
   );
 }

@@ -46,7 +46,7 @@ urlpatterns = [
 
     # Image Posts!
     # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
-    #     GET [local, remote] get the public post converted to binary as an iamge
+    #     GET [local, remote] get the public post converted to binary as an image
     #     return 404 if not an image
     #
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),

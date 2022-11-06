@@ -10,8 +10,8 @@ from .serializer import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from base64 import b64encode 
 
 class AuthorCreate(
     generics.CreateAPIView
@@ -248,12 +248,14 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
 
     queryset = POST.objects.all()
     serializer_class = PostSerializer
-    # parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
 
     '''
         Sends all the public post and post in which a relation of follower and follwoing exists between the authors
         all_post_objects has a list of all public and friend post after filtering the unlisted post
+
+        Cannot do image encoding here becoz broweser compalian about large files
     '''
     def get(self, request, *args, **kwargs):
         #author__ becoz the author is named author in the post model and serializer
@@ -268,12 +270,9 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
                 all_post_objects.append(obj)
             # if the connection does not exist then it is false or else true (so we add to post when connection exists)
             elif obj.visibility == 'FRIENDS' and bool(Follower.objects.filter(follower__id=kwargs['uuidOfAuthor'], following__id=obj.author.id)):
-                all_post_objects.append(obj)
-            
-             
-            
+                all_post_objects.append(obj) 
         serializer = self.serializer_class(all_post_objects, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
     
     # adding extra data to context object becoz we need to author to create the post
     def get_serializer_context(self):
@@ -281,7 +280,6 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
         if self.request.method == 'POST':
             #can also do get_object_or_404..
             context['author'] = Author.objects.filter(id=self.kwargs['uuidOfAuthor']).first()
-       
         return context
     
     # by default does the same as this
@@ -291,8 +289,16 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
 
         
 
-class PostImageView(generics.ListAPIView):
-    pass
+class PostImageView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = POST.objects.all()
+    serializer_class = PostSerializer
+     
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(id=kwargs['uuidOfPost'])
+        serializer = self.get_serializer(queryset)
+
+        print(serializer.data)
 
 
 class CommentPostView(generics.ListCreateAPIView):

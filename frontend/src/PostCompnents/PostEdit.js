@@ -14,11 +14,9 @@ import axiosInstance from "../axiosInstance";
 
 import { useRef } from "react";
 
-
-
 /**
  * Issues
- * Need to deal with image parts 
+ * Need to deal with image parts
  * The blur in UI is out of range
  * The edit part appears on the very top of the page need to deal with it too
  */
@@ -39,7 +37,7 @@ const useStyles = makeStyles({
     marginLeft: "auto",
     marginRight: "auto",
     paddingBottom: 0,
-    
+
     marginTop: 0,
     fontWeight: 500,
     backgroundColor: "#303245",
@@ -56,16 +54,18 @@ const useStyles = makeStyles({
   },
   paper: {
     background: "red",
-    color: "white"
+    color: "white",
   },
- 
+  backDrop: {
+    backdropFilter: "blur(3px)",
+    backgroundColor:'rgba(0,0,30,0.4)'
+  },
 });
 
-const PostEdit = ({onClickPostEditHandler, data}) => {
+const PostEdit = ({ onClickPostEditHandler, data }) => {
   //material ui styles
   const styleClasses = useStyles();
 
-  console.log(data)
 
   //react
   const titleRef = useRef(null);
@@ -79,18 +79,19 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-
+    let formData = new FormData();
+    formData.append("title", titleRef.current.value);
+    formData.append("content", contentRef.current.value);
+    formData.append("contentType", contentTypeRef.current.value);
+    formData.append("visibility", visibilityRef.current.value);
+    //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+    formData.append("image", imageRef.current.files[0]);
+    formData.append("unlisted", unlistedRef.current.value);
+    formData.append("source", sourceRef.current.value);
+    formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/`, {
-        title: titleRef.current.value,
-        content: contentRef.current.value,
-        contentType: contentTypeRef.current.value,
-        visibility: visibilityRef.current.value,
-        unlisted: unlistedRef.current.value,
-        source: sourceRef.current.value,
-        origin: originRef.current.value,
-      })
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/`, formData)
       .then((response) => {
         //temp need to save user id
         console.log(response.data);
@@ -104,7 +105,11 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
 
   return (
     <>
-      <Box id="modal" component="form" onSubmit={onSubmitHandler}>
+      <Box id="modal" component="form" onSubmit={onSubmitHandler}  BackdropProps={{
+        classes: {
+          root: styleClasses.backDrop,
+        },
+      }}>
         <CloseIcon
           sx={{ size: "large" }}
           className="close-tab"
@@ -121,11 +126,12 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
               Content-Type
             </InputLabel>
             <Select
-             sx={{color: "#fff",
-             "& .MuiSvgIcon-root": {
-                 color: "white",
-                 
-             }}}
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
               defaultValue={data.contentType}
               inputRef={contentTypeRef}
               inputProps={{
@@ -136,7 +142,9 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             >
               <MenuItem value={"text/markdown"}>text/markdown</MenuItem>
               <MenuItem value={"text/plain"}>text/plain</MenuItem>
-              <MenuItem value={"application/base64"}>application/base64</MenuItem>
+              <MenuItem value={"application/base64"}>
+                application/base64
+              </MenuItem>
               <MenuItem value={"image/jpeg;base64"}>image/jpeg;base64</MenuItem>
               <MenuItem value={"image/png;base64"}>image/png;base64</MenuItem>
             </Select>
@@ -165,7 +173,6 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             placeholder="content"
             ref={contentRef}
             className={styleClasses.textfields}
-            
           />
           <br />
           <FormControl fullWidth className={styleClasses.textfields}>
@@ -176,11 +183,13 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             >
               Visibility
             </InputLabel>
-            <Select 
-             sx={{color: "#fff",
-             "& .MuiSvgIcon-root": {
-                 color: "white",
-             }}}
+            <Select
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
               defaultValue={data.visibility}
               inputProps={{
                 name: "visibility",
@@ -201,17 +210,18 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             >
               Unlisted
             </InputLabel>
-            <Select 
+            <Select
               defaultValue={data.unlisted}
               inputProps={{
                 name: "unlisted",
                 id: "uncontrolled-native",
-                 
               }}
-              sx={{color: "#fff",
-              "& .MuiSvgIcon-root": {
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
                   color: "white",
-              }}}
+                },
+              }}
               inputRef={unlistedRef}
             >
               <MenuItem value={"false"}>false</MenuItem>
@@ -219,7 +229,7 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             </Select>
           </FormControl>
           <br />
-          <label htmlFor="upload-image" >
+          <label htmlFor="upload-image">
             <input
               style={{ display: "none" }}
               id="upload-image"
@@ -230,7 +240,7 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
             <Fab
               color="primary"
               size="large"
-              sx={{width: "100%"}}
+              sx={{ width: "100%" }}
               component="span"
               aria-label="add"
               variant="extended"
@@ -250,7 +260,7 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
               className: styleClasses.input,
             }}
             InputLabelProps={{
-              style: { color: '#fff' },
+              style: { color: "#fff" },
             }}
             inputRef={sourceRef}
           />
@@ -265,7 +275,7 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
               className: styleClasses.input,
             }}
             InputLabelProps={{
-              style: { color: '#fff' },
+              style: { color: "#fff" },
             }}
             inputRef={originRef}
           />
@@ -277,7 +287,7 @@ const PostEdit = ({onClickPostEditHandler, data}) => {
           Post
         </Button>
       </Box>
-      <div className="blur"></div>
+ 
     </>
   );
 };
