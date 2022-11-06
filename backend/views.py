@@ -59,7 +59,7 @@ def getSingleAuthor(request, uuidOfAuthor):
         return response.Response(serializer.data)
     # Update single author
     elif request.method == "POST":
-        serializer =  PostAuthorSerializer(instance=singleAuthor, data=request.data, partial=True)
+        serializer =  GetAuthorSerializer(instance=singleAuthor, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
         return response.Response(serializer.data)
@@ -173,10 +173,12 @@ def getAllFollowers(request, uuidOfAuthor):
 @api_view(["GET","PUT","POST","DELETE"])
 @permission_classes([AllowAny])
 def testAuth(request):
-    print(request.method)
-    print(request.user)
-    print(request.user.is_authenticated)
-    return response.Response(status=status.HTTP_200_OK)
+    resp = {
+        "method":request.method,
+        "user": str(request.user),
+        "isAuthenticated":request.user.is_authenticated,
+    }
+    return response.Response(resp,status=status.HTTP_200_OK)
 
 
 

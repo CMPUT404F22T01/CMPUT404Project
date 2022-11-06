@@ -15,7 +15,7 @@ urlpatterns = [
 
     # Author routes!
     path('authors/', views.getAllAuthors), # TODO add pagination
-    path('authors/<uuid:uuidOfAuthor>', views.getSingleAuthor),
+    path('authors/<uuid:uuidOfAuthor>/', views.getSingleAuthor),
     
     # Follower routes!
     path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),
@@ -23,7 +23,7 @@ urlpatterns = [
 
 
     # Follow Request routes! (This is not specified in the description)
-    path('authors/<uuid:sender>/followers/<uuid:receiver>', views.handleFollowRequest), # TODO put in inbox
+    path('authors/<uuid:sender>/followrequest/<uuid:receiver>', views.handleFollowRequest), # -- This should send a follow req to reciever from sender. Also put in inbox!
 
     # Post routes!
     path("posts/", views.getAllPosts), # Gets all posts (not required)
