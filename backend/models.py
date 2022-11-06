@@ -7,6 +7,9 @@ from uuid import uuid4
 def post_upload_to(instance, filename):
     return 'posts/{filename}'.format(filename=filename)
 
+def profile_upload_to(instance, filename):
+    return 'profile/{filename}'.format(filename=filename)
+
 class AuthorUserManager(BaseUserManager):
     def create_user(self, username, password=None, displayName=None, github=None, **other_fields):
        
@@ -32,7 +35,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30, unique=True)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     join_date = models.DateTimeField(auto_now_add=True)
-    profileImage = models.ImageField(null=True, blank=True)
+    profileImage = models.ImageField(upload_to = profile_upload_to, null=True, blank=True)
     host = models.CharField(max_length=255, blank=True, default='http://127.0.0.1:8000/')
     url = models.URLField(max_length=255, blank=True)
     github = models.URLField(max_length=255, blank=True, null=True)

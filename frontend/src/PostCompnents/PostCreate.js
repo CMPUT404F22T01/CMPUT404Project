@@ -14,7 +14,6 @@ import axiosInstance from "../axiosInstance";
 
 import { useRef } from "react";
 
-
 /**
  * need to allow custom id post creatation called put
  */
@@ -26,9 +25,9 @@ const useStyles = makeStyles({
     borderRadius: 3,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
-    height: 48,
+    height: 45,
     padding: "0 30px",
-    width: 100,
+    width: '100%',
   },
 
   textfields: {
@@ -36,7 +35,7 @@ const useStyles = makeStyles({
     marginLeft: "auto",
     marginRight: "auto",
     paddingBottom: 0,
-    
+
     marginTop: 0,
     fontWeight: 500,
     backgroundColor: "#303245",
@@ -53,9 +52,8 @@ const useStyles = makeStyles({
   },
   paper: {
     background: "red",
-    color: "white"
+    color: "white",
   },
- 
 });
 
 const PostCreate = ({ onClickCreatePostHandler }) => {
@@ -73,21 +71,23 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   const originRef = useRef(null);
 
   const onSubmitHandler = (e) => {
-    e.preventDefault();
-
+    e.preventDefault(); 
+    let formData = new FormData();
+    formData.append("title", titleRef.current.value);
+    formData.append("content", contentRef.current.value);
+    formData.append("contentType", contentTypeRef.current.value);
+    formData.append("visibility", visibilityRef.current.value);
+    //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
+    formData.append("image", imageRef.current.files[0] ? imageRef.current.files[0] :  '');
+    formData.append("unlisted", unlistedRef.current.value);
+    formData.append("source", sourceRef.current.value);
+    formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/`, {
-        title: titleRef.current.value,
-        content: contentRef.current.value,
-        contentType: contentTypeRef.current.value,
-        visibility: visibilityRef.current.value,
-        unlisted: unlistedRef.current.value,
-        source: sourceRef.current.value,
-        origin: originRef.current.value,
-      })
+      .post(`authors/${localStorage.getItem("id")}/posts/`, formData)
       .then((response) => {
         //temp need to save user id
+        // uses the return repsonse to send a success message (Do same in PostEdit.js)
         console.log(response.data);
       })
       .catch((err) => {
@@ -116,11 +116,12 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               Content-Type
             </InputLabel>
             <Select
-             sx={{color: "#fff",
-             "& .MuiSvgIcon-root": {
-                 color: "white",
-                 
-             }}}
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
               defaultValue={"text/plain"}
               inputRef={contentTypeRef}
               inputProps={{
@@ -131,7 +132,9 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             >
               <MenuItem value={"text/markdown"}>text/markdown</MenuItem>
               <MenuItem value={"text/plain"}>text/plain</MenuItem>
-              <MenuItem value={"application/base64"}>application/base64</MenuItem>
+              <MenuItem value={"application/base64"}>
+                application/base64
+              </MenuItem>
               <MenuItem value={"image/jpeg;base64"}>image/jpeg;base64</MenuItem>
               <MenuItem value={"image/png;base64"}>image/png;base64</MenuItem>
             </Select>
@@ -158,7 +161,6 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             placeholder="content"
             ref={contentRef}
             className={styleClasses.textfields}
-            
           />
           <br />
           <FormControl fullWidth className={styleClasses.textfields}>
@@ -169,11 +171,13 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             >
               Visibility
             </InputLabel>
-            <Select 
-             sx={{color: "#fff",
-             "& .MuiSvgIcon-root": {
-                 color: "white",
-             }}}
+            <Select
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
+                  color: "white",
+                },
+              }}
               defaultValue={"PUBLIC"}
               inputProps={{
                 name: "visibility",
@@ -194,17 +198,18 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             >
               Unlisted
             </InputLabel>
-            <Select 
+            <Select
               defaultValue={"false"}
               inputProps={{
                 name: "unlisted",
                 id: "uncontrolled-native",
-                 
               }}
-              sx={{color: "#fff",
-              "& .MuiSvgIcon-root": {
+              sx={{
+                color: "#fff",
+                "& .MuiSvgIcon-root": {
                   color: "white",
-              }}}
+                },
+              }}
               inputRef={unlistedRef}
             >
               <MenuItem value={"false"}>false</MenuItem>
@@ -212,18 +217,19 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             </Select>
           </FormControl>
           <br />
-          <label htmlFor="upload-image" >
+          <label htmlFor="image">
             <input
               style={{ display: "none" }}
-              id="upload-image"
-              name="upload-image"
+              id="image"
+              name="image"
+              accept="image/*"
               type="file"
               ref={imageRef}
             />
             <Fab
               color="primary"
               size="large"
-              sx={{width: "100%"}}
+              sx={{ width: "100%" }}
               component="span"
               aria-label="add"
               variant="extended"
@@ -242,7 +248,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               className: styleClasses.input,
             }}
             InputLabelProps={{
-              style: { color: '#fff' },
+              style: { color: "#fff" },
             }}
             inputRef={sourceRef}
           />
@@ -256,7 +262,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               className: styleClasses.input,
             }}
             InputLabelProps={{
-              style: { color: '#fff' },
+              style: { color: "#fff" },
             }}
             inputRef={originRef}
           />

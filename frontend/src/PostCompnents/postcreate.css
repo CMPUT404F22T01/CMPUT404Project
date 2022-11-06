@@ -22,8 +22,7 @@
     position: relative; 
     left: 95%;
     cursor: pointer;
-    font-weight: bold;
-
+    font-weight: bold; 
 } 
 
 .blur {
@@ -35,15 +34,9 @@
     z-index: 5; 
 }
 
- 
 .card-view{ 
-    background-color: wheat;
     display: flex;
     padding: 25px;
-    flex-direction: column;
-    
+    flex-direction: column; 
 }
-
-.option-items{
-    color: white;
-}
+ 

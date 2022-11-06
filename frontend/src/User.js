@@ -1,12 +1,17 @@
 class User{
-    constructor(id, username, display_name, githun_url){
+    constructor(id, display_name, github_url){
         this.id = id;
-        this.username = username;
         this.display_name = display_name;
-        this.githun_url = githun_url;
+        this.github_url = github_url;
     }
 
     setUserData(){
+        localStorage.setItem('id', this.id);
+        localStorage.setItem('display_name', this.display_name);
+        localStorage.setItem('github_url', this.github_url);
+    }
+
+    static getUserData(){
         
     }
 }
