@@ -1,48 +1,60 @@
-import {
-    Box,
-    Typography
-} from "@mui/material"
-import  {useEffect, useState} from "react"
-import axiosInstance from '../axiosInstance'
+import { Box, Typography, Card, CardContent, CardActions, IconButton } from "@mui/material";
+import { useEffect, useState } from "react";
+import axiosInstance from "../axiosInstance";
 import { makeStyles } from "@mui/styles";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 const useStyles = makeStyles({
-     allCommentsContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-         
-     }
+  allCommentsContainer: {
+    display: "flex",
+    flexDirection: "column",
+  },
+});
+
+const Comment = ({ postData }) => {
+  const styleClasses = useStyles();
+
+  const [commentData, setCommentData] = useState([]);
+  useEffect(() => {
+    axiosInstance
+      .get(
+        `authors/${localStorage.getItem("id")}/posts/${postData.id}/comments`
+      )
+      .then((response) => {
+        console.log(response.data);
+        setCommentData(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, []);
+
+  const allComments = commentData.map((data, index) => {
+    //data is an object containg all the comments for each post
+    return (
+      <>
+        <CardContent>
+          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+            {data.author.displayName}
+          </Typography>
+          <Typography variant="body2">
+            {data.comment}
+          </Typography>
+        </CardContent>
+        <CardActions>
+          <IconButton aria-label="add to favorites">
+            <FavoriteIcon />
+          </IconButton>
+        </CardActions>
+      </>
+    );
   });
-  
-const Comment = ({postData}) => { 
 
-    const styleClasses = useStyles()
-
-    const [commentData, setCommentData] = useState([])
-    useEffect(() => {
-        axiosInstance.get(`authors/${localStorage.getItem('id')}/posts/${postData.id}/comments`)
-        .then((response) => {
-            console.log(response.data)
-            setCommentData(response.data)
-        }).catch((error) => {
-            console.error(error)
-        }) 
-    }, [])
-
-    const allComments = commentData.map((data, index) => {
-        //data is an object containg all the comments for each post
-        return (
-            <Typography variant="p" sx={{p: '10px 10px'}}>{data.comment}</Typography>
-        )
-    })
-
-    return(
-        <>
-        <Box className={styleClasses.allCommentsContainer}> 
-            {allComments}
-        </Box>
-        </>
-    )
-}
+  return (
+    <>
+      <Box className={styleClasses.allCommentsContainer}>{allComments}</Box>
+    </>
+  );
+};
 
 export default Comment;

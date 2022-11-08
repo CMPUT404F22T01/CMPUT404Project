@@ -53,15 +53,15 @@ const useStyles = makeStyles({
     borderRadius: 100,
     width: "100%",
     //for reference remove it later
-    backgroundColor: "#303245",
+    // backgroundColor: "#303245",
   },
   cardContainer: {
     margin: '0 auto',
-    backgroundColor: "#333",
+     
     borderRadius: 10,
   },
   cardHeader: {
-    backgroundColor: "#333",
+     
   },
   commentContainer: {
     width: "100%",
@@ -165,7 +165,7 @@ export default function Post() {
             action={
               <IconButton aria-label="settings">
                 {/* to allow author to edit its own post */}
-                {data.author.id === localStorage.getItem("id") ? (
+                {data.author.id.split('authors/')[1] === localStorage.getItem("id") ? (
                   <MoreVertIcon onClick={() => onClickPostEditHandler(index)} />
                 ) : (
                   ""
