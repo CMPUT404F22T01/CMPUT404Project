@@ -22,6 +22,7 @@ const Comment = ({postData}) => {
     useEffect(() => {
         axiosInstance.get(`authors/${localStorage.getItem('id')}/posts/${postData.id}/comments`)
         .then((response) => {
+            console.log(response.data)
             setCommentData(response.data)
         }).catch((error) => {
             console.error(error)
