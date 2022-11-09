@@ -12,9 +12,7 @@ import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import CommentIcon from "@mui/icons-material/Comment";
-import ShareIcon from "@mui/icons-material/Share";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CommentIcon from "@mui/icons-material/Comment"; 
 import Box from "@mui/material/Box";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import "./post.css";
@@ -55,15 +53,15 @@ const useStyles = makeStyles({
     borderRadius: 100,
     width: "100%",
     //for reference remove it later
-    backgroundColor: "#303245",
+    // backgroundColor: "#303245",
   },
   cardContainer: {
     margin: '0 auto',
-    backgroundColor: "#333",
+     
     borderRadius: 10,
   },
   cardHeader: {
-    backgroundColor: "#333",
+     
   },
   commentContainer: {
     width: "100%",
@@ -94,6 +92,7 @@ export default function Post() {
   const [post, setPost] = useState([]);
   const commentRef = useRef("")
   const [comment, setComment] = useState(null);
+  const [indexOfCollapse, setIndexOfCollapse] = useState(null);
    
 
   //this two are for the editPost and PostEdit prop
@@ -106,15 +105,15 @@ export default function Post() {
   }
 
   const onClickCreateCommentHandler = (data) => {
-    console.log(commentRef.current);
+    // console.log(commentRef.current);
     // doubt why does the useRef gives an empty value and why the ... warning
-    console.log(commentRef.current.value);
+    // console.log(commentRef.current.value);
     axiosInstance
       .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/comments`, {
         'comment': comment, 
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.status);
       })
       .catch((error) => {
         console.log(error);
@@ -132,7 +131,12 @@ export default function Post() {
     // axiosInstance.post(``)
   };
 
-  const handleExpandClick = () => {
+  const handleExpandClick = (index) => {
+    if(indexOfCollapse === index){
+      setIndexOfCollapse(null);
+    }else{
+      setIndexOfCollapse(index);
+    }
     setExpanded(!expanded);
   };
 
@@ -161,7 +165,7 @@ export default function Post() {
             action={
               <IconButton aria-label="settings">
                 {/* to allow author to edit its own post */}
-                {data.author.id === localStorage.getItem("id") ? (
+                {data.author.id.split('authors/')[1] === localStorage.getItem("id") ? (
                   <MoreVertIcon onClick={() => onClickPostEditHandler(index)} />
                 ) : (
                   ""
@@ -193,27 +197,17 @@ export default function Post() {
             <IconButton aria-label="add to favorites">
               <FavoriteIcon onClick={() => onClickLikeHandler(index)} />
             </IconButton>
-            <IconButton aria-label="comment">
-              <ExpandMore
-                expand={expanded}
-                onClick={handleExpandClick}
-                aria-expanded={expanded}
-                aria-label="show more"
-              >
-                <CommentIcon />
-              </ExpandMore>
-            </IconButton>
-            <IconButton aria-label="share">
-              <ShareIcon />
+            <IconButton aria-label="share"> 
+                <CommentIcon onClick={() => {handleExpandClick(index)}}/> 
             </IconButton>
           </CardActions>
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
+         
+          <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
                 <TextField inputRef={commentRef} size="small" label="comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
-                /> 
-               
+                />  
                 <Button onClick={() => {
                   onClickCreateCommentHandler(data);
                 }} className={styleClasses.commentButton}>Post</Button>

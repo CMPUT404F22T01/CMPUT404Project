@@ -85,7 +85,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("contentType", contentTypeRef.current.value);
     formData.append("visibility", visibilityRef.current.value);
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
-    formData.append("image", imageRef.current.files[0]);
+    formData.append("image", imageRef.current.files[0] ? imageRef.current.files[0] :  '');
     formData.append("unlisted", unlistedRef.current.value);
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);

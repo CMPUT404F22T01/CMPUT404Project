@@ -39,12 +39,12 @@ const useStyles = makeStyles({
     marginTop: 0,
     fontWeight: 500,
     backgroundColor: "#303245",
-    color: "white",
+    color: "#fff",
     borderRadius: 10,
   },
 
   input: {
-    color: "white",
+    color: "#fff",
   },
 
   textarea: {
@@ -71,7 +71,8 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   const originRef = useRef(null);
 
   const onSubmitHandler = (e) => {
-    e.preventDefault(); 
+    console.log(e)
+     
     let formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
@@ -88,7 +89,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
       .then((response) => {
         //temp need to save user id
         // uses the return repsonse to send a success message (Do same in PostEdit.js)
-        console.log(response.data);
+        console.log(response.status);
       })
       .catch((err) => {
         console.error(err);
@@ -175,7 +176,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
               sx={{
                 color: "#fff",
                 "& .MuiSvgIcon-root": {
-                  color: "white",
+                  color: "#fff",
                 },
               }}
               defaultValue={"PUBLIC"}
