@@ -341,8 +341,10 @@ class CommentPostView(generics.ListCreateAPIView):
         return self.create(request, *args, **kwargs)
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset().filter(author__id=kwargs['uuidOfAuthor'], post__id=kwargs['uuidOfPost'])
+        #edit 
+        queryset = self.get_queryset().filter(post__id=kwargs['uuidOfPost'])
         serializer = self.get_serializer(queryset, many=True)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(["GET","POST","DELETE"])

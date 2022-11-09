@@ -79,6 +79,7 @@ const UserProfile = () => {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/`)
       .then((response) => {
+        console.log(response.data)
         setData(response.data);
       })
       .catch((error) => {
@@ -91,7 +92,8 @@ const UserProfile = () => {
   };
 
   const allpost = data.map((item, index) => {
-    if (item.author.id === localStorage.getItem("id")) {
+    // return a uri therefore need to split it 
+    if (item.author.id.split('authors/')[1] === localStorage.getItem("id")) {
       return (
         <Typography paragraph className="card-container">
           <Card sx={{ maxWidth: 1000 }} className="card-view">
@@ -104,11 +106,9 @@ const UserProfile = () => {
               action={
                 <IconButton aria-label="delete">
                   {/* to allow author to edit its own post */}
-                  {item.author.id === localStorage.getItem("id") ? (
+                  
                   <DeleteIcon onClick={() => onClickDeletePost(index)} />
-                  ) : (
-                    ""
-                  )}
+                  
                 </IconButton>
               }
               title={item.title}
