@@ -192,3 +192,6 @@ CORS_ALLOWED_ORIGINS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+
+import django_on_heroku
+django_on_heroku.settings(locals())
