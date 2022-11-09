@@ -13,6 +13,7 @@ import TextField from "@mui/material/TextField";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
+import ShareIcon from "@mui/icons-material/Share";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@mui/material/Box";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -192,7 +193,7 @@ export default function Post() {
             <IconButton aria-label="add to favorites">
               <FavoriteIcon onClick={() => onClickLikeHandler(index)} />
             </IconButton>
-            <IconButton aria-label="share">
+            <IconButton aria-label="comment">
               <ExpandMore
                 expand={expanded}
                 onClick={handleExpandClick}
@@ -201,6 +202,9 @@ export default function Post() {
               >
                 <CommentIcon />
               </ExpandMore>
+            </IconButton>
+            <IconButton aria-label="share">
+              <ShareIcon />
             </IconButton>
           </CardActions>
           <Collapse in={expanded} timeout="auto" unmountOnExit>
