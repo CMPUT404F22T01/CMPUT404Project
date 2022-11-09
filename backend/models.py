@@ -145,6 +145,7 @@ class Like(models.Model):
         ("comment","comment")
     )
 
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
     object_id = models.UUIDField(null=True) 
@@ -164,6 +165,7 @@ class Like(models.Model):
             return Comment.objects.get(id=self.object_id).get_id()
 
 class Follower(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     #sender
     follower = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='follower')
     #recevier
@@ -177,6 +179,7 @@ class Follower(models.Model):
 
 
 class FollowRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     sender = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='receiver')
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -199,3 +202,6 @@ class Inbox(models.Model):
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True )
     object_id = models.UUIDField(null=True)
     published = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-published']

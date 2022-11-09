@@ -21,34 +21,17 @@ urlpatterns = [
     path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),
     path('authors/<uuid:authorID>/followers/<uuid:foreignAuthor>', views.handleSingleFollow),
 
-
     # Follow Request routes! (This is not specified in the description)
     path('authors/<uuid:sender>/followrequest/<uuid:receiver>', views.handleFollowRequest), # -- This should send a follow req to reciever from sender. Also put in inbox!
 
     # Post routes!
     path("posts/", views.getAllPosts), # Gets all posts (not required)
- 
-
-    # path("authors/<uuid:authorID>/posts/<uuid:postID>", views.handleUUIDPostRequest),
-    # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}
-    #     GET [local, remote] get the public post whose id is POST_ID
-    #     POST [local] update the post whose id is POST_ID (must be authenticated)
-    #     DELETE [local] remove the post whose id is POST_ID
-    #     PUT [local] create a post where its id is POST_ID
-    #
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/', views.PostSingleDetailView.as_view()),
  
     # Creation URL ://service/authors/{AUTHOR_ID}/posts/
-    #     GET [local, remote] get the recent posts from author AUTHOR_ID (paginated)
-    #     POST [local] create a new post but generate a new id
-    #recent posts by the author
     path('authors/<uuid:uuidOfAuthor>/posts/', views.PostMutipleDetailView.as_view()),
 
     # Image Posts!
-    # URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
-    #     GET [local, remote] get the public post converted to binary as an image
-    #     return 404 if not an image
-    #
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),
 
     # Comment routes!
@@ -63,6 +46,9 @@ urlpatterns = [
     
     # Inbox routes!
     path("authors/<uuid:author_id>/inbox", views.handleInboxRequests),
+
+    # Inbox route to get everything (not only posts!)
+    path("authors/<uuid:author_id>/inboxAll", views.getEntireInboxRequests),
 
     *router.urls,
 ]

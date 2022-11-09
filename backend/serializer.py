@@ -50,6 +50,23 @@ class FollowerSerializer(serializers.ModelSerializer):
         fields = ["follower"]
 
 
+class SingleFollowerSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField()
+    follower = GetAuthorSerializer()
+    following = GetAuthorSerializer()
+    class Meta:
+        model = Follower
+        fields = ["id","follower","following","timestamp"]
+
+class SingleFollowRequestSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField()
+    sender = GetAuthorSerializer()
+    receiver = GetAuthorSerializer()
+    class Meta:
+        model = FollowRequest
+        fields = ["id","sender","receiver","timestamp"]
+
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(read_only=True)
     id = serializers.CharField(source="get_id", read_only=True)
@@ -74,7 +91,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     summary = serializers.CharField(read_only=True)
     type = serializers.CharField(read_only=True)
-    author = GetAuthorSerializer("author", read_only=True)
+    author = GetAuthorSerializer("author")
     object = serializers.CharField(source="object_url")
     class Meta:
         model = Like
