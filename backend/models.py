@@ -38,7 +38,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     join_date = models.DateTimeField(auto_now_add=True)
     profileImage = models.ImageField(upload_to = profile_upload_to, null=True, blank=True)
-    host = models.CharField(max_length=255, blank=True, default='http://127.0.0.1:8000/')
+    host = models.CharField(max_length=255, blank=True, default=HOSTNAME)
     url = models.URLField(max_length=255, blank=True)
     github = models.URLField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, null=True, blank=True)
@@ -77,7 +77,7 @@ class POST(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True, default='No Title')
-    source = models.URLField(null=True, blank=True)
+    source = models.URLField(null=True, blank=True, default=HOSTNAME)
     origin = models.URLField(default=HOSTNAME)
     description = models.CharField(max_length=500, blank=True, null=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/plain')
