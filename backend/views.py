@@ -333,6 +333,7 @@ class CommentPostView(generics.ListCreateAPIView):
     '''
     def post(self, request, *args, **kwargs):
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
+        print(queryset)
         data = {'count' : queryset.count + 1} 
         serializer =  PostSerializer(queryset, data=data)
         if serializer.is_valid():

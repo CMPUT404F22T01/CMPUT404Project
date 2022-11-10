@@ -90,9 +90,11 @@ export default function Post() {
 
   const [expanded, setExpanded] = React.useState(false);
   const [post, setPost] = useState([]);
-  const commentRef = useRef("")
+   
   const [comment, setComment] = useState(null);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null);
+  //this reRenderHelper is used to re render the comment component (expensive maybe!!)
+  const [reRenderHelper, setReRenderHelper] = useState(false);
    
 
   //this two are for the editPost and PostEdit prop
@@ -118,6 +120,8 @@ export default function Post() {
       .catch((error) => {
         console.log(error);
       });
+      setComment("");  
+      setReRenderHelper((prevState)=> !prevState);
   };
 
   //handler for the edit button click
@@ -206,13 +210,13 @@ export default function Post() {
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
-                <TextField inputRef={commentRef} size="small" label="comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
+                <TextField value={comment} size="small" label="comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
                 />  
                 <Button onClick={() => {
                   onClickCreateCommentHandler(data);
                 }} className={styleClasses.commentButton}>Post</Button>
               </Box>
-              <Comment postData={data} />
+              <Comment postData={data} reRenderHelper={reRenderHelper} />
             </CardContent>
           </Collapse>
         </Card>

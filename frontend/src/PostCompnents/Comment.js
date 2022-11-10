@@ -11,9 +11,9 @@ const useStyles = makeStyles({
   },
 });
 
-const Comment = ({ postData }) => {
+const Comment = ({ postData, reRenderHelper }) => {
   const styleClasses = useStyles();
-
+ 
   const [commentData, setCommentData] = useState([]);
   useEffect(() => {
     axiosInstance
@@ -21,13 +21,13 @@ const Comment = ({ postData }) => {
         `authors/${localStorage.getItem("id")}/posts/${postData.id}/comments`
       )
       .then((response) => {
-        console.log(response.data);
+         
         setCommentData(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [reRenderHelper]);
 
   const allComments = commentData.map((data, index) => {
     //data is an object containg all the comments for each post
