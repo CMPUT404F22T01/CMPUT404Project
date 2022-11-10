@@ -70,9 +70,9 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
-  const onSubmitHandler = (e) => {
-    console.log(e)
-     
+  const onSubmitHandler = (e) => { 
+    // need to uncomment this for forceUpdate to work
+    // e.preventDefault();
     let formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
@@ -94,7 +94,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
       .catch((err) => {
         console.error(err);
       });
-
+    this.forceUpdate();
     onClickCreatePostHandler();
   };
 

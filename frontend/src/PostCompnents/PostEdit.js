@@ -27,9 +27,9 @@ const useStyles = makeStyles({
     borderRadius: 3,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
     color: "white",
-    height: 48,
+    height: 45,
     padding: "0 30px",
-    width: 100,
+    width: '100%',
   },
 
   textfields: {
@@ -78,7 +78,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
   const originRef = useRef(null);
 
   const onSubmitHandler = (e) => {
-    e.preventDefault();
+   
     let formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
@@ -94,12 +94,12 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
       .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/`, formData)
       .then((response) => {
         //temp need to save user id
-        console.log(response.data);
+        console.log(response.status);
       })
       .catch((err) => {
         console.error(err);
       });
-
+     this.forceUpdate();
     onClickPostEditHandler();
   };
 

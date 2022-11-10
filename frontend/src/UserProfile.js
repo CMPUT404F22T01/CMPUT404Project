@@ -57,10 +57,9 @@ const ExpandMore = styled((props) => {
 const UserProfile = () => {
   const location = useLocation();
   const [data, setData] = useState([]);
-  const [expanded, setExpanded] = React.useState(false);
+  const [reRenderHelper, setReRenderHelper] = React.useState(false);
 
-  const onClickDeletePost = (index) => {
-    console.log(data[index].id);
+  const onClickDeletePost = (index) => { 
     axiosInstance
       .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id}/`)
       .then((response) => {
@@ -69,6 +68,7 @@ const UserProfile = () => {
       .catch((error) => {
         console.log(error);
       });
+      setReRenderHelper((prevState)=>!prevState); 
   };
   // const url = 'http://127.0.0.1:8000/mainDB/user/data/'
   // const config = {
@@ -85,11 +85,7 @@ const UserProfile = () => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
-  }, []);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  }, [reRenderHelper]); 
 
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
