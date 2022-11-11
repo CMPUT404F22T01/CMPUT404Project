@@ -1,22 +1,22 @@
-import Card from "@mui/material/Card";
-import Box from "@mui/material/Box";
+import * as React from "react";
+import { useRef } from "react";
+
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
+import TextField from "@mui/material/TextField"; 
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent"; 
+import DialogTitle from "@mui/material/DialogTitle";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
+import Box from "@mui/material/Box";
 import { Fab, Select, MenuItem } from "@mui/material";
+
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
+ 
 import { makeStyles } from "@mui/styles";
-import "./postcreate.css";
 import axiosInstance from "../axiosInstance";
-
-import { useRef } from "react";
-
-/**
- * need to allow custom id post creatation called put
- */
 
 const useStyles = makeStyles({
   submit_btn: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles({
     color: "white",
     height: 45,
     padding: "0 30px",
-    width: '100%',
+    width: "100%",
   },
 
   textfields: {
@@ -54,13 +54,21 @@ const useStyles = makeStyles({
     background: "red",
     color: "white",
   },
+  closeTab: {
+    background: "transparent",
+    fontSize: "40px",
+    position: "relative",
+    left: "95%",
+
+    cursor: "pointer",
+    fontWeight: "bold",
+  },
 });
 
-const PostCreate = ({ onClickCreatePostHandler }) => {
-  //material ui styles
+export default function PostCreates({ onClickCreatePostHandler }) {
   const styleClasses = useStyles();
-
   //react
+  const customPostIdRef = useRef(null);
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const contentTypeRef = useRef(null);
@@ -70,22 +78,37 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
-  const onSubmitHandler = (e) => { 
+  const onSubmitHandler = (e) => {
+    //https://melvingeorge.me/blog/check-if-string-valid-uuid-regex-javascript
+    // Regular expression to check if string is a valid UUID
+    const regexExp =
+      /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/gi;
+
+    let url = `authors/${localStorage.getItem("id")}/posts/`;
+    let method = "POST";
     // need to uncomment this for forceUpdate to work
     // e.preventDefault();
+
     let formData = new FormData();
+    if (regexExp.test(customPostIdRef.current.value)) {
+      method = "PUT";
+      url += customPostIdRef.current.value;
+      url += "/";
+    }
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
     formData.append("visibility", visibilityRef.current.value);
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
-    formData.append("image", imageRef.current.files[0] ? imageRef.current.files[0] :  '');
+    formData.append(
+      "image",
+      imageRef.current.files[0] ? imageRef.current.files[0] : ""
+    );
     formData.append("unlisted", unlistedRef.current.value);
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);
-    //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
-    axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/`, formData)
+
+    axiosInstance({ method: method, url: url, data: formData })
       .then((response) => {
         //temp need to save user id
         // uses the return repsonse to send a success message (Do same in PostEdit.js)
@@ -100,14 +123,35 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
 
   return (
     <>
-      <Box id="modal" component="form" onSubmit={onSubmitHandler}>
+      <DialogTitle sx={{ backgroundColor: "#15172b", color: "#fff" }}>
         <CloseIcon
           sx={{ size: "large" }}
-          className="close-tab"
+          className={styleClasses.closeTab}
           onClick={() => onClickCreatePostHandler()}
         />
-
-        <Card className="card-view" style={{ backgroundColor: "#15172b" }}>
+        Create Post
+      </DialogTitle>
+      <DialogContent sx={{ width: 600, backgroundColor: "#15172b" }}>
+        <Box
+          className="card-view"
+          component="form"
+          onSubmit={onSubmitHandler}
+          style={{ backgroundColor: "#15172b" }}
+        >
+          <TextField
+            id="outlined-basic"
+            label="Custom Id(optional)"
+            variant="outlined"
+            className={styleClasses.textfields}
+            InputProps={{
+              className: styleClasses.input,
+            }}
+            InputLabelProps={{
+              style: { color: "#fff" },
+            }}
+            inputRef={customPostIdRef}
+          />
+          <br />
           <FormControl fullWidth className={styleClasses.textfields}>
             <InputLabel
               variant="standard"
@@ -268,16 +312,14 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             inputRef={originRef}
           />
           <br />
-        </Card>
-        <br />
 
-        <Button type="submit" className={styleClasses.submit_btn}>
-          Post
-        </Button>
-      </Box>
-      <div className="blur"></div>
+          <DialogActions>
+            <Button type="submit" className={styleClasses.submit_btn}>
+              Post
+            </Button>
+          </DialogActions>
+        </Box>
+      </DialogContent>
     </>
   );
-};
-
-export default PostCreate;
+}

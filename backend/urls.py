@@ -30,9 +30,10 @@ urlpatterns = [
  
     # Creation URL ://service/authors/{AUTHOR_ID}/posts/
     path('authors/<uuid:uuidOfAuthor>/posts/', views.PostMutipleDetailView.as_view()),
+    path('authors/<uuid:uuidOfAuthor>/posts/distinct/', views.PostDistinctView.as_view()),
 
     # Image Posts!
-    path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),
+    # path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/image/', views.PostImageView.as_view()),
 
     # Comment routes!
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/comments', views.CommentPostView.as_view()),

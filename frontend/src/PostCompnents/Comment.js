@@ -1,4 +1,4 @@
-import { Box, Typography, Card, CardContent, CardActions, IconButton } from "@mui/material";
+import { Box, Typography, CardContent, CardActions, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { makeStyles } from "@mui/styles";

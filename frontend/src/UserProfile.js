@@ -33,6 +33,8 @@ import Collapse from "@mui/material/Collapse";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
+ * 
+ * Problem in reRenderHelper for last post deletion
  */
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -63,7 +65,7 @@ const UserProfile = () => {
     axiosInstance
       .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id}/`)
       .then((response) => {
-        console.log(response);
+        console.log(response.status)
       })
       .catch((error) => {
         console.log(error);
@@ -79,7 +81,6 @@ const UserProfile = () => {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/`)
       .then((response) => {
-        console.log(response.data)
         setData(response.data);
       })
       .catch((error) => {

@@ -14,15 +14,14 @@ import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment"; 
 import Box from "@mui/material/Box";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import "./post.css";
-import { useEffect, useState, useRef } from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert"; 
+import { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "./Comment";
 import { Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-
+import Dialog from '@mui/material/Dialog';
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -35,19 +34,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
-
+  
 const useStyles = makeStyles({
   container: {
     borderRadius: 100,
@@ -125,9 +112,11 @@ export default function Post() {
   };
 
   //handler for the edit button click
-  const onClickPostEditHandler = (index_to_edit) => {
-    setIndexToEdit(index_to_edit);
-    return setPostEdit((prevState) => !prevState);
+  const onClickPostEditHandler = (index_to_edit=-1) => {
+    if(index_to_edit !== -1){
+      setIndexToEdit(index_to_edit);
+    } 
+    setPostEdit((prevState) => !prevState);
   };
 
   //how to handle a like??
@@ -146,8 +135,9 @@ export default function Post() {
 
   useEffect(() => {
     axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/posts/`)
+      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
+        
         setPost(response.data);
       })
       .catch((error) => {
@@ -232,14 +222,12 @@ export default function Post() {
     >
       <DrawerHeader />
       {allPost}
-      {postEdit ? (
+      <Dialog open={postEdit} >
         <PostEdit
           onClickPostEditHandler={onClickPostEditHandler}
           data={post[indexToEdit]}
         />
-      ) : (
-        ""
-      )}
+        </Dialog>
     </Box>
   );
 }
