@@ -23,13 +23,15 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CommentIcon from "@mui/icons-material/Comment";
- 
+import GitHubIcon from '@mui/icons-material/GitHub';
+import EditIcon from '@mui/icons-material/Edit';
 
 import axiosInstance from "./axiosInstance";
 
 import "./UserProfile.css";
 
 import Collapse from "@mui/material/Collapse";
+import { width } from "@mui/system";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -58,6 +60,7 @@ const UserProfile = () => {
   const location = useLocation();
   const [data, setData] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
+  const [user, setUser] = useState(null)
 
   const onClickDeletePost = (index) => {
     console.log(data[index].id);
@@ -85,6 +88,7 @@ const UserProfile = () => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
+
   }, []);
 
   const handleExpandClick = () => {
@@ -144,34 +148,48 @@ const UserProfile = () => {
 
   return (
     <>
-      <Card className="user-profile-card" sx={{backgroundColor: '#333'}}>
+      <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-          <Avatar
-            src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"
-            className="profile-img"
-            sx={{ width: 100, height: 100 }}
-          />
-          <Typography
-            variant="h5"
-            component="h2"
-            className="user-name"
-          >DisplayName</Typography>
-          <Typography
-            variant="h6"
-            component="h2"
-            className="user-name"
-          ></Typography>
-          <Typography
-            variant="h6"
-            component="h2"
-            className="user-name"
-          ></Typography>
+       
+            <Avatar
+              src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"
+              className="profile-img"
+              sx={{ width: 150, height: 150 }}
+            />
+         
+          <Grid container direction="row" alignItems="center" spacing={4}>
+
+            <Grid item>
+              <Typography
+                variant="h5"
+                component="h2"
+                className="user-name"
+              >{localStorage.getItem('display_name')} Display Name</Typography>
+            </Grid>
+
+            <Grid item>
+              <Button 
+                  variant="outlined" 
+                  size="small"
+                  sx = {{borderRadius: 10}}
+                  startIcon={<EditIcon />}> 
+                  Edit
+                </Button>
+              </Grid>
+
+          </Grid>
+          <Grid container direction="row" alignItems="center" className="github">
+            <Grid item>
+              <GitHubIcon></GitHubIcon>
+            </Grid>
+            <Grid item paddingLeft={1}>
+            {localStorage.getItem('github_url')}
+            </Grid>
+          </Grid>
           <div className="fcontainer">
             <Box className="fbox">Follwers</Box>
 
             <Box className="fbox">Following</Box>
-
-            <Box className="fbox">Bff</Box>
           </div>
         </CardContent>
       </Card>

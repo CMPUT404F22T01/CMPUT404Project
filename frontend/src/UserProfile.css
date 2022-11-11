@@ -4,14 +4,13 @@
     flex-direction: column; 
     height: 400px; 
     justify-content: flex-end;
-     
     align-items: space-around;
     
 }
 
 .fcontainer{
     display: flex;
-    width: 600px;
+    width: 350px;
     justify-content: space-between;
      
 }
@@ -27,4 +26,16 @@
     line-height: 35px;
     border-radius: 10px;
     text-align: center;
+}
+
+.user-name {
+    padding-top: 15px;
+    margin-bottom: 15px;
+    color: white;
+}
+
+.github {
+    color: white;
+    margin-top: 15px;
+    margin-bottom: 30px;
 }
