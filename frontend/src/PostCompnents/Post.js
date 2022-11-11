@@ -95,10 +95,9 @@ export default function Post() {
 
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
-    // doubt why does the useRef gives an empty value and why the ... warning
-    // console.log(commentRef.current.value);
+    // doubt why does the useRef gives an empty value and why the ... warning 
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/comments`, {
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split('posts/')[1]}/comments`, {
         'comment': comment, 
       })
       .then((response) => {

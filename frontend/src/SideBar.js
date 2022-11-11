@@ -30,6 +30,7 @@ import SearchIcon from '@mui/icons-material/Search';
  
 import Post from './PostCompnents/Post'
 import PostCreates from './PostCompnents/PostCreates';
+import Search from './Search';
 import "./sidebar.css";
 
 import { useNavigate } from "react-router-dom";
@@ -40,7 +41,7 @@ import {useState} from "react";
 
 const drawerWidth = 240; 
 
-const Search = styled('div')(({ theme }) => ({
+const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -202,7 +203,7 @@ const SideBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Search>
+          <SearchM>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -211,10 +212,11 @@ const SideBar = () => {
               inputProps={{ 'aria-label': 'search' }}
               onChange={onChangeSearchHandler}
             />
-          </Search>
+          </SearchM>
+          
         </Toolbar>
       </AppBar>
-
+       
       <Drawer variant="permanent" open={open}>
         {/* //the headning of the inside drawer */}
         <DrawerHeader className="listArea-color">
@@ -315,9 +317,12 @@ const SideBar = () => {
           ))}
         </List>
       </Drawer>
+       
       <Dialog open={createPost} >
           <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
        </Dialog>
+       {searchUser ? <Search searchValue={searchUser}></Search> : ""}
+        
        <Post></Post>
        </Box>
   );

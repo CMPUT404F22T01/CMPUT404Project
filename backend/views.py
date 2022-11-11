@@ -468,3 +468,14 @@ def getEntireInboxRequests(request, author_id):
 
     except:
         return response.Response({"message": "Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AuthorSearchView(generics.ListAPIView):
+    queryset = Author.objects.all()
+    serializer_class = GetAuthorSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = Author.objects.filter(username__icontains=request.GET.get('username'))
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -105,7 +105,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/`, formData)
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}/`, formData)
       .then((response) => {
         //temp need to save user id
         console.log(response.status);
