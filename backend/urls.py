@@ -16,6 +16,9 @@ urlpatterns = [
     # Author routes!
     path('authors/', views.getAllAuthors), # TODO add pagination
     path('authors/<uuid:uuidOfAuthor>/', views.getSingleAuthor),
+
+    #search author routes
+    path('author/search/', views.AuthorSearchView.as_view()), 
     
     # Follower routes!
     path('authors/<uuid:uuidOfAuthor>/followers', views.getAllFollowers),

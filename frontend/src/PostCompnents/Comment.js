@@ -18,7 +18,7 @@ const Comment = ({ postData, reRenderHelper }) => {
   useEffect(() => {
     axiosInstance
       .get(
-        `authors/${localStorage.getItem("id")}/posts/${postData.id}/comments`
+        `authors/${localStorage.getItem("id")}/posts/${postData.id.split('posts/')[1]}/comments`
       )
       .then((response) => {
          

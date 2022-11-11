@@ -40,7 +40,7 @@ class GetAuthorSerializer(serializers.ModelSerializer):
     profileImage = serializers.URLField(allow_blank=True, allow_null=True)
     class Meta:
         model = Author
-        fields = ["type","id","host","displayName","url","github","profileImage"]
+        fields = ["type","id","host","displayName","url","github","profileImage", "username"]
 
 class FollowerSerializer(serializers.ModelSerializer):
 
@@ -78,7 +78,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)
-    id = serializers.CharField(source="get_id")
+    id = serializers.CharField(source="get_id", read_only=True)
     class Meta:
         model = Comment
         fields = ["type", "author", "comment", "contentType", "published", "id"]
@@ -87,6 +87,7 @@ class CommentSerializer(serializers.ModelSerializer):
         validated_data['author'] = self.context.get('author')
         validated_data['post'] = self.context.get('post')
         return super().create(validated_data)
+
 
         
 class LikeSerializer(serializers.ModelSerializer):
