@@ -78,6 +78,7 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)
+    id = serializers.CharField(source="get_id")
     class Meta:
         model = Comment
         fields = ["type", "author", "comment", "contentType", "published", "id"]
@@ -105,7 +106,8 @@ class PostSerializer(serializers.ModelSerializer):
     #method 2
     # type = serializers.ReadOnlyField(default=POST.type)
     # read_only equals to true becoz we don't want users to edit the author data while changing post data
-    author = GetAuthorSerializer("author", read_only=True) 
+    author = GetAuthorSerializer("author", read_only=True)
+    id = serializers.CharField(source="get_id", read_only=True)
     class Meta:
         model = POST
         fields = "__all__"

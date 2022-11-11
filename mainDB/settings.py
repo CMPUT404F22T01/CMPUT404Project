@@ -30,14 +30,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-PORT = 8000
-try:
-    HOSTNAME = socket.gethostbyname(socket.gethostname())
-except:
-    HOSTNAME = "127.0.0.1"
-
-HOSTNAME = "https://{}:{}/".format(HOSTNAME, PORT)
+NAME = "c404t3.herokuapp.com"
+HOSTNAME = "https://{}/".format(NAME)
 
 # Application definition
 
