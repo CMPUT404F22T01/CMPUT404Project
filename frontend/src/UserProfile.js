@@ -29,9 +29,11 @@ import EditIcon from '@mui/icons-material/Edit';
 import axiosInstance from "./axiosInstance";
 
 import "./UserProfile.css";
+import "./ProfileEdit.js"
 
 import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
+import ProfileEdit from "./ProfileEdit.js";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -60,7 +62,7 @@ const UserProfile = () => {
   const location = useLocation();
   const [data, setData] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
-  const [user, setUser] = useState(null)
+  const [openDialog, setOpenDialog] = useState(false)
 
   const onClickDeletePost = (index) => {
     console.log(data[index].id);
@@ -77,6 +79,15 @@ const UserProfile = () => {
   // const config = {
   //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
   // };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true)
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
 
   useEffect(() => {
     axiosInstance
@@ -157,7 +168,7 @@ const UserProfile = () => {
               sx={{ width: 150, height: 150 }}
             />
          
-          <Grid container direction="row" alignItems="center" spacing={4}>
+          <Grid container direction="row" alignItems="center" spacing={8}>
 
             <Grid item>
               <Typography
@@ -172,7 +183,8 @@ const UserProfile = () => {
                   variant="outlined" 
                   size="small"
                   sx = {{borderRadius: 10}}
-                  startIcon={<EditIcon />}> 
+                  startIcon={<EditIcon />}
+                  onClick={handleOpenDialog}> 
                   Edit
                 </Button>
               </Grid>
@@ -187,6 +199,8 @@ const UserProfile = () => {
             </Grid>
           </Grid>
           <div className="fcontainer">
+            <Box className="fbox">Posts</Box>
+
             <Box className="fbox">Follwers</Box>
 
             <Box className="fbox">Following</Box>
@@ -194,6 +208,11 @@ const UserProfile = () => {
         </CardContent>
       </Card>
       <div className="post">{allpost}</div>
+
+      <ProfileEdit 
+        openDialog={openDialog} 
+        setOpenDialog={setOpenDialog}>
+       </ProfileEdit>
     </>
   );
 };
