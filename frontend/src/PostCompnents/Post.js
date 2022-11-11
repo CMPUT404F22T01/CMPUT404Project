@@ -96,11 +96,6 @@ const useStyles = makeStyles({
 });
 
 export default function Post() {
-
-
-
-
-
   const styleClasses = useStyles()
   const [post, setPost] = useState([]);
   const commentRef = useRef("")

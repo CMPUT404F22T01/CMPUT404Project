@@ -159,7 +159,7 @@ const PostCreate = ({ onClickCreatePostHandler }) => {
             aria-label="Content"
             minRows={10}
             style={{ width: "100%" }}
-            placeholder="content"
+            placeholder="Write Content Here"
             ref={contentRef}
             className={styleClasses.textfields}
           />
