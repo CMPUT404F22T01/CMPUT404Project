@@ -8,7 +8,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import { TextField } from '@mui/material';
+
+// https://mui.com/material-ui/react-dialog/
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -67,11 +70,24 @@ export default function CustomizedDialogs(props) {
         <BootstrapDialogTitle id="customized-dialog-title" onClose={()=>{setOpenDialog(false)}}>
           Edit Profile
         </BootstrapDialogTitle>
-        <DialogContent dividers>
+        <DialogContent>
+          <Grid container direction="column" spacing={2}>
+            <Grid item>
+              <TextField
+                id="display-name"
+                label="Display Name"/>
+            </Grid>
+            <Grid item>
+              <TextField
+                id="github-url"
+                label="GitHub"/>
+
+            </Grid>
+          </Grid>
        
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={()=>{setOpenDialog(false)}}>
+          <Button autoFocus onClick={handleOnClickSubmit}>
             Save changes
           </Button>
         </DialogActions>
