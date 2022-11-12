@@ -120,7 +120,7 @@ class Comment(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(POST, on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey(POST, on_delete=models.CASCADE)
     comment = models.CharField(max_length=255)
     published = models.DateTimeField(auto_now_add=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/markdown')
@@ -148,7 +148,7 @@ class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
-    object_id = models.UUIDField(null=True) 
+    object_id = models.URLField(null=True) 
     published = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -202,6 +202,7 @@ class Inbox(models.Model):
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True )
     object_id = models.UUIDField(null=True)
     published = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=500, default="No message")
 
     class Meta:
         ordering = ['-published']

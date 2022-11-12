@@ -17,6 +17,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Slide from '@mui/material/Slide';
 
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -31,6 +32,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Post from './PostCompnents/Post'
 import PostCreates from './PostCompnents/PostCreates';
 import Search from './Search';
+import Inbox from './Inbox';
 import "./sidebar.css";
 
 import { useNavigate } from "react-router-dom";
@@ -40,6 +42,11 @@ import {useState} from "react";
  
 
 const drawerWidth = 240; 
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 
 const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -157,15 +164,18 @@ const SideBar = () => {
   let navigate = useNavigate();
 
   const [searchUser, setSearchUser] = useState(null);
+  const [inboxOpen, setInboxOpen] = useState(false);
 
   const onChangeSearchHandler = (e) => {
     setSearchUser(e.target.value);
   }
-  
+  const onClickInboxHandler = () => {
+    setInboxOpen((prevState)=>!prevState)
+  }
+
   const iconData = [
-    <PersonSearchIcon className="icon-color" />,
-    <AccountCircleIcon className="icon-color" onClick={() =>  navigate("/profile")}/>,
-    <InboxIcon className="icon-color" />,
+    <AccountCircleIcon className="icon-color" />,
+    <InboxIcon className="icon-color"/>,
   ];
   
   const theme = useTheme();
@@ -183,9 +193,9 @@ const SideBar = () => {
   const onClickCreatePostHandler = () => {
     setCreatePost((prevState)=>{
       return !prevState;
-    });
+    }); 
   };
-
+ 
   return (
     <Box sx={{ display: "flex"}} >
       <CssBaseline />
@@ -253,10 +263,10 @@ const SideBar = () => {
               height: open ? 90 : 40,
             }}
           />
-          <h4>{open ? "username" : ""}</h4>
+          <h4>{open ?  localStorage.getItem("username") : ""}</h4>
         </Box>
         <List className="listArea-color">
-          {["Search", "Profile", "Inbox"].map((text, index) => (
+          {["Profile", "Inbox"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block", '&:hover':{
               backgroundColor: 'red',
               opacity: [0.3, 0.8, 0.7],
@@ -267,7 +277,7 @@ const SideBar = () => {
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
-                 
+                onClick={index === 0 ? () =>  navigate("/profile") : onClickInboxHandler}
               >
                 <ListItemIcon
                   sx={{
@@ -322,8 +332,14 @@ const SideBar = () => {
           <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
        </Dialog>
        {searchUser ? <Search searchValue={searchUser}></Search> : ""}
-        
-       <Post></Post>
+       <Dialog
+        fullScreen
+        open={inboxOpen}
+        TransitionComponent={Transition}
+        >
+          <Inbox onClickInboxHandler={onClickInboxHandler}/>
+         </Dialog>
+       <Post postReRenderHelper={createPost}></Post>
        </Box>
   );
 }
