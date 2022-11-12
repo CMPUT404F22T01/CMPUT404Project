@@ -5,14 +5,16 @@ import CardHeader from "@mui/material/CardHeader";
 import CardMedia from "@mui/material/CardMedia";
 import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
-import Collapse from "@mui/material/Collapse";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import CommentIcon from "@mui/icons-material/Comment"; 
+import CommentIcon from "@mui/icons-material/Comment";
+import Diversity1Icon from '@mui/icons-material/Diversity1';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SendIcon from '@mui/icons-material/Send';
 import Box from "@mui/material/Box";
 import MoreVertIcon from "@mui/icons-material/MoreVert"; 
 import { useEffect, useState } from "react";
@@ -21,7 +23,12 @@ import PostEdit from "./PostEdit";
 import Comment from "./Comment";
 import { Button } from "@mui/material";
 import { makeStyles } from "@mui/styles";
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
 import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -57,29 +64,32 @@ const useStyles = makeStyles({
   }, 
   commentTextField: {
     height: 40,
-    width: "50%",
+    width: "90%",
   }, 
   commentButton: {
-     width: "20%",
+     width: "10%",
      height: 40,
      borderRadius: 10,
-   
-     '&:hover':{
-      backgroundImage:     "linear-gradient( to right,  #E7484F, #E7484F 16.65%,  #F68B1D 16.65%,     #F68B1D 33.3%,     #FCED00 33.3%,      #FCED00 49.95%,      #009E4F 49.95%,       #009E4F 66.6%,       #00AAC3 66.6%,   #00AAC3 83.25%,   #732982 83.25%,  #732982 100%,  #E7484F 100% )",
-      animation:'slidebg 2s linear infinite'
-     }
+  },
+  postCommentCard: {
+    display:"flex",
+    //alignItems:"center",
+    mx: 'auto',
+    width: 1000,
+    //m: '1rem' 
   }
 });
 
 export default function Post() {
-
   const styleClasses = useStyles()
-
-  const [expanded, setExpanded] = React.useState(false);
   const [post, setPost] = useState([]);
    
   const [comment, setComment] = useState(null);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null);
+  const [openComment, setOpenComment] = React.useState(false);
+  const [openLikedBy, setOpenLikedBy] = React.useState(false);
+  const [openShare, setOpenShare] = React.useState(false);
+
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
   const [reRenderHelper, setReRenderHelper] = useState(false);
    
@@ -118,18 +128,47 @@ export default function Post() {
     setPostEdit((prevState) => !prevState);
   };
 
+
+
+  const handleClickOpenComment = (index) => {
+    setIndexOfCollapse(index);
+    setOpenComment(true);
+  };
+
+  const handleCloseComment = () => {
+    setIndexOfCollapse(null);
+    setOpenComment(false);
+  };
+
+  const handleClickOpenLikedBy = (index) => {
+    setIndexOfCollapse(index);
+    setOpenLikedBy(true);
+  };
+
+  const handleCloseLikedBy = () => {
+    setIndexOfCollapse(null);
+    setOpenLikedBy(false);
+  };
+
+  const handleClickOpenShare = (index) => {
+    setIndexOfCollapse(index);
+    setOpenShare(true);
+  };
+
+  const handleCloseShare = () => {
+    setIndexOfCollapse(null);
+    setOpenShare(false);
+  };
+
+
   //how to handle a like??
-  const onClickLikeHandler = (index) => {
+  const handleLike = (index) => {
     // axiosInstance.post(``)
   };
 
-  const handleExpandClick = (index) => {
-    if(indexOfCollapse === index){
-      setIndexOfCollapse(null);
-    }else{
-      setIndexOfCollapse(index);
-    }
-    setExpanded(!expanded);
+  //how to handle a share??
+  const handleShare = (index) => {
+    // axiosInstance.post(``)
   };
 
   useEffect(() => {
@@ -187,27 +226,116 @@ export default function Post() {
             </Typography>
           </CardContent>
           <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon onClick={() => onClickLikeHandler(index)} />
+            <IconButton aria-label="likedby">
+              <Diversity1Icon onClick={() => handleClickOpenLikedBy(index)} />
             </IconButton>
-            <IconButton aria-label="share"> 
-                <CommentIcon onClick={() => {handleExpandClick(index)}}/> 
+            <IconButton aria-label="comment"> 
+                <CommentIcon onClick={() => {handleClickOpenComment(index)}}/> 
+            </IconButton>
+            <IconButton /*Only open if post === public*/ aria-label="share"> 
+                <SendIcon onClick={() => {handleClickOpenShare(index)}}/> 
             </IconButton>
           </CardActions>
-         
-          <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
+        
+          <Dialog
+            fullScreen
+            open={openComment && indexOfCollapse === index}
+            onClose={handleCloseComment}
+            unmountOnExit
+            timeout="auto"
+            aria-label="comment dialog"
+          >
+            <AppBar sx={{ position: 'relative' }}>
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  onClick={handleCloseComment}
+                  aria-label="close comments"
+                >
+                  <ArrowBackIcon/>
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                  Comments:
+                </Typography>
+              </Toolbar>
+            </AppBar>
             <CardContent>
-              <Box className={styleClasses.commentContainer}>
+              <Card className={styleClasses.postCommentCard}>
                 {/* commentRef does not work */}
-                <TextField value={comment} size="small" label="comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
+                <TextField value={comment} size="small" label="Add Comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
                 />  
                 <Button onClick={() => {
                   onClickCreateCommentHandler(data);
                 }} className={styleClasses.commentButton}>Post</Button>
-              </Box>
+              </Card>
               <Comment postData={data} reRenderHelper={reRenderHelper} />
             </CardContent>
-          </Collapse>
+          </Dialog>
+          
+          <Dialog
+            fullScreen
+            open={openLikedBy && indexOfCollapse === index}
+            onClose={handleCloseLikedBy}
+            unmountOnExit
+            timeout="auto"
+            aria-label="liked by dialog"
+          >
+            <AppBar sx={{ position: 'relative' }}>
+              <Toolbar>
+                <IconButton
+                  edge="start"
+                  color="inherit"
+                  onClick={handleCloseLikedBy}
+                  aria-label="close liked by"
+                >
+                  <ArrowBackIcon/>
+                </IconButton>
+                <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
+                  Liked By:
+                </Typography>
+                <IconButton
+                  edge="end"
+                  color="inherit"
+                  onClick={handleLike(index)}
+                  aria-label="like"
+                >
+                  {/* If the user has liked the item : style={{ color: "red" }} */}
+                  <FavoriteIcon/>
+                </IconButton>
+              </Toolbar>
+            </AppBar>
+            <CardContent>
+              {/* Should list all of the people who have liked the item */}
+            </CardContent>
+          </Dialog>
+
+          <Dialog 
+          open={openShare && indexOfCollapse === index}
+          onClose={handleCloseShare}
+          unmountOnExit
+          timeout="auto"
+          aria-label="share dialog"
+          >
+            <DialogTitle>Share with:</DialogTitle>
+            <DialogContent>
+              <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseShare}>Cancel</Button>
+              <Button onClick={handleShare}>Share</Button>
+            </DialogActions>
+          </Dialog>
+
+
         </Card>
       </Typography>
     );

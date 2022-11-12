@@ -1,4 +1,4 @@
-import { Box, Typography, CardContent, CardActions, IconButton } from "@mui/material";
+import { Box, Typography, Card, CardContent, CardActions, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { makeStyles } from "@mui/styles";
@@ -8,6 +8,7 @@ const useStyles = makeStyles({
   allCommentsContainer: {
     display: "flex",
     flexDirection: "column",
+    alignItems: 'center'
   },
 });
 
@@ -33,6 +34,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     //data is an object containg all the comments for each post
     return (
       <>
+        <Card sx={{ width: 1000, m: '1rem' }}>
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {data.author.displayName}
@@ -41,11 +43,14 @@ const Comment = ({ postData, reRenderHelper }) => {
             {data.comment}
           </Typography>
         </CardContent>
+        
         <CardActions>
-          <IconButton aria-label="add to favorites">
+          {/* If the user has liked the item : style={{ color: "red" }} */}
+          <IconButton aria-label="like">
             <FavoriteIcon />
           </IconButton>
         </CardActions>
+        </Card>
       </>
     );
   });
