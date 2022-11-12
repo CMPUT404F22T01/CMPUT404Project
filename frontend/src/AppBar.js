@@ -13,11 +13,11 @@ import { styled, alpha } from "@mui/material/styles";
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-
-import Post from './PostCompnents/Post'
-import PostCreate from './PostCompnents/PostCreate';
-
-const settings = ["Profile", "Logout"];
+import Dialog from '@mui/material/Dialog';
+import MenuList from '@mui/material/MenuList';
+import Post from './PostCompnents/Post';
+import PostCreates from './PostCompnents/PostCreates';
+import { useNavigate } from "react-router-dom";
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -63,6 +63,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 function ResponsiveAppBar() {
+
+    let navigate = useNavigate();
+
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [createPost, setCreatePost] = React.useState(false);
 
@@ -141,16 +144,20 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem onClick={() =>  navigate("/profile")}>
+                <Typography textAlign="center">Profile</Typography>
+              </MenuItem>
+              <MenuItem onClick={handleCloseUserMenu}>
+                <Typography textAlign="center">Logout</Typography>
+              </MenuItem>
+
             </Menu>
           </Box>
         </Toolbar>
     </AppBar>
-    {createPost ? <PostCreate onClickCreatePostHandler={onClickCreatePostHandler}/> : ""}
+    <Dialog open={createPost} >
+      <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
+    </Dialog>
     <Post></Post>
     </Box>
   );
