@@ -78,28 +78,29 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)
+    # this post is needed becoz i want to get the details about the post for sending a request in the inbox
+    post = PostSerializer("post", read_only=True)
     id = serializers.CharField(source="get_id", read_only=True)
     class Meta:
         model = Comment
-        fields = ["type", "author", "comment", "contentType", "published", "id"]
+        fields = ["type", "author", "post", "comment", "contentType", "published", "id"]
     
     def create(self, validated_data):
         validated_data['author'] = self.context.get('author')
-        validated_data['post'] = self.context.get('post')
+        validated_data['post'] = self.context.get('post') 
         return super().create(validated_data)
 
 
         
-class LikeSerializer(serializers.ModelSerializer):
-    summary = serializers.CharField(read_only=True)
+class LikeSerializer(serializers.ModelSerializer): 
     type = serializers.CharField(read_only=True)
-    author = GetAuthorSerializer("author")
-    object = serializers.CharField(source="object_url")
+    author = GetAuthorSerializer("author", read_only=True)
+    # object = serializers.CharField(source="object_url") 
     class Meta:
         model = Like
-        fields = ["summary","type", "author", "object"]
-
-
+        fields = ["type", "author", "object_id"] 
+ 
+        
 class PostSerializer(serializers.ModelSerializer):
 
     #Method 1

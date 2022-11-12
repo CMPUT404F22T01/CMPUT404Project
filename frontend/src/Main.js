@@ -5,7 +5,7 @@ import ResponsiveAppBar from './AppBar'
 const Main = () => {
     return (
         <> 
-        <ResponsiveAppBar />
+        <SideBar />
         </>
     )
 }

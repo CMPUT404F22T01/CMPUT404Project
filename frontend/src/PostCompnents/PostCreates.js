@@ -2,9 +2,9 @@ import * as React from "react";
 import { useRef } from "react";
 
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField"; 
+import TextField from "@mui/material/TextField";
 import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent"; 
+import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextareaAutosize from "@mui/base/TextareaAutosize";
 import FormControl from "@mui/material/FormControl";
@@ -14,7 +14,7 @@ import { Fab, Select, MenuItem } from "@mui/material";
 
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
- 
+
 import { makeStyles } from "@mui/styles";
 import axiosInstance from "../axiosInstance";
 
@@ -58,7 +58,7 @@ const useStyles = makeStyles({
     background: "transparent",
     fontSize: "40px",
     position: "relative",
-    left: "95%",
+    left: "90%",
 
     cursor: "pointer",
     fontWeight: "bold",
@@ -78,7 +78,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
-  const onSubmitHandler = (e) => {
+  const onSubmitHandler = async (e) => {
     //https://melvingeorge.me/blog/check-if-string-valid-uuid-regex-javascript
     // Regular expression to check if string is a valid UUID
     const regexExp =
@@ -87,7 +87,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
     let url = `authors/${localStorage.getItem("id")}/posts/`;
     let method = "POST";
     // need to uncomment this for forceUpdate to work
-    // e.preventDefault();
+    e.preventDefault();
 
     let formData = new FormData();
     if (regexExp.test(customPostIdRef.current.value)) {
@@ -108,22 +108,60 @@ export default function PostCreates({ onClickCreatePostHandler }) {
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);
 
-    axiosInstance({ method: method, url: url, data: formData })
-      .then((response) => {
-        //temp need to save user id
-        // uses the return repsonse to send a success message (Do same in PostEdit.js)
-        console.log(response.status);
-      })
-      .catch((err) => {
-        console.error(err);
+    try {
+      const postCreateResponse = await axiosInstance({
+        method: method,
+        url: url,
+        data: formData,
       });
-    this.forceUpdate();
+
+      const followerData = await axiosInstance.get(
+        `authors/${localStorage.getItem("id")}/followers`
+      );
+
+      await followerData.data.items.forEach((follower) => {
+        axiosInstance.post(
+          `authors/${follower.id.split("authors/")[1]}/inbox`,
+          postCreateResponse.data
+        );
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    
+    // axiosInstance({ method: method, url: url, data: formData })
+    //   .then((response) => {
+    //     //temp need to save user id
+    //     // uses the return repsonse to send a success message (Do same in PostEdit.js)
+    //     return response.data
+    //   }).then((postresponse) => {
+    //     axiosInstance.get(`authors/${localStorage.getItem("id")}/followers`)
+    //     .then((response) => {
+    //       for (let  follower of response.data.items){
+    //           axiosInstance.post(
+    //             `authors/${follower.id.split("authors/")[1]}/inbox`,
+    //              postresponse
+    //           )
+    //           .then((response) => {
+    //             console.log(response.data)
+    //           }).catch((error) => {
+    //             console.error(error)
+    //           })
+    //       }
+    //     })
+    //   })
+    //   .catch((err) => {
+    //     console.error(err);
+    //   });
+
     onClickCreatePostHandler();
   };
 
   return (
     <>
-      <DialogTitle sx={{ backgroundColor: "#15172b", color: "#fff" }}>
+      <DialogTitle
+        sx={{ width: "100%", backgroundColor: "#15172b", color: "#fff" }}
+      >
         <CloseIcon
           sx={{ size: "large" }}
           className={styleClasses.closeTab}

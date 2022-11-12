@@ -8,7 +8,7 @@ const useStyles = makeStyles({
   allCommentsContainer: {
     display: "flex",
     flexDirection: "column",
-    alignItems: 'center'
+    
   },
 });
 
@@ -34,7 +34,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     //data is an object containg all the comments for each post
     return (
       <>
-        <Card sx={{ width: 1000, m: '1rem' }}>
+         
         <CardContent>
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {data.author.displayName}
@@ -50,7 +50,7 @@ const Comment = ({ postData, reRenderHelper }) => {
             <FavoriteIcon />
           </IconButton>
         </CardActions>
-        </Card>
+       
       </>
     );
   });

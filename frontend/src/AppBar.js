@@ -16,10 +16,11 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Dialog from '@mui/material/Dialog';
 import MenuList from '@mui/material/MenuList';
 import Post from './PostCompnents/Post';
-import PostCreates from './PostCompnents/PostCreates';
+import PostCreates from './PostCompnents/PostCreates'; 
 import { useNavigate } from "react-router-dom";
+import Search from "./Search";
 
-const Search = styled('div')(({ theme }) => ({
+const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -68,6 +69,11 @@ function ResponsiveAppBar() {
 
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [createPost, setCreatePost] = React.useState(false);
+  const [searchUser, setSearchUser] = React.useState(null);
+
+  const onChangeSearchHandler = (e) => {
+    setSearchUser(e.target.value);
+  }
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -86,7 +92,7 @@ function ResponsiveAppBar() {
 
   return (
     <Box>
-    <AppBar position="static">
+    <AppBar position="fixed">
         <Toolbar>
           <Box display='flex' flexGrow={1}>
           {/* LOGO HERE */}
@@ -111,15 +117,16 @@ function ResponsiveAppBar() {
           
           <AddCircleOutlineIcon  onClick={onClickCreatePostHandler}/>
           
-          <Search >
+          <SearchM>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              onChange={onChangeSearchHandler}
             />
-          </Search>
+          </SearchM>
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
@@ -158,6 +165,7 @@ function ResponsiveAppBar() {
     <Dialog open={createPost} >
       <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
     </Dialog>
+    {searchUser ? <Search searchValue={searchUser}></Search> : ""}
     <Post></Post>
     </Box>
   );

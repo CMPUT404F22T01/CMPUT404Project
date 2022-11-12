@@ -226,7 +226,7 @@ class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.Creat
 
     def get(self, request, *args, **kwargs):
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
-        print(queryset.author.id, kwargs['uuidOfAuthor'])
+         
         if (kwargs['uuidOfAuthor'] == queryset.author.id) or queryset.visibility == 'PUBLIC':
             serializer = self.serializer_class(queryset, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -346,7 +346,7 @@ class CommentPostView(generics.ListCreateAPIView):
         return context
 
     '''
-        stuff before the return self.create is only for incrementing the count in the post object by 1 becoz count is 
+        stuff before the return self.create is only for incrementing the count in the post object by 1 becoz count is
         number of comments on a particular post object
     '''
 
@@ -392,16 +392,25 @@ def handleInboxRequests(request, author_id):
     if request.method == "POST":
         try:
             try:
+                message = "None"
                 postType = str(request.data["type"]).lower()
-                if not postType in {"post", "comment", "like", "follow"}:
+                if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
-                if postType == "like":
+                if postType == "like": 
+                    message = f'{request.user.username} liked your post {request.data["data"]["title"]}'
+                    data = {
+                        "object_type": request.data["data"]["type"],
+                        "author": request.data["data"]["author"],
+                        "object_id": request.data["data"]["id"],
+                    }
                     serializer = LikeSerializer(
-                        data=request.data, partial=True)
-                    if not serializer.is_valid():
+                        data=data, partial=True)
+                    if not serializer.is_valid(raise_exception=True):
                         raise KeyError("like object not valid!")
+
                     authorID, postID, commentID = utils.getAuthorIDandPostIDFromLikeURL(
-                        serializer.data["object"])
+                        serializer.data["object_id"]) 
+                        
                     if authorID != None and postID != None and commentID != None:
                         l = Like.objects.get_or_create(
                             author_id=request.user.id, object_type="comment", object_id=commentID)
@@ -411,15 +420,26 @@ def handleInboxRequests(request, author_id):
                     else:
                         raise KeyError("like object not valid!")
                     idOfItem = l[0].id
+
                 else:
                     idOfItem = utils.getUUID(request.data["id"])
+                    type = request.data["type"].lower()
+                     
+                    if type == "comment":
+                        message = f'{request.data["author"]["username"]}  commented on your post'
+                    elif type == "post":
+                        message = f'{request.data["author"]["username"]} added a new post {request.data["title"]}'
+                    elif type == "share":
+                        message = f'{request.GET.get("username")} shared a post with you.'
+                        postType = 'post'
+                
                 Inbox.objects.create(author_id=author_id,
-                                     object_type=postType, object_id=idOfItem)
-                return response.Response({"message": "Added to inbox!"}, status.HTTP_201_CREATED)
-            except KeyError as e:
+                                     object_type=postType, object_id=idOfItem, message=message)
+                return response.Response({"message": message}, status.HTTP_201_CREATED)
+            except Exception as e:
                 return response.Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
-        except:
-            return response.Response({"message": "Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return response.Response({"message": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if request.method == "DELETE":
         try:
@@ -438,6 +458,7 @@ def getEntireInboxRequests(request, author_id):
             return response.Response({"message": "Can't retreive someone else's inbox!"}, status.HTTP_401_UNAUTHORIZED)
         # Get inbox
         inboxObjects = Inbox.objects.filter(author__id=author_id)
+   
 
         # Make return object!
         def helperFunc(obj: Inbox):
@@ -455,19 +476,19 @@ def getEntireInboxRequests(request, author_id):
             elif obj.object_type == "follow":
                 objectToSerialize = Follower.objects.get(id=obj.object_id)
                 serializerClass = FollowerSerializer
-            s = serializerClass(objectToSerialize)
-            return s.data
+            s = serializerClass(objectToSerialize) 
+            return {"data":s.data, "message": obj.message}
 
         items = list(map(helperFunc, inboxObjects))
         resp = {
             "type": "inbox",
             "author": request.user.url(),
-            "items": items
+            "items": items, 
         }
         return response.Response(resp, 200)
 
-    except:
-        return response.Response({"message": "Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    except Exception as e:
+        return response.Response({"message": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthorSearchView(generics.ListAPIView):
