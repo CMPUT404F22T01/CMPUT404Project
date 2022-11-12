@@ -33,6 +33,8 @@ import Collapse from "@mui/material/Collapse";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
+ * 
+ * Problem in reRenderHelper for last post deletion
  */
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -54,21 +56,44 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-const UserProfile = () => {
-  const location = useLocation();
-  const [data, setData] = useState([]);
-  const [expanded, setExpanded] = React.useState(false);
+const UserProfile = ({userData}) => {
+  
+  // we use UseNagivation to show search user peoples profile
+  // so when the user clicked on one of the search user's profile we send that data along with the 
+  // navigation
+  const {state} = useLocation(); 
 
-  const onClickDeletePost = (index) => {
-    console.log(data[index].id);
+  /**
+   * this are the default user ids comes from the local storage or later we implement an user class
+   */
+  let authorID =  localStorage.getItem("id");
+  let authorUsername = localStorage.getItem("username")
+  let authorDisplayName = state.value.displayName;
+  let authorGithubURL = state.value.github_url;
+  
+  const [data, setData] = useState([]);
+  const [reRenderHelper, setReRenderHelper] = React.useState(false);
+
+  // when the show other user's profile
+  if(state !== null){
+    authorID = state.value.id.split("authors/")[1];
+    authorUsername = state.value.username;
+    authorDisplayName = state.value.displayName;
+    authorGithubURL = state.value.github_url; 
+
+  }
+
+  // we allow delete only for current user profile
+  const onClickDeletePost = (index) => { 
     axiosInstance
-      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id}/`)
+      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}/`)
       .then((response) => {
-        console.log(response);
+        console.log(response.status)
       })
       .catch((error) => {
         console.log(error);
       });
+      setReRenderHelper((prevState)=>!prevState); 
   };
   // const url = 'http://127.0.0.1:8000/mainDB/user/data/'
   // const config = {
@@ -77,23 +102,18 @@ const UserProfile = () => {
 
   useEffect(() => {
     axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/posts/`)
+      .get(`authors/${authorID}/posts/`)
       .then((response) => {
-        console.log(response.data)
         setData(response.data);
       })
       .catch((error) => {
         console.error("error in post get ", error);
       });
-  }, []);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  }, [reRenderHelper]); 
 
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
-    if (item.author.id.split('authors/')[1] === localStorage.getItem("id")) {
+   
       return (
         <Typography paragraph className="card-container">
           <Card sx={{ maxWidth: 1000 }} className="card-view">
@@ -104,12 +124,14 @@ const UserProfile = () => {
                 </Avatar>
               }
               action={
+                // this if statement helps to avoid other user deleting current user post when they visit other user profiles
+               item.author.id.split('authors/')[1] === localStorage.getItem("id") ?
                 <IconButton aria-label="delete">
-                  {/* to allow author to edit its own post */}
-                  
+                  {/* to allow author to edit its own post */} 
                   <DeleteIcon onClick={() => onClickDeletePost(index)} />
                   
                 </IconButton>
+               : ""
               }
               title={item.title}
               subheader={item.published}
@@ -140,7 +162,7 @@ const UserProfile = () => {
         </Typography>
       );
     }
-  });
+  );
 
   return (
     <>
@@ -155,7 +177,7 @@ const UserProfile = () => {
             variant="h5"
             component="h2"
             className="user-name"
-          >DisplayName</Typography>
+          >{authorUsername}</Typography>
           <Typography
             variant="h6"
             component="h2"

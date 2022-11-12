@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { styled, useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
@@ -10,31 +11,37 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import InputBase from '@mui/material/InputBase';
+import Dialog from '@mui/material/Dialog'; 
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
-import "./sidebar.css";
-import { useNavigate } from "react-router-dom";
-
-
+ 
 import Post from './PostCompnents/Post'
-import PostCreate from './PostCompnents/PostCreate';
+import PostCreates from './PostCompnents/PostCreates';
+import Search from './Search';
+import "./sidebar.css";
+
+import { useNavigate } from "react-router-dom";
+import {useState} from "react";
+
+
  
 
 const drawerWidth = 240; 
 
-const Search = styled('div')(({ theme }) => ({
+const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -148,6 +155,13 @@ const Drawer = styled(MuiDrawer, {
 const SideBar = () => {
 
   let navigate = useNavigate();
+
+  const [searchUser, setSearchUser] = useState(null);
+
+  const onChangeSearchHandler = (e) => {
+    setSearchUser(e.target.value);
+  }
+  
   const iconData = [
     <PersonSearchIcon className="icon-color" />,
     <AccountCircleIcon className="icon-color" onClick={() =>  navigate("/profile")}/>,
@@ -189,18 +203,20 @@ const SideBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Search>
+          <SearchM>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              onChange={onChangeSearchHandler}
             />
-          </Search>
+          </SearchM>
+          
         </Toolbar>
       </AppBar>
-
+       
       <Drawer variant="permanent" open={open}>
         {/* //the headning of the inside drawer */}
         <DrawerHeader className="listArea-color">
@@ -301,7 +317,12 @@ const SideBar = () => {
           ))}
         </List>
       </Drawer>
-       {createPost ? <PostCreate onClickCreatePostHandler={onClickCreatePostHandler}/> : ""}
+       
+      <Dialog open={createPost} >
+          <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
+       </Dialog>
+       {searchUser ? <Search searchValue={searchUser}></Search> : ""}
+        
        <Post></Post>
        </Box>
   );

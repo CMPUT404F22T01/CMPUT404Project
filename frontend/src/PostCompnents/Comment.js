@@ -1,4 +1,4 @@
-import { Box, Typography, Card, CardContent, CardActions, IconButton } from "@mui/material";
+import { Box, Typography, CardContent, CardActions, IconButton } from "@mui/material";
 import { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import { makeStyles } from "@mui/styles";
@@ -12,23 +12,23 @@ const useStyles = makeStyles({
   },
 });
 
-const Comment = ({ postData }) => {
+const Comment = ({ postData, reRenderHelper }) => {
   const styleClasses = useStyles();
-
+ 
   const [commentData, setCommentData] = useState([]);
   useEffect(() => {
     axiosInstance
       .get(
-        `authors/${localStorage.getItem("id")}/posts/${postData.id}/comments`
+        `authors/${localStorage.getItem("id")}/posts/${postData.id.split('posts/')[1]}/comments`
       )
       .then((response) => {
-        console.log(response.data);
+         
         setCommentData(response.data);
       })
       .catch((error) => {
         console.error(error);
       });
-  }, []);
+  }, [reRenderHelper]);
 
   const allComments = commentData.map((data, index) => {
     //data is an object containg all the comments for each post

@@ -17,9 +17,8 @@ import Diversity1Icon from '@mui/icons-material/Diversity1';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SendIcon from '@mui/icons-material/Send';
 import Box from "@mui/material/Box";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import "./post.css";
-import { useEffect, useState, useRef } from "react";
+import MoreVertIcon from "@mui/icons-material/MoreVert"; 
+import { useEffect, useState } from "react";
 import axiosInstance from "../axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "./Comment";
@@ -31,7 +30,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -44,19 +42,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
-
+  
 const useStyles = makeStyles({
   container: {
     borderRadius: 100,
@@ -98,13 +84,16 @@ const useStyles = makeStyles({
 export default function Post() {
   const styleClasses = useStyles()
   const [post, setPost] = useState([]);
-  const commentRef = useRef("")
+   
   const [comment, setComment] = useState(null);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null);
   const [openComment, setOpenComment] = React.useState(false);
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
 
+  //this reRenderHelper is used to re render the comment component (expensive maybe!!)
+  const [reRenderHelper, setReRenderHelper] = useState(false);
+   
 
   //this two are for the editPost and PostEdit prop
   //indexToEdit is used to get the index clicked happened and pass post at that index as prop to the PostEdit
@@ -117,10 +106,9 @@ export default function Post() {
 
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
-    // doubt why does the useRef gives an empty value and why the ... warning
-    // console.log(commentRef.current.value);
+    // doubt why does the useRef gives an empty value and why the ... warning 
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id}/comments`, {
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split('posts/')[1]}/comments`, {
         'comment': comment, 
       })
       .then((response) => {
@@ -129,12 +117,16 @@ export default function Post() {
       .catch((error) => {
         console.log(error);
       });
+      setComment("");  
+      setReRenderHelper((prevState)=> !prevState);
   };
 
   //handler for the edit button click
-  const onClickPostEditHandler = (index_to_edit) => {
-    setIndexToEdit(index_to_edit);
-    return setPostEdit((prevState) => !prevState);
+  const onClickPostEditHandler = (index_to_edit=-1) => {
+    if(index_to_edit !== -1){
+      setIndexToEdit(index_to_edit);
+    } 
+    setPostEdit((prevState) => !prevState);
   };
 
 
@@ -182,8 +174,9 @@ export default function Post() {
 
   useEffect(() => {
     axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/posts/`)
+      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
+        
         setPost(response.data);
       })
       .catch((error) => {
@@ -271,13 +264,13 @@ export default function Post() {
             <CardContent>
               <Card className={styleClasses.postCommentCard}>
                 {/* commentRef does not work */}
-                <TextField inputRef={commentRef} size="small" label="Add Comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
+                <TextField value={comment} size="small" label="Add Comment" onChange={onChangeCommentHandler} className={styleClasses.commentTextField}
                 />  
                 <Button onClick={() => {
                   onClickCreateCommentHandler(data);
                 }} className={styleClasses.commentButton}>Post</Button>
               </Card>
-              <Comment postData={data} />
+              <Comment postData={data} reRenderHelper={reRenderHelper} />
             </CardContent>
           </Dialog>
           
@@ -357,14 +350,12 @@ export default function Post() {
     >
       <DrawerHeader />
       {allPost}
-      {postEdit ? (
+      <Dialog open={postEdit} >
         <PostEdit
           onClickPostEditHandler={onClickPostEditHandler}
           data={post[indexToEdit]}
         />
-      ) : (
-        ""
-      )}
+        </Dialog>
     </Box>
   );
 }
