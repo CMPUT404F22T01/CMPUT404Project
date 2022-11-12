@@ -68,8 +68,8 @@ const UserProfile = ({userData}) => {
    */
   let authorID =  localStorage.getItem("id");
   let authorUsername = localStorage.getItem("username")
-  let authorDisplayName = state.value.displayName;
-  let authorGithubURL = state.value.github_url;
+  let authorDisplayName;
+  let authorGithubURL;
   
   const [data, setData] = useState([]);
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
