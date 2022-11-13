@@ -14,15 +14,17 @@ import { TextField } from '@mui/material';
 import { useState } from "react";
 import { useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
+import { Avatar} from "@mui/material";
 
 // https://mui.com/material-ui/react-dialog/
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
-    padding: theme.spacing(2),
+    padding: theme.spacing(3),
+    minWidth: 300
   },
   '& .MuiDialogActions-root': {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
   },
 }));
 
@@ -94,20 +96,34 @@ export default function CustomizedDialogs(props) {
           Edit Profile
         </BootstrapDialogTitle>
         <DialogContent>
-          <Grid container direction="column" spacing={2}>
+          <Grid container direction="column" spacing={2}  >
+            <Grid item alignItems="center" justifyContent="center">
+            <IconButton>
+              <Avatar 
+                src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg" 
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  marginBottom: "20px"
+                }} 
+              />
+              </IconButton>
+            </Grid>
             <Grid item>
               <TextField
                 id="display-name"
                 label="Display Name"
                 defaultValue={displayName}
-                inputRef={display}/>
+                inputRef={display}
+                fullWidth/>
             </Grid>
             <Grid item>
               <TextField
                 id="github-url"
                 label="GitHub"
                 defaultValue={githubURL}
-                inputRef={github}/>
+                inputRef={github}
+                fullWidth/>
 
             </Grid>
           </Grid>
