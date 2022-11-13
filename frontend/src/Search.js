@@ -47,17 +47,18 @@ const Search = ({ searchValue }) => {
         })
     }, [searchValue])
 
-  const searchResults = searchData.map((value, index) => {
+  const searchResults = searchData.map((authorData, index) => {
+     
     return (
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
           <Avatar src="https://i.picsum.photos/id/49/536/354.jpg?hmac=nHnd7iRJJCEu5ETUJ1utIrDqxG0pq_JrU_d_9zSnuL0"></Avatar>
           <Link
-            onClick={()=>navigate('/profile', {state:{value}})}
+            onClick={()=>navigate('/profile', {state:{authorData}})}
             variant="body2"
             sx={{ fontSize: "20px", marginLeft: "10px", color: "white", lineHeight:'40px'}}
           >
-            {value.username}
+            {authorData.username}
           </Link>
         </CardContent>
       </Card>

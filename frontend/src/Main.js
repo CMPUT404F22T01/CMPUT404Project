@@ -1,6 +1,5 @@
  
-import SideBar from './SideBar'
-import ResponsiveAppBar from './AppBar'
+import SideBar from './SideBar' 
 
 const Main = () => {
     return (

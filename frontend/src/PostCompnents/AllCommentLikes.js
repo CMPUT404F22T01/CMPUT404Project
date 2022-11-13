@@ -5,32 +5,22 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate } from "react-router-dom";
 
-const AllPostLikes = ({postData, reRenderLikeHelper}) => {
+const AllPostLikes = ({commentData, reRenderLikeHelper}) => {
 
     const navigate = useNavigate();
     const [likeData, setLikeData] = React.useState([])
     
+ 
     React.useEffect(() => {
-        console.log("post called")
-        axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${postData.id.split("posts/")[1]}/likes`)
+        console.log("comment called")
+        axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.post.id.split("posts/")[1]}/comments/${commentData.id.split("comments/")[1]}/likes`)
         .then((response) => {
-            // console.log(response.data);
+            console.log(response.data);
             setLikeData(response.data)
         }).catch((error) => {
             console.error(error)
         })
     }, [reRenderLikeHelper])
-
-    // React.useEffect(() => {
-    //     console.log("comment called")
-    //     axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.post.id.split("posts/")[1]}/comments/${commentData.id.split("comments/")[1]}/likes`)
-    //     .then((response) => {
-    //         console.log(response.data);
-    //         setLikeData(response.data)
-    //     }).catch((error) => {
-    //         console.error(error)
-    //     })
-    // }, [commentData])
 
     const allLikes = likeData.map((value) =>{
         const authorData = value.author
