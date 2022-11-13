@@ -62,7 +62,6 @@ const UserProfile = ({userData}) => {
   // so when the user clicked on one of the search user's profile we send that data along with the 
   // navigation
   const {state} = useLocation(); 
-
   /**
    * this are the default user ids comes from the local storage or later we implement an user class
    */
@@ -76,10 +75,10 @@ const UserProfile = ({userData}) => {
 
   // when the show other user's profile
   if(state !== null){
-    authorID = state.value.id.split("authors/")[1];
-    authorUsername = state.value.username;
-    authorDisplayName = state.value.displayName;
-    authorGithubURL = state.value.github_url; 
+    authorID = state.authorData.id.split("authors/")[1];
+    authorUsername = state.authorData.username;
+    authorDisplayName = state.authorData.displayName;
+    authorGithubURL = state.authorData.github_url; 
 
   }
 

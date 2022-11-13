@@ -10,27 +10,32 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
 import Collapse from "@mui/material/Collapse";
-import { red } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import CommentIcon from "@mui/icons-material/Comment";
-import Diversity1Icon from "@mui/icons-material/Diversity1";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import SendIcon from "@mui/icons-material/Send";
-import Box from "@mui/material/Box";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useEffect, useState, useRef } from "react";
-import axiosInstance from "../axiosInstance";
-import PostEdit from "./PostEdit";
-import Comment from "./Comment";
-import { Button } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Box from "@mui/material/Box";
+import  Button  from "@mui/material/Button";
+
+import { red } from "@mui/material/colors";
+
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import CommentIcon from "@mui/icons-material/Comment";
+import Diversity1Icon from "@mui/icons-material/Diversity1";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SendIcon from "@mui/icons-material/Send";
+ 
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+
+import { makeStyles } from "@mui/styles"; 
+
 import AllPostLikes from "./AllPostLikes";
+import { useEffect, useState, useRef } from "react";
+import axiosInstance from "../axiosInstance";
+import PostEdit from "./PostEdit";
+import Comment from "./Comment";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -93,7 +98,7 @@ export default function Post({postReRenderHelper}) {
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
   const [reRenderHelper, setReRenderHelper] = useState(false);
-
+  const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false);
   //this two are for the editPost and PostEdit prop
   //indexToEdit is used to get the index clicked happened and pass post at that index as prop to the PostEdit
   const [postEdit, setPostEdit] = useState(false);
@@ -134,43 +139,7 @@ export default function Post({postReRenderHelper}) {
     setReRenderHelper((prevState) => !prevState);
   };
 
-  //handler for the edit button click
-  const onClickPostEditHandler = (index_to_edit = -1) => {
-    if (index_to_edit !== -1) {
-      setIndexToEdit(index_to_edit);
-    }
-    setPostEdit((prevState) => !prevState);
-  }; 
-
-  const handleClickOpenLikedBy = (index) => {
-    setIndexOfCollapse(index);
-    setOpenLikedBy(true);
-  };
-
-  const handleCloseLikedBy = () => {
-    setIndexOfCollapse(null);
-    setOpenLikedBy(false);
-  };
-  const handleExpandClick = (index) => {
-    if (indexOfCollapse === index) {
-      setIndexOfCollapse(null);
-    } else {
-      setIndexOfCollapse(index);
-    }
-    setExpanded((prevState)=> !prevState);
-  };
-  const handleClickOpenShare = (index) => {
-    setIndexOfCollapse(index);
-    setOpenShare(true);
-  };
-
-  const handleCloseShare = () => {
-    setIndexOfCollapse(null);
-    setOpenShare(false);
-  };
-
-  const onClickLikeHandler = (index) => { 
-    console.log(post[index])
+  const onClickLikeHandler = (index) => {  
     const data = {
       'type': 'like', 
       'data': post[index] 
@@ -183,9 +152,11 @@ export default function Post({postReRenderHelper}) {
       }).catch((error)=>{
         console.log(error)
       })
+
+      setReRenderLikeHelper((prevState) => !prevState);
   }
 
-  //how to handle a share??
+   //how to handle a share??
   // find the user and use the found user's id to send post request to the inbox.
   const handleShare = (index) => {
   
@@ -222,6 +193,41 @@ export default function Post({postReRenderHelper}) {
         console.error("error in post get ", error);
       });
   }, [postReRenderHelper]);
+
+  //handler for the edit button click
+  const onClickPostEditHandler = (index_to_edit = -1) => {
+    if (index_to_edit !== -1) {
+      setIndexToEdit(index_to_edit);
+    }
+    setPostEdit((prevState) => !prevState);
+  }; 
+
+  const handleClickOpenLikedBy = (index) => {
+    setIndexOfCollapse(index);
+    setOpenLikedBy(true);
+  };
+
+  const handleCloseLikedBy = () => {
+    setIndexOfCollapse(null);
+    setOpenLikedBy(false);
+  };
+  const handleExpandClick = (index) => {
+    if (indexOfCollapse === index) {
+      setIndexOfCollapse(null);
+    } else {
+      setIndexOfCollapse(index);
+    }
+    setExpanded((prevState)=> !prevState);
+  };
+  const handleClickOpenShare = (index) => {
+    setIndexOfCollapse(index);
+    setOpenShare(true);
+  };
+
+  const handleCloseShare = () => {
+    setIndexOfCollapse(null);
+    setOpenShare(false);
+  };
 
   const allPost = post.map((data, index) => {
     return (
@@ -345,7 +351,7 @@ export default function Post({postReRenderHelper}) {
             </AppBar>
             <CardContent>
               {/* Should list all of the people who have liked the item */}
-              <AllPostLikes postData={post[indexOfCollapse]}/>
+              <AllPostLikes postData={post[indexOfCollapse]} reRenderLikeHelper={reRenderLikeHelper}/>
             </CardContent>
           </Dialog>
 

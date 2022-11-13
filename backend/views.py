@@ -397,7 +397,7 @@ def handleInboxRequests(request, author_id):
                 if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
                 if postType == "like": 
-                    message = f'{request.user.username} liked your post {request.data["data"]["title"]}'
+                     
                     data = {
                         "object_type": request.data["data"]["type"],
                         "author": request.data["data"]["author"],
@@ -412,9 +412,11 @@ def handleInboxRequests(request, author_id):
                         serializer.data["object_id"]) 
                         
                     if authorID != None and postID != None and commentID != None:
+                        message = f'{request.user.username} liked your comment {request.data["data"]["comment"]}'
                         l = Like.objects.get_or_create(
                             author_id=request.user.id, object_type="comment", object_id=commentID)
                     elif authorID != None and postID != None:
+                        message = f'{request.user.username} liked your post {request.data["data"]["title"]}'
                         l = Like.objects.get_or_create(
                             author_id=request.user.id, object_type="post", object_id=postID)
                     else:
