@@ -1,4 +1,5 @@
 import * as React from "react";
+
 import { styled, useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Avatar from "@mui/material/Avatar";
@@ -10,31 +11,43 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import InputBase from '@mui/material/InputBase';
+import Dialog from '@mui/material/Dialog'; 
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Slide from '@mui/material/Slide';
+
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; 
 import SearchIcon from '@mui/icons-material/Search';
-import InputBase from '@mui/material/InputBase';
-import "./sidebar.css";
+ 
+import Post from '../Posts/Post'
+import PostCreates from '../Posts/PostCreates';
+import Search from '../User/Search';
+import Inbox from '../Inbox/Inbox';
+import "../SideBar/sidebar.css";
+
 import { useNavigate } from "react-router-dom";
+import {useState} from "react";
 
 
-import Post from './PostCompnents/Post'
-import PostCreate from './PostCompnents/PostCreate';
  
 
 const drawerWidth = 240; 
 
-const Search = styled('div')(({ theme }) => ({
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
+
+const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
   backgroundColor: alpha(theme.palette.common.white, 0.15),
@@ -148,10 +161,20 @@ const Drawer = styled(MuiDrawer, {
 const SideBar = () => {
 
   let navigate = useNavigate();
+
+  const [searchUser, setSearchUser] = useState(null);
+  const [inboxOpen, setInboxOpen] = useState(false);
+
+  const onChangeSearchHandler = (e) => {
+    setSearchUser(e.target.value);
+  }
+  const onClickInboxHandler = () => {
+    setInboxOpen((prevState)=>!prevState)
+  }
+
   const iconData = [
-    <PersonSearchIcon className="icon-color" />,
-    <AccountCircleIcon className="icon-color" onClick={() =>  navigate("/profile")}/>,
-    <InboxIcon className="icon-color" />,
+    <AccountCircleIcon className="icon-color" />,
+    <InboxIcon className="icon-color"/>,
   ];
   
   const theme = useTheme();
@@ -169,9 +192,9 @@ const SideBar = () => {
   const onClickCreatePostHandler = () => {
     setCreatePost((prevState)=>{
       return !prevState;
-    });
+    }); 
   };
-
+ 
   return (
     <Box sx={{ display: "flex"}} >
       <CssBaseline />
@@ -189,18 +212,20 @@ const SideBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Search>
+          <SearchM>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+              onChange={onChangeSearchHandler}
             />
-          </Search>
+          </SearchM>
+          
         </Toolbar>
       </AppBar>
-
+       
       <Drawer variant="permanent" open={open}>
         {/* //the headning of the inside drawer */}
         <DrawerHeader className="listArea-color">
@@ -237,10 +262,10 @@ const SideBar = () => {
               height: open ? 90 : 40,
             }}
           />
-          <h4>{open ? "username" : ""}</h4>
+          <h4>{open ?  localStorage.getItem("username") : ""}</h4>
         </Box>
         <List className="listArea-color">
-          {["Search", "Profile", "Inbox"].map((text, index) => (
+          {["Profile", "Inbox"].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: "block", '&:hover':{
               backgroundColor: 'red',
               opacity: [0.3, 0.8, 0.7],
@@ -251,7 +276,7 @@ const SideBar = () => {
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
-                 
+                onClick={index === 0 ? () =>  navigate("/profile") : onClickInboxHandler}
               >
                 <ListItemIcon
                   sx={{
@@ -301,8 +326,19 @@ const SideBar = () => {
           ))}
         </List>
       </Drawer>
-       {createPost ? <PostCreate onClickCreatePostHandler={onClickCreatePostHandler}/> : ""}
-       <Post></Post>
+       
+      <Dialog open={createPost} >
+          <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
+       </Dialog>
+       {searchUser ? <Search searchValue={searchUser}></Search> : ""}
+       <Dialog
+        fullScreen
+        open={inboxOpen}
+        TransitionComponent={Transition}
+        >
+          <Inbox onClickInboxHandler={onClickInboxHandler}/>
+         </Dialog>
+       <Post postReRenderHelper={createPost}></Post>
        </Box>
   );
 }

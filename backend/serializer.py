@@ -40,7 +40,7 @@ class GetAuthorSerializer(serializers.ModelSerializer):
     profileImage = serializers.URLField(allow_blank=True, allow_null=True)
     class Meta:
         model = Author
-        fields = ["type","id","host","displayName","url","github","profileImage"]
+        fields = ["type","id","host","displayName","url","github","profileImage", "username"]
 
 class FollowerSerializer(serializers.ModelSerializer):
 
@@ -49,6 +49,23 @@ class FollowerSerializer(serializers.ModelSerializer):
         model = Follower
         fields = ["follower"]
 
+
+class SingleFollowerSerializer(serializers.ModelSerializer):
+    id = serializers.UUIDField()
+    follower = GetAuthorSerializer()
+    following = GetAuthorSerializer()
+    class Meta:
+        model = Follower
+        fields = ["id","follower","following","timestamp"]
+
+class SingleFollowRequestSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField()
+    sender = GetAuthorSerializer()
+    receiver = GetAuthorSerializer()
+    class Meta:
+        model = FollowRequest
+        fields = ["id","sender","receiver","timestamp"]
 
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(read_only=True)
@@ -61,26 +78,29 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)
+    # this post is needed becoz i want to get the details about the post for sending a request in the inbox
+    post = PostSerializer("post", read_only=True)
+    id = serializers.CharField(source="get_id", read_only=True)
     class Meta:
         model = Comment
-        fields = ["type", "author", "comment", "contentType", "published", "id"]
+        fields = ["type", "author", "post", "comment", "contentType", "published", "id"]
     
     def create(self, validated_data):
         validated_data['author'] = self.context.get('author')
-        validated_data['post'] = self.context.get('post')
+        validated_data['post'] = self.context.get('post') 
         return super().create(validated_data)
 
+
         
-class LikeSerializer(serializers.ModelSerializer):
-    summary = serializers.CharField(read_only=True)
+class LikeSerializer(serializers.ModelSerializer): 
     type = serializers.CharField(read_only=True)
     author = GetAuthorSerializer("author", read_only=True)
-    object = serializers.CharField(source="object_url")
+    # object = serializers.CharField(source="object_url") 
     class Meta:
         model = Like
-        fields = ["summary","type", "author", "object"]
-
-
+        fields = ["type", "author", "object_id"] 
+ 
+        
 class PostSerializer(serializers.ModelSerializer):
 
     #Method 1
@@ -88,7 +108,8 @@ class PostSerializer(serializers.ModelSerializer):
     #method 2
     # type = serializers.ReadOnlyField(default=POST.type)
     # read_only equals to true becoz we don't want users to edit the author data while changing post data
-    author = GetAuthorSerializer("author", read_only=True) 
+    author = GetAuthorSerializer("author", read_only=True)
+    id = serializers.CharField(source="get_id", read_only=True)
     class Meta:
         model = POST
         fields = "__all__"

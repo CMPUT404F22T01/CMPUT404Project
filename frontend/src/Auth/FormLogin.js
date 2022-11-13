@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
  
-import axiosInstance from './axiosInstance'
+import axiosInstance from '../utils/axiosInstance'
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
@@ -18,7 +18,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const FormLogin = () => {
-    let navigation = useNavigate();
+    let navigate = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
     const url = 'http://127.0.0.1:8000/service/login/'
@@ -36,10 +36,7 @@ const FormLogin = () => {
       }
     }, [loginFail])
 
-    const onSubmitChangeToSignUp = (e) => {
-         
-    }
-
+ 
     const onSubmitHandler = (e) => {
 
         e.preventDefault();
@@ -51,9 +48,10 @@ const FormLogin = () => {
         }).then((response) => {
             //temp need to save user id
             localStorage.setItem('id', response.data.id);
+            localStorage.setItem('username', response.data.username);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            navigation("/", {state:{response: response.data}})
+            navigate("/", {state:{response: response.data}})
 
         }).catch((err) => {
             setLoginFail(true);
@@ -65,7 +63,7 @@ const FormLogin = () => {
           <Typography variant="body2" color="text.secondary" align="center" {...props}>
             {'Copyright © '}
             <Link color="inherit" href="https://mui.com/">
-              Your Website
+              Social Disco
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -150,8 +148,8 @@ const FormLogin = () => {
                       </Link>
                     </Grid> */}
                     <Grid item>
-                      <Link href="#" variant="body2" onClick={onSubmitChangeToSignUp}>
-                        {"Don't have an account? Sign Up"}
+                      <Link href="#" variant="body2" onClick={()=>navigate("../register/")}>
+                        Don't have an account? Sign Up
                       </Link>
                     </Grid>
                   </Grid>

@@ -3,9 +3,7 @@ import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
+import TextField from '@mui/material/TextField'; 
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
@@ -81,7 +79,7 @@ const FormCreate = () => {
         <Typography variant="body2" color="text.secondary" align="center" {...props}>
           {'Copyright © '}
           <Link color="inherit" href="https://mui.com/">
-            Your Website
+            Social Disco
           </Link>{' '}
           {new Date().getFullYear()}
           {'.'}
@@ -179,12 +177,7 @@ const FormCreate = () => {
                     />
                   </Grid>
                   {passwordNotMatchError ? <Alert severity='error'>Password not match</Alert> : ""} 
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={<Checkbox value="allowExtraEmails" color="primary" />}
-                      label="I want to receive inspiration, marketing promotions and updates via email."
-                    />
-                  </Grid>
+                   
                 </Grid>
                  
                 <Button
@@ -197,7 +190,7 @@ const FormCreate = () => {
                 </Button>
                 <Grid container justifyContent="flex-end">
                   <Grid item>
-                    <Link href="#" variant="body2">
+                    <Link href="#" variant="body2" onClick={() => navigate("../login/")}>
                       Already have an account? Sign in
                     </Link>
                   </Grid>

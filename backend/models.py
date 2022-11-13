@@ -38,7 +38,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     join_date = models.DateTimeField(auto_now_add=True)
     profileImage = models.ImageField(upload_to = profile_upload_to, null=True, blank=True)
-    host = models.CharField(max_length=255, blank=True, default='http://127.0.0.1:8000/')
+    host = models.CharField(max_length=255, blank=True, default=HOSTNAME)
     url = models.URLField(max_length=255, blank=True)
     github = models.URLField(max_length=255, blank=True, null=True)
     displayName = models.CharField(max_length=255, null=True, blank=True)
@@ -77,7 +77,7 @@ class POST(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     title = models.CharField(max_length=255, blank=True, null=True, default='No Title')
-    source = models.URLField(null=True, blank=True)
+    source = models.URLField(null=True, blank=True, default=HOSTNAME)
     origin = models.URLField(default=HOSTNAME)
     description = models.CharField(max_length=500, blank=True, null=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/plain')
@@ -120,7 +120,7 @@ class Comment(models.Model):
 
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    post = models.ForeignKey(POST, on_delete=models.CASCADE, null=True)
+    post = models.ForeignKey(POST, on_delete=models.CASCADE)
     comment = models.CharField(max_length=255)
     published = models.DateTimeField(auto_now_add=True)
     contentType = models.CharField(max_length=255, choices=CONTENT_TYPE, default='text/markdown')
@@ -145,9 +145,10 @@ class Like(models.Model):
         ("comment","comment")
     )
 
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True)
-    object_id = models.UUIDField(null=True) 
+    object_id = models.URLField(null=True) 
     published = models.DateTimeField(auto_now_add=True)
 
     @property
@@ -164,6 +165,7 @@ class Like(models.Model):
             return Comment.objects.get(id=self.object_id).get_id()
 
 class Follower(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     #sender
     follower = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='follower')
     #recevier
@@ -177,6 +179,7 @@ class Follower(models.Model):
 
 
 class FollowRequest(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     sender = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='sender')
     receiver = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='receiver')
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -199,3 +202,7 @@ class Inbox(models.Model):
     object_type = models.CharField(max_length=20, choices=TYPE_CHOICES, null=True )
     object_id = models.UUIDField(null=True)
     published = models.DateTimeField(auto_now_add=True)
+    message = models.CharField(max_length=500, default="No message")
+
+    class Meta:
+        ordering = ['-published']

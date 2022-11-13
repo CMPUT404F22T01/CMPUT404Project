@@ -47,7 +47,7 @@ axiosInstance.interceptors.response.use(
 							'Bearer ' + response.data.access;
 						originalRequest.headers['Authorization'] =
 							'Bearer ' + response.data.access; 
-							console.log(originalRequest)
+							// console.log(originalRequest)
 							 return axiosInstance(originalRequest);
 					}).catch((error) => {
 						console.log(error);
