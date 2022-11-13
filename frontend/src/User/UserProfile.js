@@ -196,7 +196,7 @@ const UserProfile = ({userData}) => {
                 variant="h5"
                 component="h2"
                 className="user-name"
-              >{localStorage.getItem('id')}</Typography>
+              >{authorUsername}</Typography>
             </Grid>
 
             <Grid item>
@@ -216,7 +216,7 @@ const UserProfile = ({userData}) => {
               <GitHubIcon></GitHubIcon>
             </Grid>
             <Grid item paddingLeft={1}>
-            {localStorage.getItem('id')}
+            {authorGithubURL}
             </Grid>
           </Grid>
           <div className="fcontainer">
@@ -233,8 +233,8 @@ const UserProfile = ({userData}) => {
       <ProfileEdit 
         openDialog={openDialog} 
         setOpenDialog={setOpenDialog}
-        displayName = {localStorage.getItem("id")}
-        githubURL={localStorage.getItem("id")}>
+        displayName = {authorUsername}
+        githubURL={authorGithubURL}>
        </ProfileEdit>
     </>
   );

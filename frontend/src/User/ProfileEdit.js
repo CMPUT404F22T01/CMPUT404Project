@@ -13,7 +13,7 @@ import { TextField } from '@mui/material';
 
 import { useState } from "react";
 import { useRef } from "react";
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 
 // https://mui.com/material-ui/react-dialog/
 
@@ -65,16 +65,18 @@ export default function CustomizedDialogs(props) {
   const github = useRef(githubURL);
 
   const handleOnClickSubmit = () => {
+    var newDisplay = display.current.value;
+    var newGithub = github.current.value;
     axiosInstance
     .post(`authors/${localStorage.getItem("id")}/`, {
-      "displayName": display.current.value, 
-      "github": github.current.value
+      "displayName": newDisplay, 
+      "github": newGithub
     })
     .then((response) => {
       console.log(response.status);
     })
     .catch((error) => {
-      console.log(error);
+      console.log(error);      
     });
     setOpenDialog(false);
   }
