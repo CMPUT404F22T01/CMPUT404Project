@@ -11,6 +11,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 
+import { useState } from "react";
+import { useRef } from "react";
+import axiosInstance from "./axiosInstance";
+
 // https://mui.com/material-ui/react-dialog/
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -53,11 +57,28 @@ BootstrapDialogTitle.propTypes = {
 
 export default function CustomizedDialogs(props) {
 
-  const { openDialog, setOpenDialog } = props;
+  const { openDialog, setOpenDialog, displayName, githubURL} = props;
+
+  //const [display, setDisplayName] = useState(displayName);
+  //const [github, setGithub] = useState(githubURL);
+  const display = useRef(displayName);
+  const github = useRef(githubURL);
 
   const handleOnClickSubmit = () => {
-      setOpenDialog(false);
+    axiosInstance
+    .post(`authors/${localStorage.getItem("id")}/`, {
+      "displayName": display.current.value, 
+      "github": github.current.value
+    })
+    .then((response) => {
+      console.log(response.status);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+    setOpenDialog(false);
   }
+
 
 
   return (
@@ -75,12 +96,16 @@ export default function CustomizedDialogs(props) {
             <Grid item>
               <TextField
                 id="display-name"
-                label="Display Name"/>
+                label="Display Name"
+                defaultValue={displayName}
+                inputRef={display}/>
             </Grid>
             <Grid item>
               <TextField
                 id="github-url"
-                label="GitHub"/>
+                label="GitHub"
+                defaultValue={githubURL}
+                inputRef={github}/>
 
             </Grid>
           </Grid>
