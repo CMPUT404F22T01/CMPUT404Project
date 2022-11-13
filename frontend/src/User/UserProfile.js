@@ -25,7 +25,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentIcon from "@mui/icons-material/Comment";
  
 
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 
 import "./UserProfile.css";
 

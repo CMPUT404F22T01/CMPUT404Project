@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
  
-import axiosInstance from './axiosInstance'
+import axiosInstance from '../utils/axiosInstance'
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';

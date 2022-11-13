@@ -1,7 +1,7 @@
- import './App.css';
-import FormCreate from './FormCreate';
-import FormLogin from './FormLogin';
-import UserProfile from './UserProfile';
+import './App.css';
+import FormCreate from './Auth/FormCreate';
+import FormLogin from './Auth/FormLogin';
+import UserProfile from './User/UserProfile';
 import Main from './Main';
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
  

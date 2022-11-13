@@ -16,7 +16,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
 
 import { makeStyles } from "@mui/styles";
-import axiosInstance from "../axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 
 const useStyles = makeStyles({
   submit_btn: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles({
     border: 0,
     borderRadius: 3,
     boxShadow: "0 3px 5px 2px rgba(255, 105, 135, .3)",
-    color: "white",
+    color: "#fff",
     height: 45,
     padding: "0 30px",
     width: "100%",
@@ -35,7 +35,6 @@ const useStyles = makeStyles({
     marginLeft: "auto",
     marginRight: "auto",
     paddingBottom: 0,
-
     marginTop: 0,
     fontWeight: 500,
     backgroundColor: "#303245",
@@ -51,15 +50,14 @@ const useStyles = makeStyles({
     backgroundColor: "#303245",
   },
   paper: {
-    background: "red",
-    color: "white",
+ 
+    color: "#fff",
   },
   closeTab: {
     background: "transparent",
     fontSize: "40px",
     position: "relative",
     left: "90%",
-
     cursor: "pointer",
     fontWeight: "bold",
   },
@@ -72,6 +70,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const contentTypeRef = useRef(null);
+  const categoriesRef = useRef(null);
   const unlistedRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
@@ -98,6 +97,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
+    formData.append("categories", categoriesRef.current.value);
     formData.append("visibility", visibilityRef.current.value);
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
     formData.append(
@@ -174,7 +174,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
           className="card-view"
           component="form"
           onSubmit={onSubmitHandler}
-          style={{ backgroundColor: "#15172b" }}
+          sx={{ backgroundColor: "#15172b" }}
         >
           <TextField
             id="outlined-basic"
@@ -202,7 +202,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
               sx={{
                 color: "#fff",
                 "& .MuiSvgIcon-root": {
-                  color: "white",
+                  color: "#fff",
                 },
               }}
               defaultValue={"text/plain"}
@@ -246,6 +246,20 @@ export default function PostCreates({ onClickCreatePostHandler }) {
             className={styleClasses.textfields}
           />
           <br />
+          <TextField
+            id="outlined-basic"
+            label="Categories"
+            variant="outlined"
+            className={styleClasses.textfields}
+            InputProps={{
+              className: styleClasses.input,
+            }}
+            InputLabelProps={{
+              style: { color: "#fff" },
+            }}
+            inputRef={categoriesRef}
+          />
+          <br/>
           <FormControl fullWidth className={styleClasses.textfields}>
             <InputLabel
               variant="standard"

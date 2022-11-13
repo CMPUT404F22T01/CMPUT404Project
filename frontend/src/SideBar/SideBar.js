@@ -25,15 +25,14 @@ import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import LogoutIcon from "@mui/icons-material/Logout";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import PersonSearchIcon from "@mui/icons-material/PersonSearch";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; 
 import SearchIcon from '@mui/icons-material/Search';
  
-import Post from './PostCompnents/Post'
-import PostCreates from './PostCompnents/PostCreates';
-import Search from './Search';
-import Inbox from './Inbox';
-import "./sidebar.css";
+import Post from '../Posts/Post'
+import PostCreates from '../Posts/PostCreates';
+import Search from '../User/Search';
+import Inbox from '../Inbox/Inbox';
+import "../SideBar/sidebar.css";
 
 import { useNavigate } from "react-router-dom";
 import {useState} from "react";

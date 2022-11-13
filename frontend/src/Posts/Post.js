@@ -26,16 +26,15 @@ import CommentIcon from "@mui/icons-material/Comment";
 import Diversity1Icon from "@mui/icons-material/Diversity1";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
- 
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 import { makeStyles } from "@mui/styles"; 
 
-import AllPostLikes from "./AllPostLikes";
+import AllPostLikes from "../Likes/AllPostLikes";
 import { useEffect, useState, useRef } from "react";
-import axiosInstance from "../axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
-import Comment from "./Comment";
+import Comment from "../Comment/Comment";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -234,6 +233,7 @@ export default function Post({postReRenderHelper}) {
       <Typography paragraph className={styleClasses.container}>
         <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
+             
             className={styleClasses.cardHeader}
             avatar={
               <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -245,14 +245,15 @@ export default function Post({postReRenderHelper}) {
                 {/* to allow author to edit its own post */}
                 {data.author.id.split("authors/")[1] ===
                 localStorage.getItem("id") ? (
-                  <MoreVertIcon onClick={() => onClickPostEditHandler(index)} />
+                  <MoreVertIcon  onClick={() => onClickPostEditHandler(index)} />
                 ) : (
                   ""
                 )}
               </IconButton>
             }
-            title={data.title}
-            subheader={data.published}
+            title={data.author.username}
+            subheader={data.title}
+             
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
           {data.image ? (
@@ -270,12 +271,16 @@ export default function Post({postReRenderHelper}) {
               {data.content}
             </Typography>
           </CardContent>
-          <CardActions disableSpacing>
+          <CardActions disableSpacing sx={{backgroundColor: "#333"}}>
             <IconButton aria-label="likedby">
-              <Diversity1Icon onClick={() => handleClickOpenLikedBy(index)} />
+              <Diversity1Icon 
+              sx = {{color: "#fff"}}
+              onClick={() => handleClickOpenLikedBy(index)} 
+              />
             </IconButton>
             <IconButton aria-label="comment">
               <CommentIcon
+              sx = {{color: "#fff"}}
                 onClick={() => {
                   handleExpandClick(index);
                 }}
@@ -283,11 +288,13 @@ export default function Post({postReRenderHelper}) {
             </IconButton>
             <IconButton /*Only open if post === public*/ aria-label="share">
               <SendIcon
+              sx = {{color: "#fff"}}
                 onClick={() => {
                   handleClickOpenShare(index);
                 }}
               />
             </IconButton>
+            <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
           </CardActions>
           <Collapse in={indexOfCollapse === index && expanded} timeout="auto" unmountOnExit>
             <CardContent>
