@@ -10,10 +10,10 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useState } from "react";
-import axiosInstance from "../axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
-import AllCommentLikes from "./AllCommentLikes";
+import AllCommentLikes from "../Likes/AllCommentLikes";
 
 const useStyles = makeStyles({
   allCommentsContainer: {

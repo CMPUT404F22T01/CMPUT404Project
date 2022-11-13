@@ -2,7 +2,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { Card, CardContent, Link, Box, Avatar } from "@mui/material";
-import axiosInstance from "./axiosInstance";
+
+import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles({

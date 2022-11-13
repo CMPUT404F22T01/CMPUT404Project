@@ -12,7 +12,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import axiosInstance from "./axiosInstance";
+import axiosInstance from "../utils/axiosInstance";
 
 
 const Inbox = ({ onClickInboxHandler }) => {
@@ -32,11 +32,12 @@ const Inbox = ({ onClickInboxHandler }) => {
    
 
   const allMessages = inboxData.map((value) => {   
+     
     return (
         <> 
         {/* onClick is for heroku so won't work in localhost onClick={()=> navigate(value.id)}'*/}
-       <ListItem button >
-        <ListItemText primary={`${value.data.author.username}`} secondary={`${value.message}`} />
+       <ListItem button onClick={value.data.type === "post" ? ()=>  navigate(value.data.id) : " "}>
+        <ListItemText primary={`${value.data.type}`} secondary={`${value.message}`} />
       </ListItem>
       <Divider />
       </>

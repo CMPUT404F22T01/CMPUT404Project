@@ -15,7 +15,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { makeStyles } from "@mui/styles";
 import "./postcreate.css";
 
-import axiosInstance from "../axiosInstance"; 
+import axiosInstance from "../utils/axiosInstance"; 
 import { useRef } from "react";
 
 /**
