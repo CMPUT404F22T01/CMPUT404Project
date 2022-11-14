@@ -76,9 +76,10 @@ const UserProfile = ({userData}) => {
   
   const [data, setData] = useState([]);
   const [authorData, setAuthorData] = useState([]);
-  const [expanded, setExpanded] = React.useState(false);
+  const [following, setFollowing] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
+  const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
 
   // when the show other user's profile
   if(state !== null){
@@ -115,19 +116,37 @@ const UserProfile = ({userData}) => {
   };
 
   const onClickSendFollowRequestHandler = () => {
-    const data = {
-      "type": "follow",
-      "id": localStorage.getItem('id'),
-      "username": localStorage.getItem('username'),
-    }
-    axiosInstance.post(
-      `authors/${authorData.id.split("authors/")[1]}/inbox`,
-      data
-      ).then((response) => {
-        console.log(response.data)
-      }).catch((error)=>{
-        console.log(error)
+    if(following === false){
+      const data = {
+        "type": "follow",
+        "id": localStorage.getItem('id'),
+        "username": localStorage.getItem('username'),
+      }
+      axiosInstance.post(
+        `authors/${authorData.id.split("authors/")[1]}/inbox`,
+        data
+        ).then((response) => {
+          console.log(response.data)
+          setFollowing(true);
+        }).catch((error)=>{
+          console.log(error)
+          setFollowing(false);
+        })
+    }else{
+      axiosInstance
+      .delete(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
+      .then((response) => {
+        console.log(response.status)
+         if(response.status === 200){
+          setFollowing(true);
+         }
       })
+      .catch((error) => {
+        setFollowing(false);
+      });
+    }
+
+    reRenderFollowHelper((prevState)=>!prevState)
   }
 
   useEffect(() => {
@@ -141,6 +160,19 @@ const UserProfile = ({userData}) => {
       });
   }, [])
 
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
+      .then((response) => {
+        console.log(response.status)
+         if(response.status === 200){
+          setFollowing(true);
+         }
+      })
+      .catch((error) => {
+        setFollowing(false);
+      });
+  }, [reRenderFollowHelper])
 
   useEffect(() => {
     axiosInstance
@@ -249,9 +281,7 @@ const UserProfile = ({userData}) => {
           </Grid>
           <div className="fcontainer">
             <Box className="fbox">Posts</Box>
-
-            <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follwers</Box>
-
+            {following ? <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Unfollow</Box> : <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follow</Box>} 
             <Box className="fbox">Following</Box>
           </div>
         </CardContent>
