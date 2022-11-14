@@ -80,7 +80,7 @@ const UserProfile = ({userData}) => {
   
   const [data, setData] = useState([]);
   const [authorData, setAuthorData] = useState([]);
-  const [expanded, setExpanded] = React.useState(false);
+  const [following, setFollowing] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(1);
@@ -91,14 +91,14 @@ const UserProfile = ({userData}) => {
   const [gitProfileImage, setProfileImage] = useState('')
   const [gitRepos, setRepos] = useState('')
   const [gitFollowers, setFollowers] = useState('')
-  const [gitFollowing, setFollowing] = useState('')
+  const [gitFollowing, setGitFollowing] = useState('')
   const [gitStartDate, setStartDate] = useState('')
 
   const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
       setGithubName(login);
       setProfileImage(avatar_url);
       setRepos(public_repos);
-      setFollowing(following);
+      setGitFollowing(following);
       setFollowers(followers);
       setStartDate(created_at);
   }
@@ -171,12 +171,44 @@ const UserProfile = ({userData}) => {
       });
 
   };
+  const onClickSendFollowRequestHandler = () => {
+    if(following === false){
+      const data = {
+        "type": "follow",
+        "id": localStorage.getItem('id'),
+        "username": localStorage.getItem('username'),
+      }
+      axiosInstance.post(
+        `authors/${authorData.id.split("authors/")[1]}/inbox`,
+        data
+        ).then((response) => {
+          console.log(response.data)
+          setFollowing(true);
+        }).catch((error)=>{
+          console.log(error)
+          setFollowing(false);
+        })
+    }else{
+      axiosInstance
+      .delete(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
+      .then((response) => {
+        console.log(response.status)
+         if(response.status === 200){
+          setFollowing(true);
+         }
+      })
+      .catch((error) => {
+        setFollowing(false);
+      });
+    }
+
+    reRenderFollowHelper((prevState)=>!prevState)
+  }
 
   useEffect(() => {
     axiosInstance
       .get(`authors/${authorID}/`)
       .then((response) => {
-        console.log(response.data);
         setAuthorData(response.data);
       })
       .catch((error) => {
@@ -184,6 +216,19 @@ const UserProfile = ({userData}) => {
       });
   }, [openDialog])
 
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
+      .then((response) => {
+        console.log(response.status)
+         if(response.status === 200){
+          setFollowing(true);
+         }
+      })
+      .catch((error) => {
+        setFollowing(false);
+      });
+  }, [reRenderFollowHelper])
 
   useEffect(() => {
     axiosInstance
@@ -303,6 +348,11 @@ const UserProfile = ({userData}) => {
             {authorData.github}
             </Grid>
           </Grid>
+          <div className="fcontainer">
+            <Box className="fbox">Posts</Box>
+            {following ? <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Unfollow</Box> : <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follow</Box>} 
+            <Box className="fbox">Following</Box>
+          </div>
         </CardContent>
       </Card>
       <Tabs

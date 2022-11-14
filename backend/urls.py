@@ -28,7 +28,6 @@ urlpatterns = [
     path('authors/<uuid:sender>/followrequest/<uuid:receiver>', views.handleFollowRequest), # -- This should send a follow req to reciever from sender. Also put in inbox!
 
     # Post routes!
-    path("posts/", views.getAllPosts), # Gets all posts (not required)
     path('authors/<uuid:uuidOfAuthor>/posts/<uuid:uuidOfPost>/', views.PostSingleDetailView.as_view()),
  
     # Creation URL ://service/authors/{AUTHOR_ID}/posts/

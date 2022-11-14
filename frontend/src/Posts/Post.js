@@ -93,7 +93,7 @@ export default function Post({postReRenderHelper}) {
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
-  const [expanded, setExpanded] = React.useState(false);
+  // const [expanded, setExpanded] = React.useState(false);
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
   const [reRenderHelper, setReRenderHelper] = useState(false);
@@ -166,7 +166,7 @@ export default function Post({postReRenderHelper}) {
     }).then(response => {
       return response.data;
     }).then(response => {
-      // [0] becoz the view return many = true 
+      // [0] becoz the view returns many = true 
       post[index].type = 'share';
       axiosInstance.post(
         `authors/${response[0].id.split("authors/")[1]}/inbox`,
@@ -213,11 +213,9 @@ export default function Post({postReRenderHelper}) {
   const handleExpandClick = (index) => {
     if (indexOfCollapse === index) {
       setIndexOfCollapse(null);
-      setExpanded(true);
     } else {
       setIndexOfCollapse(index);
     }
-    
   };
   const handleClickOpenShare = (index) => {
     setIndexOfCollapse(index);
@@ -297,7 +295,7 @@ export default function Post({postReRenderHelper}) {
             </IconButton>
             <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
           </CardActions>
-          <Collapse in={indexOfCollapse === index && expanded} timeout="auto" unmountOnExit>
+          <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
