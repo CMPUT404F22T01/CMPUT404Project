@@ -186,6 +186,7 @@ export default function Post({postReRenderHelper}) {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
+        console.log(typeof(response.data[0].published))
         setPost(response.data);
       })
       .catch((error) => {

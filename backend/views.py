@@ -136,26 +136,6 @@ def handleFollowRequest(request, sender, receiver):
 
 
 @api_view(["GET"])
-def getAllPosts(request):
-    posts = POST.objects.all()
-    jsonData = PostSerializer(posts, many=True)
-    return response.Response(jsonData.data, 200)
-
-
-@api_view(["GET"])
-def getAllComments(request, uuidOfAuthor, uuidOfPost):
-    # Get all comments of that post
-    allComments = Comment.objects.filter(post__id=uuidOfPost)
-    serializer = CommentSerializer(allComments, many=True)
-    ####### add post and id later ########
-    resp = {
-        "type": "comments",
-        "comments": serializer.data,
-    }
-    return response.Response(resp)
-
-
-@api_view(["GET"])
 def getAllPostLikes(request, uuidOfAuthor, uuidOfPost):
     # Get all likes of that post
     allLikes = Like.objects.filter(object_id=uuidOfPost)
