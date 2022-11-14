@@ -114,11 +114,26 @@ const UserProfile = ({userData}) => {
     setOpenDialog(false);
   };
 
+  const onClickSendFollowRequestHandler = () => {
+    const data = {
+      "type": "follow",
+      "id": localStorage.getItem('id'),
+      "username": localStorage.getItem('username'),
+    }
+    axiosInstance.post(
+      `authors/${authorData.id.split("authors/")[1]}/inbox`,
+      data
+      ).then((response) => {
+        console.log(response.data)
+      }).catch((error)=>{
+        console.log(error)
+      })
+  }
+
   useEffect(() => {
     axiosInstance
       .get(`authors/${authorID}/`)
       .then((response) => {
-        console.log(response.data);
         setAuthorData(response.data);
       })
       .catch((error) => {
@@ -235,7 +250,7 @@ const UserProfile = ({userData}) => {
           <div className="fcontainer">
             <Box className="fbox">Posts</Box>
 
-            <Box className="fbox">Follwers</Box>
+            <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follwers</Box>
 
             <Box className="fbox">Following</Box>
           </div>
