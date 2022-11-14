@@ -12,6 +12,8 @@ import {
   CardActions,
   Typography,
   TextField,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -34,6 +36,7 @@ import "./ProfileEdit.js"
 import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
+import GitHubPage from "./GitHubPage";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -80,6 +83,26 @@ const UserProfile = ({userData}) => {
   const [expanded, setExpanded] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(1);
+
+
+  // used to pull github information from github API
+
+  const [name, setName] = useState('')
+  const [profileImage, setProfileImage] = useState('')
+  const [repos, setRepos] = useState('')
+  const [followers, setFollowers] = useState('')
+  const [following, setFollowing] = useState('')
+  const [astartDate, setStartDate] = useState('')
+
+  const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
+      setName(login);
+      setProfileImage(avatar_url);
+      setRepos(public_repos);
+      setFollowing(following);
+      setFollowers(followers);
+      setStartDate(created_at);
+  }
 
   // when the show other user's profile
   if(state !== null){
@@ -90,6 +113,9 @@ const UserProfile = ({userData}) => {
     isMyProfile = false;
 
   }
+  
+  
+
 
   // we allow delete only for current user profile
   const onClickDeletePost = (index) => { 
@@ -116,6 +142,37 @@ const UserProfile = ({userData}) => {
     setOpenDialog(false);
   };
 
+  const handleTabChange = (event, newValue) => {
+    if (newValue === 3) {
+      let gitUsername = authorData.github.split('github.com/')[1];
+      let url = "https://api.github.com/users/" + gitUsername;
+      fetch(url)
+          .then(response => response.json())
+          .then(data => { setGitHubData(data)})
+          .catch( error => { console.log(error)});
+    }
+    setTabValue(newValue);
+  };
+
+  const handleFollowRequest = () => {
+    axiosInstance
+      .put(`authors/${localStorage.getItem("id")}/followrequest/${authorID}`,
+        {
+          "sender": localStorage.getItem("id"),
+          "receiver": authorID
+        }
+      )
+      .then((response) => {
+        alert(response.status)
+        console.log(response.status)
+      })
+      .catch((error) => {
+        alert(error)
+        console.log(error);
+      });
+
+  };
+
   useEffect(() => {
     axiosInstance
       .get(`authors/${authorID}/`)
@@ -126,7 +183,7 @@ const UserProfile = ({userData}) => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
-  }, [])
+  }, [openDialog])
 
 
   useEffect(() => {
@@ -139,6 +196,8 @@ const UserProfile = ({userData}) => {
         console.error("error in post get ", error);
       });
   }, [reRenderHelper]); 
+
+
 
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
@@ -197,14 +256,13 @@ const UserProfile = ({userData}) => {
     <>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-       
             <Avatar
               src={"http://localhost:8000"+authorData.profileImage}
               className="profile-img"
-              sx={{ width: 150, height: 150 }}
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
             /> 
          
-          <Grid container direction="row" alignItems="center" spacing={8}>
+          <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
               <Typography
@@ -231,7 +289,7 @@ const UserProfile = ({userData}) => {
                     variant="outlined" 
                     size="small"
                     sx = {{borderRadius: 10}}
-                    onClick={handleOpenEditDialog}> 
+                    onClick={handleFollowRequest}> 
                     Follow
                   </Button>
               </Grid>
@@ -243,25 +301,28 @@ const UserProfile = ({userData}) => {
               <GitHubIcon></GitHubIcon>
             </Grid>
             <Grid item paddingLeft={1}>
-            {authorData.github_url}
+            {authorData.github}
             </Grid>
           </Grid>
-          <div className="fcontainer">
-            <Box className="fbox">Posts</Box>
-
-            <Box className="fbox">Follwers</Box>
-
-            <Box className="fbox">Following</Box>
-          </div>
         </CardContent>
       </Card>
-      <div className="post">{allpost}</div>
+      <Tabs
+        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        value={tabValue}
+        onChange={handleTabChange}
+        >
+          <Tab value={1} label="posts"/>
+          <Tab value={2} label="Followers"/>
+          <Tab value={3} label="Github"/>
+      </Tabs>
+      { tabValue===1 && <div className="post">{allpost}</div>}
 
+      { tabValue===3 && <GitHubPage repos={name}></GitHubPage>}
       <ProfileEdit 
         openDialog={openDialog} 
         setOpenDialog={setOpenDialog}
-        displayName = {authorUsername}
-        githubURL={authorGithubURL}>
+        displayName = {authorData.displayName}
+        githubURL={authorData.github}>
        </ProfileEdit>
     </>
   );
