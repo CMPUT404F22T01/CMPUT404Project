@@ -23,13 +23,17 @@ import FavoriteIcon from "@mui/icons-material/Favorite";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CommentIcon from "@mui/icons-material/Comment";
- 
+import GitHubIcon from '@mui/icons-material/GitHub';
+import EditIcon from '@mui/icons-material/Edit';
 
 import axiosInstance from "../utils/axiosInstance";
 
 import "./UserProfile.css";
+import "./ProfileEdit.js"
 
 import Collapse from "@mui/material/Collapse";
+import { width } from "@mui/system";
+import ProfileEdit from "./ProfileEdit.js";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -71,6 +75,8 @@ const UserProfile = ({userData}) => {
   let authorGithubURL;
   
   const [data, setData] = useState([]);
+  const [expanded, setExpanded] = React.useState(false);
+  const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
 
   // when the show other user's profile
@@ -98,6 +104,15 @@ const UserProfile = ({userData}) => {
   // const config = {
   //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
   // };
+
+  const handleOpenDialog = () => {
+    setOpenDialog(true)
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
 
   useEffect(() => {
     axiosInstance
@@ -165,38 +180,62 @@ const UserProfile = ({userData}) => {
 
   return (
     <>
-      <Card className="user-profile-card" sx={{backgroundColor: '#333'}}>
+      <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-          <Avatar
-            src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"
-            className="profile-img"
-            sx={{ width: 100, height: 100 }}
-          />
-          <Typography
-            variant="h5"
-            component="h2"
-            className="user-name"
-          >{authorUsername}</Typography>
-          <Typography
-            variant="h6"
-            component="h2"
-            className="user-name"
-          ></Typography>
-          <Typography
-            variant="h6"
-            component="h2"
-            className="user-name"
-          ></Typography>
+       
+            <Avatar
+              src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"
+              className="profile-img"
+              sx={{ width: 150, height: 150 }}
+            />
+         
+          <Grid container direction="row" alignItems="center" spacing={8}>
+
+            <Grid item>
+              <Typography
+                variant="h5"
+                component="h2"
+                className="user-name"
+              >{authorUsername}</Typography>
+            </Grid>
+
+            <Grid item>
+              <Button 
+                  variant="outlined" 
+                  size="small"
+                  sx = {{borderRadius: 10}}
+                  startIcon={<EditIcon/>}
+                  onClick={handleOpenDialog}> 
+                  Edit
+                </Button>
+              </Grid>
+
+          </Grid>
+          <Grid container direction="row" alignItems="center" className="github">
+            <Grid item>
+              <GitHubIcon></GitHubIcon>
+            </Grid>
+            <Grid item paddingLeft={1}>
+            {authorGithubURL}
+            </Grid>
+          </Grid>
           <div className="fcontainer">
+            <Box className="fbox">Posts</Box>
+
             <Box className="fbox">Follwers</Box>
 
             <Box className="fbox">Following</Box>
-
-            <Box className="fbox">Bff</Box>
           </div>
         </CardContent>
       </Card>
       <div className="post">{allpost}</div>
+
+      <ProfileEdit 
+        openDialog={openDialog} 
+        setOpenDialog={setOpenDialog}
+        displayName = {authorUsername}
+        githubURL={authorGithubURL}>
+       </ProfileEdit>
     </>
   );
 };
