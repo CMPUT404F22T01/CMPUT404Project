@@ -76,6 +76,7 @@ const UserProfile = ({userData}) => {
   var isMyProfile = true;
   
   const [data, setData] = useState([]);
+  const [authorData, setAuthorData] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
@@ -114,6 +115,18 @@ const UserProfile = ({userData}) => {
   const handleCloseEditDialog = () => {
     setOpenDialog(false);
   };
+
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${authorID}/`)
+      .then((response) => {
+        console.log(response.data);
+        setAuthorData(response.data);
+      })
+      .catch((error) => {
+        console.error("error in post get ", error);
+      });
+  }, [])
 
 
   useEffect(() => {
@@ -186,10 +199,10 @@ const UserProfile = ({userData}) => {
         <CardContent>
        
             <Avatar
-              src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg"
+              src={"http://localhost:8000"+authorData.profileImage}
               className="profile-img"
               sx={{ width: 150, height: 150 }}
-            />
+            /> 
          
           <Grid container direction="row" alignItems="center" spacing={8}>
 
@@ -198,7 +211,7 @@ const UserProfile = ({userData}) => {
                 variant="h5"
                 component="h2"
                 className="user-name"
-              >{authorUsername}</Typography>
+              >{authorData.displayName}</Typography>
             </Grid>
 
             {isMyProfile ?
@@ -230,7 +243,7 @@ const UserProfile = ({userData}) => {
               <GitHubIcon></GitHubIcon>
             </Grid>
             <Grid item paddingLeft={1}>
-            {authorGithubURL}
+            {authorData.github_url}
             </Grid>
           </Grid>
           <div className="fcontainer">

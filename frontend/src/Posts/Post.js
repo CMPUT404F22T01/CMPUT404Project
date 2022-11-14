@@ -213,10 +213,11 @@ export default function Post({postReRenderHelper}) {
   const handleExpandClick = (index) => {
     if (indexOfCollapse === index) {
       setIndexOfCollapse(null);
+      setExpanded(true);
     } else {
       setIndexOfCollapse(index);
     }
-    setExpanded((prevState)=> !prevState);
+    
   };
   const handleClickOpenShare = (index) => {
     setIndexOfCollapse(index);
