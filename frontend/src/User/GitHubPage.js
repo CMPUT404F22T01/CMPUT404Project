@@ -4,7 +4,7 @@ import { useActionData } from "react-router-dom";
 import PropTypes from 'prop-types';
 
 export default function GitHubPage(props) {
-    const {repos} = props;
+    const {url, name, repos, imageURL, followers, following, dateJoined} = props;
 
     return (
         <Card>

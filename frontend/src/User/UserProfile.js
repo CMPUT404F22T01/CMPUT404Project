@@ -87,16 +87,15 @@ const UserProfile = ({userData}) => {
 
 
   // used to pull github information from github API
-
-  const [name, setName] = useState('')
-  const [profileImage, setProfileImage] = useState('')
-  const [repos, setRepos] = useState('')
-  const [followers, setFollowers] = useState('')
-  const [following, setFollowing] = useState('')
-  const [astartDate, setStartDate] = useState('')
+  const [gitName, setGithubName] = useState('')
+  const [gitProfileImage, setProfileImage] = useState('')
+  const [gitRepos, setRepos] = useState('')
+  const [gitFollowers, setFollowers] = useState('')
+  const [gitFollowing, setFollowing] = useState('')
+  const [gitStartDate, setStartDate] = useState('')
 
   const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
-      setName(login);
+      setGithubName(login);
       setProfileImage(avatar_url);
       setRepos(public_repos);
       setFollowing(following);
@@ -207,8 +206,8 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                  R
+                <Avatar src={"http://localhost:8000"+authorData.profileImage}>
+                  
                 </Avatar>
               }
               action={
@@ -317,7 +316,7 @@ const UserProfile = ({userData}) => {
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
 
-      { tabValue===3 && <GitHubPage repos={name}></GitHubPage>}
+      { tabValue===3 && <GitHubPage url={authorData.github} name={gitName} repos={gitRepos} imageURL={gitProfileImage} followers={gitFollowers} following={gitFollowing} dateJoined={gitStartDate}></GitHubPage>}
       <ProfileEdit 
         openDialog={openDialog} 
         setOpenDialog={setOpenDialog}
