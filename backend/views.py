@@ -89,6 +89,8 @@ def handleSingleFollow(request, authorID, foreignAuthor):
             newFollowObj = Follower.objects.get_or_create(
                 follower_id=foreignAuthor, following_id=authorID)
             serializer = SingleFollowerSerializer(newFollowObj[0])
+            Inbox.objects.create(author_id=foreignAuthor,
+                                 object_type="following", object_id=authorID, message=f"{request.user.username} accepted your follow request.")
             return response.Response(serializer.data, status=status.HTTP_201_CREATED)
         except:
             return response.Response({"message": "Following relationship does not exists!"}, 404)
@@ -206,7 +208,7 @@ class PostSingleDetailView(generics.RetrieveUpdateDestroyAPIView, generics.Creat
 
     def get(self, request, *args, **kwargs):
         queryset = POST.objects.filter(id=kwargs['uuidOfPost']).first()
-         
+
         if (kwargs['uuidOfAuthor'] == queryset.author.id) or queryset.visibility == 'PUBLIC':
             serializer = self.serializer_class(queryset, many=False)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -294,7 +296,7 @@ class PostDistinctView(generics.ListAPIView):
         all_post_objects = []
         queryset = POST.objects.all().exclude(unlisted=True)
         for obj in queryset:
-             # adding  the all public post objects anf author self create post
+            # adding  the all public post objects anf author self create post
             if (kwargs.get('uuidOfAuthor')) == obj.author.id or obj.visibility == 'PUBLIC':
                 all_post_objects.append(obj)
             # if the connection does not exist then it is false or else true (so we add to post when connection exists)
@@ -376,8 +378,8 @@ def handleInboxRequests(request, author_id):
                 postType = str(request.data["type"]).lower()
                 if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
-                if postType == "like": 
-                     
+                if postType == "like":
+
                     data = {
                         "object_type": request.data["data"]["type"],
                         "author": request.data["data"]["author"],
@@ -389,8 +391,8 @@ def handleInboxRequests(request, author_id):
                         raise KeyError("like object not valid!")
 
                     authorID, postID, commentID = utils.getAuthorIDandPostIDFromLikeURL(
-                        serializer.data["object_id"]) 
-                        
+                        serializer.data["object_id"])
+
                     if authorID != None and postID != None and commentID != None:
                         message = f'{request.user.username} liked your comment {request.data["data"]["comment"]}'
                         l = Like.objects.get_or_create(
@@ -406,7 +408,7 @@ def handleInboxRequests(request, author_id):
                 else:
                     idOfItem = utils.getUUID(request.data["id"])
                     type = request.data["type"].lower()
-                     
+
                     if type == "comment":
                         message = f'{request.data["author"]["username"]}  commented on your post'
                     elif type == "post":
@@ -414,7 +416,9 @@ def handleInboxRequests(request, author_id):
                     elif type == "share":
                         message = f'{request.GET.get("username")} shared a post with you.'
                         postType = 'post'
-                
+                    elif type == "follow":
+                        message = f'{request.data["username"]} send you a follow request.'
+                        print(idOfItem)
                 Inbox.objects.create(author_id=author_id,
                                      object_type=postType, object_id=idOfItem, message=message)
                 return response.Response({"message": message}, status.HTTP_201_CREATED)
@@ -431,46 +435,66 @@ def handleInboxRequests(request, author_id):
             return response.Response({"message": "Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-@api_view(["GET"])
+@api_view(["GET", "DELETE"])
 @permission_classes([IsAuthenticated])
 def getEntireInboxRequests(request, author_id):
-    try:
-        # Auth check
-        if request.user.id != author_id:
-            return response.Response({"message": "Can't retreive someone else's inbox!"}, status.HTTP_401_UNAUTHORIZED)
-        # Get inbox
-        inboxObjects = Inbox.objects.filter(author__id=author_id)
-   
+    if request.method == "GET":
+        try:
+            # Auth check
+            if request.user.id != author_id:
+                return response.Response({"message": "Can't retreive someone else's inbox!"}, status.HTTP_401_UNAUTHORIZED)
+            # Get inbox
+            inboxObjects = Inbox.objects.filter(author__id=author_id)
 
-        # Make return object!
-        def helperFunc(obj: Inbox):
-            serializerClass = None
-            objectToSerialize = None
-            if obj.object_type == "post":
-                objectToSerialize = POST.objects.get(id=obj.object_id)
-                serializerClass = PostSerializer
-            elif obj.object_type == "comment":
-                objectToSerialize = Comment.objects.get(id=obj.object_id)
-                serializerClass = CommentSerializer
-            elif obj.object_type == "like":
-                objectToSerialize = Like.objects.get(id=obj.object_id)
-                serializerClass = LikeSerializer
-            elif obj.object_type == "follow":
-                objectToSerialize = Follower.objects.get(id=obj.object_id)
-                serializerClass = FollowerSerializer
-            s = serializerClass(objectToSerialize) 
-            return {"data":s.data, "message": obj.message}
+            # Make return object!
 
-        items = list(map(helperFunc, inboxObjects))
-        resp = {
-            "type": "inbox",
-            "author": request.user.url(),
-            "items": items, 
-        }
-        return response.Response(resp, 200)
+            def helperFunc(obj: Inbox):
+                serializerClass = None
+                objectToSerialize = None
+                data = None
+                if obj.object_type == "post":
+                    objectToSerialize = POST.objects.get(id=obj.object_id)
+                    serializerClass = PostSerializer
+                elif obj.object_type == "comment":
+                    objectToSerialize = Comment.objects.get(id=obj.object_id)
+                    serializerClass = CommentSerializer
+                elif obj.object_type == "like":
+                    objectToSerialize = Like.objects.get(id=obj.object_id)
+                    serializerClass = LikeSerializer
+                elif obj.object_type == "follow":
+                    objectToSerialize = Author.objects.get(id=obj.object_id)
+                    serializerClass = GetAuthorSerializer
+                if objectToSerialize is None and obj.object_type == "following":
+                    # "authors/" becoz in the frontent we split at authors/ for id
+                    # sending the id of the person who accepted the follow request becoz
+                    # in the frontend we can link to the redirect to profile on click
+                    data = {"type": "follow",
+                            "author" : { "id" : "authors/"+str(obj.object_id)}
+                            }
+                else:
+                    s = serializerClass(objectToSerialize)
 
-    except Exception as e:
-        return response.Response({"message": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+                return {"data": data or s.data, "message": obj.message}
+
+            items = list(map(helperFunc, inboxObjects))
+            resp = {
+                "type": "inbox",
+                "author": request.user.url(),
+                "items": items,
+            }
+            return response.Response(resp, 200)
+
+        except Exception as e:
+            return response.Response({"message": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    if request.method == "DELETE":
+        print(request.data)
+        id = utils.getUUID(request.data["id"])
+        try:
+            Inbox.objects.filter(author__id=author_id, object_id=id).delete()
+            return response.Response({"message": "Inbox cleared!"}, status.HTTP_204_NO_CONTENT)
+        except:
+            return response.Response({"message": "Something went wrong!"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class AuthorSearchView(generics.ListAPIView):
@@ -478,7 +502,8 @@ class AuthorSearchView(generics.ListAPIView):
     serializer_class = GetAuthorSerializer
 
     def list(self, request, *args, **kwargs):
-        queryset = Author.objects.filter(username__icontains=request.GET.get('username'))
+        queryset = Author.objects.filter(
+            username__icontains=request.GET.get('username'))
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)

@@ -42,8 +42,7 @@ class GetAuthorSerializer(serializers.ModelSerializer):
         fields = ["type","id","host","displayName","url","github","profileImage", "username"]
 
 class FollowerSerializer(serializers.ModelSerializer):
-
-    follower = GetAuthorSerializer()
+    follower = GetAuthorSerializer(read_only=True)
     class Meta:
         model = Follower
         fields = ["follower"]
@@ -51,8 +50,8 @@ class FollowerSerializer(serializers.ModelSerializer):
 
 class SingleFollowerSerializer(serializers.ModelSerializer):
     id = serializers.UUIDField()
-    follower = GetAuthorSerializer()
-    following = GetAuthorSerializer()
+    follower = GetAuthorSerializer(read_only=True)
+    following = GetAuthorSerializer(read_only=True)
     class Meta:
         model = Follower
         fields = ["id","follower","following","timestamp"]
