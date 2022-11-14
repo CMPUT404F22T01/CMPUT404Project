@@ -77,16 +77,13 @@ export default function CustomizedDialogs(props) {
       imageRef.current.files[0] ? imageRef.current.files[0] : ""
     );
 
-    try {
-      const postCreateResponse = await axiosInstance({
-        method: "POST",
-        url: url,
-        data: formData,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-
+    axiosInstance.post(url, formData)
+    .then((response) => {
+      console.log(response.data)
+    }).catch((error) => {
+      console.log(error)
+    })
+     
     setOpenDialog(false);
 
 
