@@ -73,6 +73,7 @@ const UserProfile = ({userData}) => {
   let authorUsername = localStorage.getItem("username")
   let authorDisplayName;
   let authorGithubURL;
+  var isMyProfile = true;
   
   const [data, setData] = useState([]);
   const [expanded, setExpanded] = React.useState(false);
@@ -85,6 +86,7 @@ const UserProfile = ({userData}) => {
     authorUsername = state.authorData.username;
     authorDisplayName = state.authorData.displayName;
     authorGithubURL = state.authorData.github_url; 
+    isMyProfile = false;
 
   }
 
@@ -105,11 +107,11 @@ const UserProfile = ({userData}) => {
   //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
   // };
 
-  const handleOpenDialog = () => {
+  const handleOpenEditDialog = () => {
     setOpenDialog(true)
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseEditDialog = () => {
     setOpenDialog(false);
   };
 
@@ -199,16 +201,28 @@ const UserProfile = ({userData}) => {
               >{authorUsername}</Typography>
             </Grid>
 
-            <Grid item>
-              <Button 
-                  variant="outlined" 
-                  size="small"
-                  sx = {{borderRadius: 10}}
-                  startIcon={<EditIcon/>}
-                  onClick={handleOpenDialog}> 
-                  Edit
-                </Button>
+            {isMyProfile ?
+              <Grid item>
+                <Button 
+                    variant="outlined" 
+                    size="small"
+                    sx = {{borderRadius: 10}}
+                    startIcon={<EditIcon/>}
+                    onClick={handleOpenEditDialog}> 
+                    Edit
+                  </Button>
               </Grid>
+              :
+              <Grid item>
+                <Button 
+                    variant="outlined" 
+                    size="small"
+                    sx = {{borderRadius: 10}}
+                    onClick={handleOpenEditDialog}> 
+                    Follow
+                  </Button>
+              </Grid>
+            }
 
           </Grid>
           <Grid container direction="row" alignItems="center" className="github">
