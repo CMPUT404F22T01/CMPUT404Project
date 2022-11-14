@@ -10,11 +10,13 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 import { useState } from "react";
 import { useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { Avatar} from "@mui/material";
+import CameraAlt from '@mui/icons-material/CameraAlt';
 
 // https://mui.com/material-ui/react-dialog/
 
@@ -124,7 +126,7 @@ export default function CustomizedDialogs(props) {
         </BootstrapDialogTitle>
         <DialogContent>
           <Grid container direction="column" spacing={2}  >
-            <Grid item >
+            <Grid item style={{textAlign: "center"}}>
               <label htmlFor="image">
                 <input
                   style={{ display: "none" }}
@@ -134,14 +136,13 @@ export default function CustomizedDialogs(props) {
                   ref={imageRef}
                 />
                 <IconButton component="span">
-                  <Avatar 
-                    src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg" 
+                  <CameraAltIcon
                     style={{
-                      width: "150px",
-                      height: "150px",
-                      marginBottom: "20px"
-                    }} 
-                  />
+                      width: "70px",
+                      height: "70px"
+                    }} >
+
+                  </CameraAltIcon>
                   </IconButton>
               </label>
             </Grid>
