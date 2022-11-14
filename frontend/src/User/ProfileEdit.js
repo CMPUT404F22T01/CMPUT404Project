@@ -9,14 +9,10 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Grid from '@mui/material/Grid';
-<<<<<<< HEAD
 import { TextField } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 import { useState } from "react";
-=======
-import { TextField } from '@mui/material'; 
->>>>>>> 414adc0e0574b3997637aaff60200dc5bba31b1a
 import { useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import { Avatar} from "@mui/material";
@@ -78,10 +74,14 @@ export default function CustomizedDialogs(props) {
     let formData = new FormData();
     formData.append("displayName", display.current.value);
     formData.append("github", github.current.value);
-    formData.append(
-      "profileImage",
-      imageRef.current.files[0] ? imageRef.current.files[0] : ""
-    );
+
+    if (imageRef.current.files[0]) {
+      formData.append(
+        "profileImage",
+        imageRef.current.files[0]
+      );
+    }
+    
 
     axiosInstance.post(url, formData)
     .then((response) => {
