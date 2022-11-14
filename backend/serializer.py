@@ -69,7 +69,7 @@ class SingleFollowRequestSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     type = serializers.CharField(read_only=True)
     id = serializers.CharField(source="get_id", read_only=True)
-
+    
     class Meta:
         model = POST
         fields = ["type", "id", "description"]

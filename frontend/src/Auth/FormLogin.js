@@ -1,11 +1,12 @@
 import { useRef, useState, useEffect } from 'react';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
  
 import axiosInstance from '../utils/axiosInstance'
 
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField'; 
 // import Link from '@mui/material/Link';
@@ -18,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const FormLogin = () => {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
     const url = 'http://127.0.0.1:8000/service/login/'
@@ -148,7 +149,7 @@ const FormLogin = () => {
                       </Link>
                     </Grid> */}
                     <Grid item>
-                      <Link href="#" variant="body2" onClick={()=>navigate("../register/")}>
+                      <Link href="" variant="body2" onClick={() => navigate("../register/")}>
                         Don't have an account? Sign Up
                       </Link>
                     </Grid>
