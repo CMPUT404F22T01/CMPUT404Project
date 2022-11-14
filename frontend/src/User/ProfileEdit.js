@@ -65,22 +65,49 @@ export default function CustomizedDialogs(props) {
   //const [github, setGithub] = useState(githubURL);
   const display = useRef(displayName);
   const github = useRef(githubURL);
+  const imageRef = useRef(null);
 
-  const handleOnClickSubmit = () => {
+  const handleOnClickSubmit = async () => {
+    let url = `authors/${localStorage.getItem("id")}/`;
+    let formData = new FormData();
+    formData.append("displayName", display.current.value);
+    formData.append("github", github.current.value);
+    formData.append(
+      "profileImage",
+      imageRef.current.files[0] ? imageRef.current.files[0] : ""
+    );
+
+    try {
+      const postCreateResponse = await axiosInstance({
+        method: "POST",
+        url: url,
+        data: formData,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+
+    setOpenDialog(false);
+
+
+    /*
     var newDisplay = display.current.value;
     var newGithub = github.current.value;
     axiosInstance
     .post(`authors/${localStorage.getItem("id")}/`, {
       "displayName": newDisplay, 
-      "github": newGithub
+      "github": newGithub,
+      //"profileImage": image
     })
     .then((response) => {
+      alert(response.data)
       console.log(response.status);
     })
     .catch((error) => {
+      alert(error)
       console.log(error);      
     });
-    setOpenDialog(false);
+    */
   }
 
 
@@ -97,17 +124,26 @@ export default function CustomizedDialogs(props) {
         </BootstrapDialogTitle>
         <DialogContent>
           <Grid container direction="column" spacing={2}  >
-            <Grid item alignItems="center" justifyContent="center">
-            <IconButton>
-              <Avatar 
-                src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg" 
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  marginBottom: "20px"
-                }} 
-              />
-              </IconButton>
+            <Grid item >
+              <label htmlFor="image">
+                <input
+                  style={{ display: "none" }}
+                  id="image"
+                  accept="image/*"
+                  type="file"
+                  ref={imageRef}
+                />
+                <IconButton component="span">
+                  <Avatar 
+                    src="https://media.tacdn.com/media/attractions-splice-spp-674x446/09/c3/33/97.jpg" 
+                    style={{
+                      width: "150px",
+                      height: "150px",
+                      marginBottom: "20px"
+                    }} 
+                  />
+                  </IconButton>
+              </label>
             </Grid>
             <Grid item>
               <TextField
