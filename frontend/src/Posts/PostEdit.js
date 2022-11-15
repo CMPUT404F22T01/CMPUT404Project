@@ -83,7 +83,6 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
   const contentTypeRef = useRef(null);
-  const unlistedRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
   const sourceRef = useRef(null);
@@ -95,12 +94,16 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
     formData.append("visibility", visibilityRef.current.value);
+    if (visibilityRef.current.value === "Unlisted") {
+      formData.append("unlisted", "true");
+    } else {
+      formData.append("unlisted", "false");
+    }
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
     formData.append(
       "image",
       imageRef.current.files[0] ? imageRef.current.files[0] : ""
     );
-    formData.append("unlisted", unlistedRef.current.value);
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
@@ -217,35 +220,9 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
                 }}
                 inputRef={visibilityRef}
               >
-                <MenuItem value={"PUBLIC"}>public</MenuItem>
-                <MenuItem value={"FRIENDS"}>friends</MenuItem>
-              </Select>
-            </FormControl>
-            <br />
-            <FormControl fullWidth className={styleClasses.textfields}>
-              <InputLabel
-                variant="standard"
-                htmlFor="Unlisted"
-                className={styleClasses.input}
-              >
-                Unlisted
-              </InputLabel>
-              <Select
-                defaultValue={data.unlisted}
-                inputProps={{
-                  name: "unlisted",
-                  id: "uncontrolled-native",
-                }}
-                sx={{
-                  color: "#fff",
-                  "& .MuiSvgIcon-root": {
-                    color: "white",
-                  },
-                }}
-                inputRef={unlistedRef}
-              >
-                <MenuItem value={"false"}>false</MenuItem>
-                <MenuItem value={"true"}>true</MenuItem>
+                <MenuItem value={"PUBLIC"}>Public</MenuItem>
+                <MenuItem value={"FRIENDS"}>Friends</MenuItem>
+                <MenuItem value={"UNLISTED"}>Unlisted</MenuItem>
               </Select>
             </FormControl>
             <br />
