@@ -243,7 +243,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
                 variant="extended"
               >
                 <AddIcon />
-                upload image
+                Upload Image
               </Fab>
             </label>
             <br />

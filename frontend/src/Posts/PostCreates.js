@@ -309,7 +309,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
               variant="extended"
             >
               <AddIcon />
-              upload image
+              Upload Image
             </Fab>
           </label>
           <br />
