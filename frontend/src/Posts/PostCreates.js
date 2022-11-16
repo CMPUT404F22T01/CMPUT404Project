@@ -71,7 +71,6 @@ export default function PostCreates({ onClickCreatePostHandler }) {
   const contentRef = useRef(null);
   const contentTypeRef = useRef(null);
   const categoriesRef = useRef(null);
-  const unlistedRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
   const sourceRef = useRef(null);
@@ -104,7 +103,11 @@ export default function PostCreates({ onClickCreatePostHandler }) {
       "image",
       imageRef.current.files[0] ? imageRef.current.files[0] : ""
     );
-    formData.append("unlisted", unlistedRef.current.value);
+    if (visibilityRef.current.value === "Unlisted") {
+      formData.append("unlisted", "true");
+    } else {
+      formData.append("unlisted", "false");
+    }
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);
 
@@ -282,35 +285,9 @@ export default function PostCreates({ onClickCreatePostHandler }) {
               }}
               inputRef={visibilityRef}
             >
-              <MenuItem value={"PUBLIC"}>public</MenuItem>
-              <MenuItem value={"FRIENDS"}>friends</MenuItem>
-            </Select>
-          </FormControl>
-          <br />
-          <FormControl fullWidth className={styleClasses.textfields}>
-            <InputLabel
-              variant="standard"
-              htmlFor="Unlisted"
-              className={styleClasses.input}
-            >
-              Unlisted
-            </InputLabel>
-            <Select
-              defaultValue={"false"}
-              inputProps={{
-                name: "unlisted",
-                id: "uncontrolled-native",
-              }}
-              sx={{
-                color: "#fff",
-                "& .MuiSvgIcon-root": {
-                  color: "white",
-                },
-              }}
-              inputRef={unlistedRef}
-            >
-              <MenuItem value={"false"}>false</MenuItem>
-              <MenuItem value={"true"}>true</MenuItem>
+              <MenuItem value={"PUBLIC"}>Public</MenuItem>
+              <MenuItem value={"FRIENDS"}>Friends</MenuItem>
+              <MenuItem value={"UNLISTED"}>Unlisted</MenuItem>
             </Select>
           </FormControl>
           <br />
@@ -332,7 +309,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
               variant="extended"
             >
               <AddIcon />
-              upload image
+              Upload Image
             </Fab>
           </label>
           <br />

@@ -17,7 +17,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import  Button  from "@mui/material/Button";
+import Button  from "@mui/material/Button";
+import Slide from '@mui/material/Slide';
 
 import { red } from "@mui/material/colors";
 
@@ -39,6 +40,11 @@ import Comment from "../Comment/Comment";
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
  */
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -94,6 +100,9 @@ export default function Post({postReRenderHelper}) {
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
   // const [expanded, setExpanded] = React.useState(false);
+
+  const [hideShare, setHideShare] = React.useState(false);
+  const [redHeart, setRedHeart] = React.useState(false);
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
   const [reRenderHelper, setReRenderHelper] = useState(false);
@@ -271,28 +280,24 @@ export default function Post({postReRenderHelper}) {
             </Typography>
           </CardContent>
           <CardActions disableSpacing sx={{backgroundColor: "#333"}}>
-            <IconButton aria-label="likedby">
-              <Diversity1Icon 
-              sx = {{color: "#fff"}}
+            <IconButton
+              aria-label="likedby"
               onClick={() => handleClickOpenLikedBy(index)} 
-              />
+            >
+              <Diversity1Icon sx = {{color: "#fff"}} />
             </IconButton>
-            <IconButton aria-label="comment">
-              <CommentIcon
-              sx = {{color: "#fff"}}
-                onClick={() => {
-                  handleExpandClick(index);
-                }}
-              />
+            <IconButton
+              aria-label="comment"
+              onClick={() => { handleExpandClick(index); }}
+            >
+              <CommentIcon sx = {{color: "#fff"}} />
             </IconButton>
-            <IconButton /*Only open if post === public*/ aria-label="share">
-              <SendIcon
-              sx = {{color: "#fff"}}
-                onClick={() => {
-                  handleClickOpenShare(index);
-                }}
-              />
-            </IconButton>
+            {!hideShare ? <IconButton  /*Only open if post === public How should I get this info?*/ 
+              aria-label="share"
+              onClick={() => { handleClickOpenShare(index); }}
+            >
+              <SendIcon sx = {{color: "#fff"}}/>
+            </IconButton>: null}
             <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
           </CardActions>
           <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
@@ -307,9 +312,7 @@ export default function Post({postReRenderHelper}) {
                   className={styleClasses.commentTextField}
                 />
                 <Button
-                  onClick={() => {
-                    onClickCreateCommentHandler(data);
-                  }}
+                  onClick={() => { onClickCreateCommentHandler(data); }}
                   className={styleClasses.commentButton}
                 >
                   Post
@@ -323,6 +326,7 @@ export default function Post({postReRenderHelper}) {
             fullScreen
             open={openLikedBy && indexOfCollapse === index}
             onClose={handleCloseLikedBy}
+            TransitionComponent={Transition}
             unmountOnExit
             timeout="auto"
             aria-label="liked by dialog"
@@ -351,7 +355,7 @@ export default function Post({postReRenderHelper}) {
                   aria-label="like"
                 >
                   {/* If the user has liked the item : style={{ color: "red" }} */}
-                  <FavoriteIcon/>
+                  <FavoriteIcon style={{ color: redHeart ? 'red' : 'white'}}/>
                 </IconButton>
               </Toolbar>
             </AppBar>
@@ -364,6 +368,7 @@ export default function Post({postReRenderHelper}) {
           <Dialog
             open={openShare && indexOfCollapse === index}
             onClose={handleCloseShare}
+            TransitionComponent={Transition}
             unmountOnExit
             timeout="auto"
             aria-label="share dialog"
