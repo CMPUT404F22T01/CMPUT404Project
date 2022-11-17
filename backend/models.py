@@ -206,3 +206,16 @@ class Inbox(models.Model):
 
     class Meta:
         ordering = ['-published']
+
+class Node(models.Model):
+    # URL
+    host = models.URLField(primary_key=True)
+    # Auth info
+    username = models.CharField(max_length=100, blank=True, null=True)
+    password = models.CharField(max_length=100, blank=True, null=True)
+    # Team name
+    teamName = models.CharField(max_length=100, blank=True)
+    # Just so we can toggle on/off between several nodes in our system
+    currentlyConnected = models.BooleanField(default=True)
+    # Just incase some nodes dont require auth
+    requiresAuth = models.BooleanField(default=True)
