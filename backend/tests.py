@@ -7,7 +7,7 @@ from datetime import date
 
 
 # Create your tests here.
-class UserRegistrationTestCase(APITestCase):
+class AuthorTests(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
