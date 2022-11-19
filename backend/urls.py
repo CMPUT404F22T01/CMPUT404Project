@@ -58,5 +58,7 @@ urlpatterns = [
 
 
     ## Maintenence routes
-    path("update/", views.update)
+    path("update/", views.update),
+    path("test/", views.functiontester),
+
 ]

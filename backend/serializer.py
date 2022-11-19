@@ -34,7 +34,7 @@ class LoginSerializer(TokenObtainPairSerializer):
 class GetAuthorSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_url", read_only=True)
     type = serializers.CharField(read_only=True)
-    url = serializers.CharField(read_only=True)
+    url = serializers.CharField(source="get_url",read_only=True)
     displayName = serializers.CharField(allow_null=True)
     github = serializers.URLField(allow_blank=True, allow_null=True)
     class Meta:

@@ -33,6 +33,22 @@ class AuthorUserManager(BaseUserManager):
         return self.create_user(username, password, **other_fields)
 
 
+class Node(models.Model):
+    # URL
+    host = models.URLField(primary_key=True)
+    # Auth info
+    username = models.CharField(max_length=100, blank=True, null=True)
+    password = models.CharField(max_length=100, blank=True, null=True)
+    # Team name
+    teamName = models.CharField(max_length=100, blank=True)
+    # Just so we can toggle on/off between several nodes in our system
+    currentlyConnected = models.BooleanField(default=True)
+    # Just incase some nodes dont require auth
+    requiresAuth = models.BooleanField(default=True)
+
+
+selfNode, created = Node.objects.get_or_create(host=HOSTNAME, teamName="Team 3", currentlyConnected = False, requiresAuth = False)
+
 class Author(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=30, unique=True)
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
@@ -44,6 +60,7 @@ class Author(AbstractBaseUser, PermissionsMixin):
     displayName = models.CharField(max_length=255, null=True, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    node = models.ForeignKey(Node, on_delete=models.CASCADE, blank=True, null=True)
     
     USERNAME_FIELD = 'username'
 
@@ -55,9 +72,11 @@ class Author(AbstractBaseUser, PermissionsMixin):
         return 'author' 
 
     def get_url(self):
-        if self.id == None:
-            return self.host + "authors/" + str(self.id)
-        return str(self.url)
+        if not self.url:
+            self.url = self.host + "authors/" + str(self.id)
+            self.save()
+        return self.url
+
 
     objects = AuthorUserManager()
  
@@ -209,15 +228,3 @@ class Inbox(models.Model):
     class Meta:
         ordering = ['-published']
 
-class Node(models.Model):
-    # URL
-    host = models.URLField(primary_key=True)
-    # Auth info
-    username = models.CharField(max_length=100, blank=True, null=True)
-    password = models.CharField(max_length=100, blank=True, null=True)
-    # Team name
-    teamName = models.CharField(max_length=100, blank=True)
-    # Just so we can toggle on/off between several nodes in our system
-    currentlyConnected = models.BooleanField(default=True)
-    # Just incase some nodes dont require auth
-    requiresAuth = models.BooleanField(default=True)

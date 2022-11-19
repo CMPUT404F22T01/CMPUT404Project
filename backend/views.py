@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from base64 import b64encode
 from . import node_utils as nu
+from uuid import UUID
 
 
 class AuthorCreate(
@@ -45,7 +46,7 @@ class GetAuthorData(generics.ListAPIView):
 
 @api_view(["GET"])
 def getAllAuthors(request):
-    allAuthors = Author.objects.all()
+    allAuthors = Author.objects.filter(host=HOSTNAME)
     serializer = GetAuthorSerializer(allAuthors, many=True)
     resp = {
         "type": "authors",
@@ -350,13 +351,16 @@ class CommentPostView(generics.ListCreateAPIView):
 
 
 @api_view(["GET", "POST", "DELETE"])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def handleInboxRequests(request, author_id):
+
+    request.user = Author.objects.get(id=author_id)
+
     if request.method == "GET":
         try:
             # Auth check
-            if not request.user.is_authenticated or request.user.id != author_id:
-                return response.Response({"message": "Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
+            # if not request.user.is_authenticated or request.user.id != author_id:
+            #     return response.Response({"message": "Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
             # Retrieve all posts
             allPostIDsInThisAuthorsInbox = Inbox.objects.filter(
                 author__id=author_id, object_type="post")
@@ -365,7 +369,7 @@ def handleInboxRequests(request, author_id):
             items = PostSerializer(allPosts, many=True)
             resp = {
                 "type": "inbox",
-                "author": request.user.url(),
+                "author": request.user.get_url(),
                 "items": items.data
             }
             return response.Response(resp, 200)
@@ -514,4 +518,11 @@ class AuthorSearchView(generics.ListAPIView):
 @api_view(["GET"])
 def update(request):
     nu.getRemoteContent()
+    return response.Response(None, 200)
+
+@api_view(["GET"])
+def functiontester(request):
+    u = UUID("f2136e19-65e8-43aa-8d45-c5072babc0b7")
+    post = POST.objects.get(id=u)
+    nu.sendPostToAllForeignAuthors(post)
     return response.Response(None, 200)
