@@ -55,4 +55,8 @@ urlpatterns = [
     path("authors/<uuid:author_id>/inboxAll", views.getEntireInboxRequests),
 
     *router.urls,
+
+
+    ## Maintenence routes
+    path("update/", views.update)
 ]

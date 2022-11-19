@@ -54,8 +54,10 @@ class Author(AbstractBaseUser, PermissionsMixin):
     def type(self):
         return 'author' 
 
-    def url(self):
-        return self.host + "authors/" + str(self.id)
+    def get_url(self):
+        if self.id == None:
+            return self.host + "authors/" + str(self.id)
+        return str(self.url)
 
     objects = AuthorUserManager()
  

@@ -32,7 +32,7 @@ class LoginSerializer(TokenObtainPairSerializer):
         return data
 
 class GetAuthorSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source="url", read_only=True)
+    id = serializers.CharField(source="get_url", read_only=True)
     type = serializers.CharField(read_only=True)
     url = serializers.CharField(read_only=True)
     displayName = serializers.CharField(allow_null=True)

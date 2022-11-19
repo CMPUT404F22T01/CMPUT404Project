@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view, permission_classes, parser_class
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from base64 import b64encode
+from . import node_utils as nu
 
 
 class AuthorCreate(
@@ -507,3 +508,10 @@ class AuthorSearchView(generics.ListAPIView):
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+@api_view(["GET"])
+def update(request):
+    nu.getRemoteContent()
+    return response.Response(None, 200)
