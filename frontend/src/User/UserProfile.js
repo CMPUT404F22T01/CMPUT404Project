@@ -84,6 +84,9 @@ const UserProfile = ({userData}) => {
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(1);
+  const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
+
+
 
 
   // used to pull github information from github API
@@ -140,6 +143,7 @@ const UserProfile = ({userData}) => {
   const handleCloseEditDialog = () => {
     setOpenDialog(false);
   };
+
 
   const handleTabChange = (event, newValue) => {
     if (newValue === 3) {
@@ -333,8 +337,8 @@ const UserProfile = ({userData}) => {
                     variant="outlined" 
                     size="small"
                     sx = {{borderRadius: 10}}
-                    onClick={handleFollowRequest}> 
-                    Follow
+                    onClick={onClickSendFollowRequestHandler}> 
+                    {following ? 'Unfollow' : 'Follow'}
                   </Button>
               </Grid>
             }
@@ -348,11 +352,6 @@ const UserProfile = ({userData}) => {
             {authorData.github}
             </Grid>
           </Grid>
-          <div className="fcontainer">
-            <Box className="fbox">Posts</Box>
-            {following ? <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Unfollow</Box> : <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follow</Box>} 
-            <Box className="fbox">Following</Box>
-          </div>
         </CardContent>
       </Card>
       <Tabs
@@ -366,7 +365,7 @@ const UserProfile = ({userData}) => {
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
 
-      { tabValue===3 && <GitHubPage url={authorData.github} name={gitName} repos={gitRepos} imageURL={gitProfileImage} followers={gitFollowers} following={gitFollowing} dateJoined={gitStartDate}></GitHubPage>}
+      { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 
         setOpenDialog={setOpenDialog}
