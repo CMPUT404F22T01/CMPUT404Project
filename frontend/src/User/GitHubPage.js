@@ -24,6 +24,7 @@ export default function GitHubPage(props) {
   const [gitFollowers, setFollowers] = useState('')
   const [gitFollowing, setGitFollowing] = useState('')
   const [gitStartDate, setStartDate] = useState('')
+  const [eventData, setEventData] = useState([])
 
   const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
       setGithubName(login);
@@ -46,14 +47,23 @@ export default function GitHubPage(props) {
           .then(response => response.json())
           .then(data => {setGitHubData(data)})
           .catch( error => { console.log(error)});
+
+        fetch(apiURL + "/events")
+            .then(response => response.json())
+            .then(data => {setEventData(data)})
+            .catch( error => {console.log(error)});
     }, []);
 
-    const formattedDate = () => {
+    const allEvents = eventData.map((event, index) => {
+        return (
+            <Typography>{event.id}</Typography>
+        )
+    });
 
-        return 'gwa';
-    }
+
 
     return (
+        <>
         <Card sx={{width: 350, margin: 2}} >
             <CardMedia component="img" image={gitProfileImage}/>
             <CardContent> 
@@ -86,5 +96,7 @@ export default function GitHubPage(props) {
             </CardContent>
             
         </Card>
+        {allEvents}
+        </>
     );
 };
