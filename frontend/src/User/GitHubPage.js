@@ -31,7 +31,12 @@ export default function GitHubPage(props) {
       setRepos(public_repos);
       setGitFollowing(following);
       setFollowers(followers);
-      setStartDate(created_at);
+
+      let date = new Date(created_at);
+      let dateToString = date.toDateString();
+      let dateParts = dateToString.split(" ");
+      let dateString = dateParts[1] + " " + dateParts[2] + " " + dateParts[3];
+      setStartDate(dateString);
   }
 
     useEffect( () => {
@@ -43,13 +48,18 @@ export default function GitHubPage(props) {
           .catch( error => { console.log(error)});
     }, []);
 
+    const formattedDate = () => {
+
+        return 'gwa';
+    }
+
     return (
         <Card sx={{width: 350, margin: 2}} >
             <CardMedia component="img" image={gitProfileImage}/>
             <CardContent> 
                 <List>
                     <ListItem>
-                        <Typography variant="h6">{gitName}</Typography>
+                        <ListItemText primary={gitName} secondary={ "Joined " + gitStartDate} primaryTypographyProps={{fontSize: 20}}></ListItemText>
                     </ListItem>
                     <Divider component="li"/>
                     <ListItem>
