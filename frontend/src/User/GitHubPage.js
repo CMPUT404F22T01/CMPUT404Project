@@ -1,7 +1,16 @@
-import { Avatar, Card, CardContent } from "@mui/material";
+import { Grid, Card, CardContent, CardHeader, CardMedia, Typography, Divider } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
-import { useActionData } from "react-router-dom";
+import { Link, useActionData } from "react-router-dom";
 import PropTypes from 'prop-types';
+import { Box, margin } from "@mui/system";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import BookIcon from '@mui/icons-material/Book';
+import LinkIcon from '@mui/icons-material/Link';
+import PersonIcon from '@mui/icons-material/Person';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 export default function GitHubPage(props) {
     const {url} = props;
@@ -26,16 +35,46 @@ export default function GitHubPage(props) {
   }
 
     useEffect( () => {
-        fetch(url)
+        let gitUsername = url.split('github.com/')[1];
+        let apiURL = "https://api.github.com/users/" + gitUsername;
+        fetch(apiURL)
           .then(response => response.json())
-          .then(data => { setGitHubData(data)})
+          .then(data => {setGitHubData(data)})
           .catch( error => { console.log(error)});
     }, []);
 
     return (
-        <Card>
-            <CardContent>
+        <Card sx={{width: 350, margin: 2}} >
+            <CardMedia component="img" image={gitProfileImage}/>
+            <CardContent> 
+                <List>
+                    <ListItem>
+                        <Typography variant="h6">{gitName}</Typography>
+                    </ListItem>
+                    <Divider component="li"/>
+                    <ListItem>
+                        <PeopleAltIcon sx={{marginRight: 1}}></PeopleAltIcon>
+                        {gitFollowers} Followers
+                    </ListItem>
+                    <Divider component="li" />
+                    <ListItem>
+                        <PersonIcon sx={{marginRight: 1}}></PersonIcon>
+                        {gitFollowing} Following
+                    </ListItem>
+                    <Divider component="li" />
+                    <ListItem>
+                        <BookIcon sx={{marginRight: 1}}></BookIcon>
+                        {gitRepos} Repositories
+                    </ListItem>
+                    <Divider component="li" />
+                    <ListItem>
+                       <LinkIcon sx={{marginRight: 1}}></LinkIcon>
+                        <Link href={url} onClick={() => window.open(url)}>github.com/{gitName}</Link>
+                    </ListItem>
+                </List>
+
             </CardContent>
+            
         </Card>
     );
 };
