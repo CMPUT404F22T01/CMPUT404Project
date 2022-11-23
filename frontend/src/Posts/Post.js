@@ -93,6 +93,7 @@ export default function Post({postReRenderHelper}) {
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
+  const [openComment, setOpenComment] = React.useState(false);
   // const [expanded, setExpanded] = React.useState(false);
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
@@ -213,8 +214,10 @@ export default function Post({postReRenderHelper}) {
   const handleExpandClick = (index) => {
     if (indexOfCollapse === index) {
       setIndexOfCollapse(null);
+      setOpenComment(false);
     } else {
       setIndexOfCollapse(index);
+      setOpenComment(true);
     }
   };
   const handleClickOpenShare = (index) => {
@@ -295,7 +298,7 @@ export default function Post({postReRenderHelper}) {
             </IconButton>
             <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
           </CardActions>
-          <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
+          <Collapse in={indexOfCollapse === index && openComment} timeout="auto" unmountOnExit>
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
