@@ -12,6 +12,8 @@ import {
   CardActions,
   Typography,
   TextField,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -34,6 +36,7 @@ import "./ProfileEdit.js"
 import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
+import GitHubPage from "./GitHubPage";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -73,13 +76,35 @@ const UserProfile = ({userData}) => {
   let authorUsername = localStorage.getItem("username")
   let authorDisplayName;
   let authorGithubURL;
+  var isMyProfile = true;
   
   const [data, setData] = useState([]);
   const [authorData, setAuthorData] = useState([]);
   const [following, setFollowing] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
+  const [tabValue, setTabValue] = React.useState(1);
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
+
+
+
+
+  // used to pull github information from github API
+  const [gitName, setGithubName] = useState('')
+  const [gitProfileImage, setProfileImage] = useState('')
+  const [gitRepos, setRepos] = useState('')
+  const [gitFollowers, setFollowers] = useState('')
+  const [gitFollowing, setGitFollowing] = useState('')
+  const [gitStartDate, setStartDate] = useState('')
+
+  const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
+      setGithubName(login);
+      setProfileImage(avatar_url);
+      setRepos(public_repos);
+      setGitFollowing(following);
+      setFollowers(followers);
+      setStartDate(created_at);
+  }
 
   // when the show other user's profile
   if(state !== null){
@@ -87,8 +112,12 @@ const UserProfile = ({userData}) => {
     authorUsername = state.authorData.username;
     authorDisplayName = state.authorData.displayName;
     authorGithubURL = state.authorData.github_url; 
+    isMyProfile = false;
 
   }
+  
+  
+
 
   // we allow delete only for current user profile
   const onClickDeletePost = (index) => { 
@@ -107,14 +136,45 @@ const UserProfile = ({userData}) => {
   //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
   // };
 
-  const handleOpenDialog = () => {
+  const handleOpenEditDialog = () => {
     setOpenDialog(true)
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseEditDialog = () => {
     setOpenDialog(false);
   };
 
+
+  const handleTabChange = (event, newValue) => {
+    if (newValue === 3) {
+      let gitUsername = authorData.github.split('github.com/')[1];
+      let url = "https://api.github.com/users/" + gitUsername;
+      fetch(url)
+          .then(response => response.json())
+          .then(data => { setGitHubData(data)})
+          .catch( error => { console.log(error)});
+    }
+    setTabValue(newValue);
+  };
+
+  const handleFollowRequest = () => {
+    axiosInstance
+      .put(`authors/${localStorage.getItem("id")}/followrequest/${authorID}`,
+        {
+          "sender": localStorage.getItem("id"),
+          "receiver": authorID
+        }
+      )
+      .then((response) => {
+        alert(response.status)
+        console.log(response.status)
+      })
+      .catch((error) => {
+        alert(error)
+        console.log(error);
+      });
+
+  };
   const onClickSendFollowRequestHandler = () => {
     if(following === false){
       const data = {
@@ -158,7 +218,7 @@ const UserProfile = ({userData}) => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
-  }, [])
+  }, [openDialog])
 
   useEffect(() => {
     axiosInstance
@@ -185,6 +245,8 @@ const UserProfile = ({userData}) => {
       });
   }, [reRenderHelper]); 
 
+
+
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
    
@@ -193,8 +255,8 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                  R
+                <Avatar src={"http://localhost:8000"+authorData.profileImage}>
+                  
                 </Avatar>
               }
               action={
@@ -242,14 +304,13 @@ const UserProfile = ({userData}) => {
     <>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-       
             <Avatar
               src={"http://localhost:8000"+authorData.profileImage}
               className="profile-img"
-              sx={{ width: 150, height: 150 }}
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
             /> 
          
-          <Grid container direction="row" alignItems="center" spacing={8}>
+          <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
               <Typography
@@ -259,16 +320,28 @@ const UserProfile = ({userData}) => {
               >{authorData.displayName}</Typography>
             </Grid>
 
-            <Grid item>
-              <Button 
-                  variant="outlined" 
-                  size="small"
-                  sx = {{borderRadius: 10}}
-                  startIcon={<EditIcon/>}
-                  onClick={handleOpenDialog}> 
-                  Edit
-                </Button>
+            {isMyProfile ?
+              <Grid item>
+                <Button 
+                    variant="outlined" 
+                    size="small"
+                    sx = {{borderRadius: 10}}
+                    startIcon={<EditIcon/>}
+                    onClick={handleOpenEditDialog}> 
+                    Edit
+                  </Button>
               </Grid>
+              :
+              <Grid item>
+                <Button 
+                    variant="outlined" 
+                    size="small"
+                    sx = {{borderRadius: 10}}
+                    onClick={onClickSendFollowRequestHandler}> 
+                    {following ? 'Unfollow' : 'Follow'}
+                  </Button>
+              </Grid>
+            }
 
           </Grid>
           <Grid container direction="row" alignItems="center" className="github">
@@ -276,23 +349,28 @@ const UserProfile = ({userData}) => {
               <GitHubIcon></GitHubIcon>
             </Grid>
             <Grid item paddingLeft={1}>
-            {authorData.github_url}
+            {authorData.github}
             </Grid>
           </Grid>
-          <div className="fcontainer">
-            <Box className="fbox">Posts</Box>
-            {following ? <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Unfollow</Box> : <Box className="fbox" component="button" onClick={onClickSendFollowRequestHandler}>Follow</Box>} 
-            <Box className="fbox">Following</Box>
-          </div>
         </CardContent>
       </Card>
-      <div className="post">{allpost}</div>
+      <Tabs
+        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        value={tabValue}
+        onChange={handleTabChange}
+        >
+          <Tab value={1} label="posts"/>
+          <Tab value={2} label="Followers"/>
+          <Tab value={3} label="Github"/>
+      </Tabs>
+      { tabValue===1 && <div className="post">{allpost}</div>}
 
+      { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 
         setOpenDialog={setOpenDialog}
-        displayName = {authorUsername}
-        githubURL={authorGithubURL}>
+        displayName = {authorData.displayName}
+        githubURL={authorData.github}>
        </ProfileEdit>
     </>
   );
