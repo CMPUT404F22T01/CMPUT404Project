@@ -55,48 +55,68 @@ export default function GitHubPage(props) {
     }, []);
 
     const allEvents = eventData.map((event, index) => {
+
+        
+      let date = new Date(event.created_at);
+      let dateToString = date.toDateString();
+      let dateParts = dateToString.split(" ");
+      let dateString = dateParts[1] + " " + dateParts[2] + " " + dateParts[3];
+
         return (
-            <Typography>{event.id}</Typography>
+            <>
+            <ListItem sx={{margin: 1}}>
+                <ListItemText primary={event.actor.login +" had a " + event.type + " in the "  + event.repo.name + " repository"} secondary={dateString}/>  
+            </ListItem>
+            <Divider/>
+            </>
         )
     });
 
 
 
     return (
-        <>
-        <Card sx={{width: 350, margin: 2}} >
-            <CardMedia component="img" image={gitProfileImage}/>
-            <CardContent> 
-                <List>
-                    <ListItem>
-                        <ListItemText primary={gitName} secondary={ "Joined " + gitStartDate} primaryTypographyProps={{fontSize: 20}}></ListItemText>
-                    </ListItem>
-                    <Divider component="li"/>
-                    <ListItem>
-                        <PeopleAltIcon sx={{marginRight: 1}}></PeopleAltIcon>
-                        {gitFollowers} Followers
-                    </ListItem>
-                    <Divider component="li" />
-                    <ListItem>
-                        <PersonIcon sx={{marginRight: 1}}></PersonIcon>
-                        {gitFollowing} Following
-                    </ListItem>
-                    <Divider component="li" />
-                    <ListItem>
-                        <BookIcon sx={{marginRight: 1}}></BookIcon>
-                        {gitRepos} Repositories
-                    </ListItem>
-                    <Divider component="li" />
-                    <ListItem>
-                       <LinkIcon sx={{marginRight: 1}}></LinkIcon>
-                        <Link href={url} onClick={() => window.open(url)}>github.com/{gitName}</Link>
-                    </ListItem>
-                </List>
+        
+        <Grid container direction="row" spacing={2}>
+            <Grid item>
+                <Card sx={{width: 350, margin: 2}} >
+                    <CardMedia component="img" image={gitProfileImage}/>
+                    <CardContent> 
+                        <List>
+                            <ListItem>
+                                <ListItemText primary={gitName} secondary={ "Joined " + gitStartDate} primaryTypographyProps={{fontSize: 20}}></ListItemText>
+                            </ListItem>
+                            <Divider component="li"/>
+                            <ListItem>
+                                <PeopleAltIcon sx={{marginRight: 1}}></PeopleAltIcon>
+                                {gitFollowers} Followers
+                            </ListItem>
+                            <Divider component="li" />
+                            <ListItem>
+                                <PersonIcon sx={{marginRight: 1}}></PersonIcon>
+                                {gitFollowing} Following
+                            </ListItem>
+                            <Divider component="li" />
+                            <ListItem>
+                                <BookIcon sx={{marginRight: 1}}></BookIcon>
+                                {gitRepos} Repositories
+                            </ListItem>
+                            <Divider component="li" />
+                            <ListItem>
+                            <LinkIcon sx={{marginRight: 1}}></LinkIcon>
+                                <Link href={url} onClick={() => window.open(url)}>github.com/{gitName}</Link>
+                            </ListItem>
+                        </List>
 
-            </CardContent>
-            
-        </Card>
-        {allEvents}
-        </>
+                    </CardContent>
+                    
+                </Card>
+            </Grid>
+            <Grid item>
+                <Typography variant="h3" sx={{margin: 2}}> Recent Activities</Typography>
+                <Divider sx={{borderBottomWidth: 2}}/>
+                {allEvents}
+            </Grid>
+        </Grid>
+        
     );
 };
