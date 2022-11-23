@@ -164,8 +164,7 @@ export default function Post({postReRenderHelper}) {
       setReRenderLikeHelper((prevState) => !prevState);
   }
 
-   //how to handle a share??
-  // find the user and use the found user's id to send post request to the inbox.
+  // How to handle a share: find the user and use the found user's id to send post request to the inbox.
   const handleShare = (index) => {
   
     axiosInstance.get(`author/search/`, {
@@ -202,7 +201,7 @@ export default function Post({postReRenderHelper}) {
       });
   }, [postReRenderHelper]);
 
-  //handler for the edit button click
+  // Handler for the edit button click
   const onClickPostEditHandler = (index_to_edit = -1) => {
     if (index_to_edit !== -1) {
       setIndexToEdit(index_to_edit);
@@ -244,9 +243,11 @@ export default function Post({postReRenderHelper}) {
              
             className={styleClasses.cardHeader}
             avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                R
-              </Avatar>
+              <Avatar 
+              alt="Post User's Profile Picture"
+              src={"http://localhost:8000"+data.author.profileImage}
+              />
+              
             }
             action={
               <IconButton aria-label="settings">
