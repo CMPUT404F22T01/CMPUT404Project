@@ -94,7 +94,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
     formData.append("visibility", visibilityRef.current.value);
-    if (visibilityRef.current.value === "Unlisted") {
+    if (visibilityRef.current.value === "UNLISTED") {
       formData.append("unlisted", "true");
     } else {
       formData.append("unlisted", "false");

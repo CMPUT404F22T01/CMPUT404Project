@@ -270,7 +270,7 @@ const SideBar = () => {
           }}
         >
           <Avatar
-            alt="User's Profile Picture"
+            alt={authorData.username+": User's Profile Picture"}
             src={"http://localhost:8000"+authorData.profileImage}
             sx={{ 
               width: open ? 90 : 40, 
