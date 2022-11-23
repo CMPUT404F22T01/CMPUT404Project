@@ -44,7 +44,7 @@ class Node(models.Model):
     # Just so we can toggle on/off between several nodes in our system
     currentlyConnected = models.BooleanField(default=True)
     # Just incase some nodes dont require auth
-    requiresAuth = models.BooleanField(default=True)
+    requiresAuth = models.BooleanField(default=True) 
 
 
 selfNode, created = Node.objects.get_or_create(host=HOSTNAME, teamName="Team 3", currentlyConnected = False, requiresAuth = False)

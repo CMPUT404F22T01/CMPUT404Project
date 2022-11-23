@@ -1,19 +1,14 @@
-from functools import partial
-import json
-from re import A
-import re
 from . import utils
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import *
 from .serializer import *
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, OR
+from .foreignServerPermission import ConnectedForeignServer, IsAuthenticatedORForeignServer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from base64 import b64encode
 from . import node_utils as nu
-from uuid import UUID
 
 
 class AuthorCreate(
@@ -521,8 +516,11 @@ def update(request):
     return response.Response(None, 200)
 
 @api_view(["GET"])
+# @permission_classes([IsAuthenticatedORForeignServer])
 def functiontester(request):
-    u = UUID("f2136e19-65e8-43aa-8d45-c5072babc0b7")
-    post = POST.objects.get(id=u)
-    nu.sendPostToAllForeignAuthors(post)
+    
+    # u = UUID("f2136e19-65e8-43aa-8d45-c5072babc0b7")
+    # post = POST.objects.get(id=u)
+    # nu.sendPostToAllForeignAuthors(post)
+    print(request.user, request.user.is_authenticated)
     return response.Response(None, 200)

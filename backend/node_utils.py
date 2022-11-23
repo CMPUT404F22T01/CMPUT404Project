@@ -43,7 +43,7 @@ def updateAuthors(node: Node):
             authorObj["displayName"] = authorObj["display_name"]
             del authorObj["display_name"]
         p = Author(
-            username = str(node.teamName) + "_" + str(uuid4()), # Just putting a unique username, we wont need this ever, and it can't be null either
+            username = str(node.teamName) + "_" + str(authorObj["displayName"]), # Just putting a unique username, we wont need this ever, and it can't be null either
             displayName = authorObj["displayName"],
             url = authorObj["url"],
             host = authorObj["host"],
@@ -65,7 +65,8 @@ def sendPostToAllForeignAuthors(post: POST):
     allForeignAuthors = Author.objects.exclude(node=None, host=HOSTNAME)
 
     for author in allForeignAuthors:
-
+        if not author.node.currentlyConnected:
+            continue
         username = author.node.username
         password = author.node.password
         if author.node.requiresAuth:
