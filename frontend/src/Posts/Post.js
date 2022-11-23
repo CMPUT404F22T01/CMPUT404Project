@@ -102,7 +102,6 @@ export default function Post({postReRenderHelper}) {
   const [openComment, setOpenComment] = React.useState(false);
   // const [expanded, setExpanded] = React.useState(false);
 
-  const [hideShare, setHideShare] = React.useState(false);
   const [redHeart, setRedHeart] = React.useState(false);
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
@@ -247,7 +246,7 @@ export default function Post({postReRenderHelper}) {
             className={styleClasses.cardHeader}
             avatar={
               <Avatar 
-              alt="Post User's Profile Picture"
+              alt={data.author.username+": Post User's Profile Picture"}
               src={"http://localhost:8000"+data.author.profileImage}
               />
               
@@ -296,7 +295,7 @@ export default function Post({postReRenderHelper}) {
             >
               <CommentIcon sx = {{color: "#fff"}} />
             </IconButton>
-            {!hideShare ? <IconButton  /*Only open if post === public How should I get this info?*/ 
+            {!(data.visibility === "UNLISTED") ? <IconButton
               aria-label="share"
               onClick={() => { handleClickOpenShare(index); }}
             >
@@ -322,7 +321,7 @@ export default function Post({postReRenderHelper}) {
                   Post
                 </Button>
               </Box>
-              <Comment postData={data} reRenderHelper={reRenderHelper} />
+              {(!(data.visibility === "FRIENDS") || (data.author.id === localStorage.getItem("id"))) ? <Comment postData={data} reRenderHelper={reRenderHelper} />: null}
             </CardContent>
           </Collapse>
 

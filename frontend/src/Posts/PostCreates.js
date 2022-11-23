@@ -103,7 +103,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
       "image",
       imageRef.current.files[0] ? imageRef.current.files[0] : ""
     );
-    if (visibilityRef.current.value === "Unlisted") {
+    if (visibilityRef.current.value === "UNLISTED") {
       formData.append("unlisted", "true");
     } else {
       formData.append("unlisted", "false");
