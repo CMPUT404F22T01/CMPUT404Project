@@ -87,25 +87,6 @@ const UserProfile = ({userData}) => {
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
 
 
-
-
-  // used to pull github information from github API
-  const [gitName, setGithubName] = useState('')
-  const [gitProfileImage, setProfileImage] = useState('')
-  const [gitRepos, setRepos] = useState('')
-  const [gitFollowers, setFollowers] = useState('')
-  const [gitFollowing, setGitFollowing] = useState('')
-  const [gitStartDate, setStartDate] = useState('')
-
-  const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
-      setGithubName(login);
-      setProfileImage(avatar_url);
-      setRepos(public_repos);
-      setGitFollowing(following);
-      setFollowers(followers);
-      setStartDate(created_at);
-  }
-
   // when the show other user's profile
   if(state !== null){
     authorID = state.authorData.id.split("authors/")[1];
@@ -146,14 +127,6 @@ const UserProfile = ({userData}) => {
 
 
   const handleTabChange = (event, newValue) => {
-    if (newValue === 3) {
-      let gitUsername = authorData.github.split('github.com/')[1];
-      let url = "https://api.github.com/users/" + gitUsername;
-      fetch(url)
-          .then(response => response.json())
-          .then(data => { setGitHubData(data)})
-          .catch( error => { console.log(error)});
-    }
     setTabValue(newValue);
   };
 
