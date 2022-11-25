@@ -16,6 +16,10 @@ import {
   Tabs,
   AppBar,
   Toolbar,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText
 } from "@mui/material";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -42,6 +46,7 @@ import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
 import Follower from "./Follower";
+import isValidUrl from "../utils/urlValidator"
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -91,6 +96,7 @@ const UserProfile = ({userData}) => {
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(1);
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
+  const [followerData, setFollowerData] = React.useState([]);
 
 
   // when the show other user's profile
@@ -118,10 +124,6 @@ const UserProfile = ({userData}) => {
       });
       setReRenderHelper((prevState)=>!prevState); 
   };
-  // const url = 'http://127.0.0.1:8000/mainDB/user/data/'
-  // const config = {
-  //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
-  // };
 
   const handleOpenEditDialog = () => {
     setOpenDialog(true)
@@ -207,7 +209,6 @@ const UserProfile = ({userData}) => {
     axiosInstance
       .get(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
       .then((response) => {
-        console.log(response.status)
          if(response.status === 200){
           setFollowing(true);
          }
@@ -228,6 +229,26 @@ const UserProfile = ({userData}) => {
       });
   }, [reRenderHelper]); 
 
+  const allfollowers = followerData.map((item) => {
+
+    return (
+      <Typography> 
+      <ListItem alignItems="flex-start">
+        <ListItemAvatar>
+          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : "http://localhost:8000"+item.profileImage} />) : ""}
+        </ListItemAvatar>
+        <ListItemText
+          primary={item.username}
+          secondary = {item.displayName}
+          sx={{cursor: "pointer"}}
+           
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+     </Typography>
+    )
+  });
+
 
 
   const allpost = data.map((item, index) => {
@@ -238,7 +259,7 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={"https://c404t3.herokuapp.com/"+authorData.profileImage}>
+                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}>
                   
                 </Avatar>
               }
@@ -256,12 +277,15 @@ const UserProfile = ({userData}) => {
               subheader={item.published}
             />
 
-            {/* <CardMedia
-                    component="img"
-                    height="394"
-                    image="https://mui.com/static/images/cards/paella.jpg"
-                    alt="Paella dish"
-                  /> */}
+        {(item.image || item.image_url) ? (
+            <CardMedia
+              component="img"
+              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3.herokuapp.com" + item.image}
+              alt="User Image"
+            />
+          ) : (
+            ""
+          )}
             <CardContent>
               <Typography variant="body2" color="text.secondary">
                 {item.content}
@@ -297,7 +321,13 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-          <Grid container direction="row" alignItems="center" spacing={12} >
+            <Avatar
+              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}
+              className="profile-img"
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
+            /> 
+         
+          <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
               <Avatar
@@ -357,8 +387,7 @@ const UserProfile = ({userData}) => {
           <Tab value={3} label="Github"/>
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
-      {tabValue ===2 && <Follower></Follower>}
-
+      { tabValue===2 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>{allfollowers}</List>}
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 

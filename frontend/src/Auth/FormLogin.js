@@ -22,7 +22,7 @@ const FormLogin = () => {
     const navigate = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
-    const url = 'https://c404t3.herokuapp.com/service/login/'
+ 
 
     const [loginFail, setLoginFail] = useState(false);
 
@@ -42,7 +42,7 @@ const FormLogin = () => {
 
         e.preventDefault();
         
-        axiosInstance.post(url, {
+        axiosInstance.post('login/', {
             'username': usernameRef.current.value,
             'password': passwordRef.current.value
 
