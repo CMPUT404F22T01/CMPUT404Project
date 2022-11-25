@@ -17,7 +17,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import  Button  from "@mui/material/Button";
+import Button  from "@mui/material/Button";
+import Slide from '@mui/material/Slide';
 
 import { red } from "@mui/material/colors";
 
@@ -39,6 +40,11 @@ import Comment from "../Comment/Comment";
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
  */
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -93,7 +99,10 @@ export default function Post({postReRenderHelper}) {
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
+  const [openComment, setOpenComment] = React.useState(false);
   // const [expanded, setExpanded] = React.useState(false);
+
+  const [redHeart, setRedHeart] = React.useState(false);
 
   //this reRenderHelper is used to re render the comment component (expensive maybe!!)
   const [reRenderHelper, setReRenderHelper] = useState(false);
@@ -155,8 +164,7 @@ export default function Post({postReRenderHelper}) {
       setReRenderLikeHelper((prevState) => !prevState);
   }
 
-   //how to handle a share??
-  // find the user and use the found user's id to send post request to the inbox.
+  // How to handle a share: find the user and use the found user's id to send post request to the inbox.
   const handleShare = (index) => {
   
     axiosInstance.get(`author/search/`, {
@@ -193,7 +201,7 @@ export default function Post({postReRenderHelper}) {
       });
   }, [postReRenderHelper]);
 
-  //handler for the edit button click
+  // Handler for the edit button click
   const onClickPostEditHandler = (index_to_edit = -1) => {
     if (index_to_edit !== -1) {
       setIndexToEdit(index_to_edit);
@@ -213,8 +221,10 @@ export default function Post({postReRenderHelper}) {
   const handleExpandClick = (index) => {
     if (indexOfCollapse === index) {
       setIndexOfCollapse(null);
+      setOpenComment(false);
     } else {
       setIndexOfCollapse(index);
+      setOpenComment(true);
     }
   };
   const handleClickOpenShare = (index) => {
@@ -235,9 +245,11 @@ export default function Post({postReRenderHelper}) {
              
             className={styleClasses.cardHeader}
             avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                R
-              </Avatar>
+              <Avatar 
+              alt={data.author.username+": Post User's Profile Picture"}
+              src={"http://localhost:8000"+data.author.profileImage}
+              />
+              
             }
             action={
               <IconButton aria-label="settings">
@@ -271,31 +283,27 @@ export default function Post({postReRenderHelper}) {
             </Typography>
           </CardContent>
           <CardActions disableSpacing sx={{backgroundColor: "#333"}}>
-            <IconButton aria-label="likedby">
-              <Diversity1Icon 
-              sx = {{color: "#fff"}}
+            <IconButton
+              aria-label="likedby"
               onClick={() => handleClickOpenLikedBy(index)} 
-              />
+            >
+              <Diversity1Icon sx = {{color: "#fff"}} />
             </IconButton>
-            <IconButton aria-label="comment">
-              <CommentIcon
-              sx = {{color: "#fff"}}
-                onClick={() => {
-                  handleExpandClick(index);
-                }}
-              />
+            <IconButton
+              aria-label="comment"
+              onClick={() => { handleExpandClick(index); }}
+            >
+              <CommentIcon sx = {{color: "#fff"}} />
             </IconButton>
-            <IconButton /*Only open if post === public*/ aria-label="share">
-              <SendIcon
-              sx = {{color: "#fff"}}
-                onClick={() => {
-                  handleClickOpenShare(index);
-                }}
-              />
-            </IconButton>
+            {!(data.visibility === "UNLISTED") ? <IconButton
+              aria-label="share"
+              onClick={() => { handleClickOpenShare(index); }}
+            >
+              <SendIcon sx = {{color: "#fff"}}/>
+            </IconButton>: null}
             <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
           </CardActions>
-          <Collapse in={indexOfCollapse === index} timeout="auto" unmountOnExit>
+          <Collapse in={indexOfCollapse === index && openComment} timeout="auto" unmountOnExit>
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
@@ -307,15 +315,13 @@ export default function Post({postReRenderHelper}) {
                   className={styleClasses.commentTextField}
                 />
                 <Button
-                  onClick={() => {
-                    onClickCreateCommentHandler(data);
-                  }}
+                  onClick={() => { onClickCreateCommentHandler(data); }}
                   className={styleClasses.commentButton}
                 >
                   Post
                 </Button>
               </Box>
-              <Comment postData={data} reRenderHelper={reRenderHelper} />
+              {(!(data.visibility === "FRIENDS") || (data.author.id === localStorage.getItem("id"))) ? <Comment postData={data} reRenderHelper={reRenderHelper} />: null}
             </CardContent>
           </Collapse>
 
@@ -323,6 +329,7 @@ export default function Post({postReRenderHelper}) {
             fullScreen
             open={openLikedBy && indexOfCollapse === index}
             onClose={handleCloseLikedBy}
+            TransitionComponent={Transition}
             unmountOnExit
             timeout="auto"
             aria-label="liked by dialog"
@@ -351,7 +358,7 @@ export default function Post({postReRenderHelper}) {
                   aria-label="like"
                 >
                   {/* If the user has liked the item : style={{ color: "red" }} */}
-                  <FavoriteIcon/>
+                  <FavoriteIcon style={{ color: redHeart ? 'red' : 'white'}}/>
                 </IconButton>
               </Toolbar>
             </AppBar>
@@ -364,6 +371,7 @@ export default function Post({postReRenderHelper}) {
           <Dialog
             open={openShare && indexOfCollapse === index}
             onClose={handleCloseShare}
+            TransitionComponent={Transition}
             unmountOnExit
             timeout="auto"
             aria-label="share dialog"
