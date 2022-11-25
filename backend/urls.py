@@ -9,6 +9,7 @@ router = routers.SimpleRouter()
 router.register(r'login', LoginViewSet, basename='auth_login')
 router.register(r'refresh', RefreshTokenViewSet, basename='auth_refresh')
 
+
 urlpatterns = [
     path('register/', views.AuthorCreate.as_view()),
     path('data/', views.testAuth),

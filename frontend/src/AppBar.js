@@ -15,10 +15,13 @@ import InputBase from '@mui/material/InputBase';
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Dialog from '@mui/material/Dialog';
 import MenuList from '@mui/material/MenuList';
-import Post from './PostCompnents/Post';
-import PostCreates from './PostCompnents/PostCreates'; 
+
 import { useNavigate } from "react-router-dom";
-import Search from "./Search";
+
+import Post from './Posts/Post'
+import PostCreates from './Posts/PostCreates';
+import Search from './User/Search';
+
 
 const SearchM = styled('div')(({ theme }) => ({
   position: 'relative',

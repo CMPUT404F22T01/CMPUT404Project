@@ -35,8 +35,9 @@ import Inbox from '../Inbox/Inbox';
 import "../SideBar/sidebar.css";
 
 import { useNavigate } from "react-router-dom";
-import {useState} from "react";
+import { useState, useEffect } from "react";
 
+import axiosInstance from "../utils/axiosInstance";
 
  
 
@@ -159,6 +160,20 @@ const Drawer = styled(MuiDrawer, {
 
 
 const SideBar = () => {
+  const [authorData, setAuthorData] = useState([]);
+  let authorID =  localStorage.getItem("id");
+
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${authorID}/`)
+      .then((response) => {
+        setAuthorData(response.data);
+      })
+      .catch((error) => {
+        console.error("error in post get ", error);
+      });
+  }, [])
+
 
   let navigate = useNavigate();
 
@@ -255,8 +270,8 @@ const SideBar = () => {
           }}
         >
           <Avatar
-            alt="User's Profile Picture"
-            src="https://miro.medium.com/max/775/0*rZecOAy_WVr16810"
+            alt={authorData.username+": User's Profile Picture"}
+            src={"http://localhost:8000"+authorData.profileImage}
             sx={{ 
               width: open ? 90 : 40, 
               height: open ? 90 : 40,
