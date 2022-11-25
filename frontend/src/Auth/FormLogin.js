@@ -22,7 +22,7 @@ const FormLogin = () => {
     const navigate = useNavigate();
     const usernameRef = useRef(null);
     const passwordRef = useRef(null);
-    const url = 'http://127.0.0.1:8000/service/login/'
+    const url = 'https://c404t3.herokuapp.com/service/login/'
 
     const [loginFail, setLoginFail] = useState(false);
 

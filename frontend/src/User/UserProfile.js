@@ -255,7 +255,7 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={"http://localhost:8000"+authorData.profileImage}>
+                <Avatar src={"https://c404t3.herokuapp.com/"+authorData.profileImage}>
                   
                 </Avatar>
               }
@@ -305,7 +305,7 @@ const UserProfile = ({userData}) => {
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
             <Avatar
-              src={"http://localhost:8000"+authorData.profileImage}
+              src={"https://c404t3.herokuapp.com/"+authorData.profileImage}
               className="profile-img"
               sx={{ width: 150, height: 150, marginBottom: 2 }}
             /> 

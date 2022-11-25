@@ -247,7 +247,7 @@ export default function Post({postReRenderHelper}) {
             avatar={
               <Avatar 
               alt={data.author.username+": Post User's Profile Picture"}
-              src={"http://localhost:8000"+data.author.profileImage}
+              src={"https://c404t3.herokuapp.com/"+data.author.profileImage}
               />
               
             }
@@ -270,7 +270,7 @@ export default function Post({postReRenderHelper}) {
           {data.image ? (
             <CardMedia
               component="img"
-              image={"http://localhost:8000" + data.image}
+              image={"https://c404t3.herokuapp.com/" + data.image}
               alt="User Image"
             />
           ) : (
