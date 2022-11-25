@@ -1,6 +1,7 @@
 
 from uuid import uuid4
 import requests
+from pprint import pprint
 from .models import Node, Author, POST, FollowRequest, Follower, Comment
 from mainDB.settings import HOSTNAME
 from .serializer import PostSerializer
@@ -9,6 +10,7 @@ from .serializer import PostSerializer
 
 ## Add all authors
 def getRemoteContent():
+    
     # Delete all old foreign authors
     Author.objects.exclude(host=HOSTNAME).delete()
     
@@ -24,17 +26,17 @@ def updateAuthors(node: Node):
     url = node.host + "authors/"
     username = node.username
     password = node.password
-    if node.requiresAuth:
-        auth = (username, password)
-    else:
-        auth = None
-    data = requests.get(url, auth=auth)
+    # if node.requiresAuth:
+    #     auth = (username, password)
+    # else:
+    #     auth = None
+    data = requests.get(url)
     if data.status_code not in range(200, 300):
-        print("Error")
+        print("Error", node)
         return
     data = data.json()
-
-    for authorObj in data["items"]:
+    data = data["items"] if type(data) == dict else data
+    for authorObj in data:
         # clean data
         if not authorObj["host"].endswith("/"):
             authorObj["host"] += "/"
@@ -55,6 +57,23 @@ def updateAuthors(node: Node):
 # def updatePosts(node: Node):
 #     pass
 
+
+def _sendPostToAuthor(post: PostSerializer, toSend: Author):
+    """
+    This is to send to a post to a remote author. This is only for remote authors.
+    """
+    # Make sure remote
+    if toSend.node is None or toSend.host == HOSTNAME:
+        print("Err: this function is only for to send stuff to remote authors")
+        return
+    # Get credentials
+    if toSend.node.requiresAuth:
+        auth = (toSend.node.username, toSend.node.password)
+    else:
+        auth = None    
+    # Make request
+    urlToHit = toSend.node.host + "author/"
+    print(urlToHit)
 
 ## Send post to foreign authors
 def sendPostToAllForeignAuthors(post: POST):
