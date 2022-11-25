@@ -23,6 +23,7 @@ const useStyles = makeStyles({
 });
 
 const Comment = ({ postData, reRenderHelper }) => {
+  console.log(postData)
   const styleClasses = useStyles();
   const [commentData, setCommentData] = useState([]);
   const [openLikedBy, setOpenLikedBy] = useState(false);
@@ -32,12 +33,13 @@ const Comment = ({ postData, reRenderHelper }) => {
   useEffect(() => {
     axiosInstance
       .get(
-        `authors/${localStorage.getItem("id")}/posts/${
+        `${postData.author.host}/authors/${localStorage.getItem("id")}/posts/${
           postData.id.split("posts/")[1]
-        }/comments`
+        }/comments/`
       )
       .then((response) => {
-        setCommentData(response.data);
+        console.log(response.data)
+        setCommentData(response.data.comments);
       })
       .catch((error) => {
         console.error(error);

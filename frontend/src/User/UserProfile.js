@@ -41,6 +41,7 @@ import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
+import isValidUrl from "../utils/urlValidator"
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -258,7 +259,7 @@ const UserProfile = ({userData}) => {
       <Typography> 
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
-          {item.profileImage ? (<Avatar alt="Remy Sharp" src={"http://localhost:8000"+item.profileImage} />) : ""}
+          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : "http://localhost:8000"+item.profileImage} />) : ""}
         </ListItemAvatar>
         <ListItemText
           primary={item.username}
@@ -282,7 +283,7 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={"http://localhost:8000"+authorData.profileImage}>
+                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}>
                   
                 </Avatar>
               }
@@ -300,10 +301,10 @@ const UserProfile = ({userData}) => {
               subheader={item.published}
             />
 
-        {item.image ? (
+        {(item.image || item.image_url) ? (
             <CardMedia
               component="img"
-              image={"http://localhost:8000" + item.image}
+              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3.herokuapp.com" + item.image}
               alt="User Image"
             />
           ) : (
@@ -335,7 +336,7 @@ const UserProfile = ({userData}) => {
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
             <Avatar
-              src={"http://localhost:8000"+authorData.profileImage}
+              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}
               className="profile-img"
               sx={{ width: 150, height: 150, marginBottom: 2 }}
             /> 

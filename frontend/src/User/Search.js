@@ -6,6 +6,8 @@ import { Card, CardContent, Link, Box, Avatar } from "@mui/material";
 import axiosInstance from "../utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
+import isValidUrl from "../utils/urlValidator";
+
 const useStyles = makeStyles({
   container: {
     position: "absolute", 
@@ -53,7 +55,7 @@ const Search = ({ searchValue }) => {
     return (
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
-          {authorData.profileImage ?  <Avatar src={"http://localhost:8000"+authorData.profileImage}></Avatar>: <Avatar sx={{backgroundColor:"#fcb69f"}}>{authorData.username[0]}</Avatar>}
+          {authorData.profileImage ?  <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}></Avatar>: <Avatar sx={{backgroundColor:"#fcb69f"}}>{authorData.username[0]}</Avatar>}
           
           <Link
             onClick={()=>navigate('/profile', {state:{authorData}})}

@@ -36,6 +36,7 @@ import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
+import isValidUrl from "../utils/urlValidator"
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -94,6 +95,7 @@ export default function Post({postReRenderHelper}) {
   const styleClasses = useStyles();
   const [post, setPost] = useState([]);
   const userToSharePostWithRef = useRef(null);
+  const [node, setNode] = useState([]);
 
   const [comment, setComment] = useState(null);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
@@ -115,6 +117,40 @@ export default function Post({postReRenderHelper}) {
   const onChangeCommentHandler = (e) => {
     setComment(e.target.value);
   };
+
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
+      .then((response) => {
+        setPost(oldData => [...oldData, ...response.data]);
+      })
+      .catch((error) => {
+        console.error("error in post get ", error);
+      });
+  }, [postReRenderHelper]);
+
+  useEffect(() => {
+    axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes`)
+    .then((response) => {
+       setNode(response.data);
+    })
+    .catch((error) => {
+      console.error("error in node get ", error);
+    })
+  }, [])
+
+  useEffect(() => {
+    node.map((item, index) => {
+      axiosInstance.get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
+      .then((response) => {
+        // console.log(response.data)
+        setPost(oldData => [...oldData, ...response.data.items]);
+      })
+      .catch((error) => {
+        // console.error("error in node get ", error);
+      })
+    })
+  }, [node])
 
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
@@ -190,18 +226,7 @@ export default function Post({postReRenderHelper}) {
     setOpenShare(false);
   };
 
-  useEffect(() => {
-    axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
-      .then((response) => {
-        setPost(response.data);
-      })
-      .catch((error) => {
-        console.error("error in post get ", error);
-      });
-  }, [postReRenderHelper]);
-
-  // Handler for the edit button click
+  //handler for the edit button click
   const onClickPostEditHandler = (index_to_edit = -1) => {
     if (index_to_edit !== -1) {
       setIndexToEdit(index_to_edit);
@@ -247,7 +272,7 @@ export default function Post({postReRenderHelper}) {
             avatar={
               <Avatar 
               alt={data.author.username+": Post User's Profile Picture"}
-              src={"http://localhost:8000"+data.author.profileImage}
+              src={isValidUrl(data.author.profileImage) ? data.author.profileImage : "https://c404t3.herokuapp.com"+data.author.profileImage}
               />
               
             }
@@ -267,11 +292,11 @@ export default function Post({postReRenderHelper}) {
              
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
-          {data.image ? (
+          {(data.image || data.image_url) ? (
             <CardMedia
               component="img"
-              image={"http://localhost:8000" + data.image}
-              alt="User Image"
+              image={isValidUrl(data.image_url) ? data.image_url : "https://c404t3.herokuapp.com" + data.image}
+              alt="Post Image"
             />
           ) : (
             ""
