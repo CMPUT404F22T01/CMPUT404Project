@@ -14,6 +14,8 @@ import {
   TextField,
   Tab,
   Tabs,
+  AppBar,
+  Toolbar,
 } from "@mui/material";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -37,6 +39,7 @@ import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
+import Follower from "./Follower";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -274,34 +277,34 @@ const UserProfile = ({userData}) => {
   );
 
   return (
-    <>
+    <Box>
+      <AppBar>
+        <Toolbar>
+
+        </Toolbar>
+
+      </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-            <Avatar
-              src={"https://c404t3.herokuapp.com/"+authorData.profileImage}
-              className="profile-img"
-              sx={{ width: 150, height: 150, marginBottom: 2 }}
-            /> 
-         
-          <Grid container direction="row" alignItems="center" spacing={8} >
+          <Grid container direction="row" alignItems="center" spacing={12} >
 
             <Grid item>
-              <Typography
-                variant="h5"
-                component="h2"
-                className="user-name"
-              >{authorData.displayName}</Typography>
-            </Grid>
+              <Avatar
+                src={"https://c404t3.herokuapp.com/"+authorData.profileImage}
+                className="profile-img"
+                sx={{ width: 150, height: 150, marginBottom: 2 }}
+              /> 
+              </Grid>
 
-            {isMyProfile ?
+              {isMyProfile ?
               <Grid item>
                 <Button 
                     variant="outlined" 
                     size="small"
-                    sx = {{borderRadius: 10}}
+                    sx = {{borderRadius: 2}}
                     startIcon={<EditIcon/>}
                     onClick={handleOpenEditDialog}> 
-                    Edit
+                    Edit Profile
                   </Button>
               </Grid>
               :
@@ -315,8 +318,14 @@ const UserProfile = ({userData}) => {
                   </Button>
               </Grid>
             }
-
           </Grid>
+         
+            <Typography
+              variant="h5"
+              component="h2"
+              className="user-name"
+            >{authorData.displayName}</Typography>
+                     
           <Grid container direction="row" alignItems="center" className="github">
             <Grid item>
               <GitHubIcon></GitHubIcon>
@@ -337,6 +346,7 @@ const UserProfile = ({userData}) => {
           <Tab value={3} label="Github"/>
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
+      {tabValue ===2 && <Follower></Follower>}
 
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
@@ -345,7 +355,7 @@ const UserProfile = ({userData}) => {
         displayName = {authorData.displayName}
         githubURL={authorData.github}>
        </ProfileEdit>
-    </>
+    </Box>
   );
 };
 
