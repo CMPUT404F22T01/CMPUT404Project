@@ -524,3 +524,14 @@ def functiontester(request):
     # nu.sendPostToAllForeignAuthors(post)
     print(request.user, request.user.is_authenticated)
     return response.Response(None, 200)
+
+class GetAllNodeUsers(generics.ListAPIView):
+
+    serializer_class = GetAuthorSerializer
+    queryset = Author.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = Author.objects.exclude(node=None)
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data, 200)

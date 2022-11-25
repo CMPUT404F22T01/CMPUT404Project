@@ -94,6 +94,7 @@ export default function Post({postReRenderHelper}) {
   const styleClasses = useStyles();
   const [post, setPost] = useState([]);
   const userToSharePostWithRef = useRef(null);
+  const [node, setNode] = useState([]);
 
   const [comment, setComment] = useState(null);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
@@ -115,6 +116,40 @@ export default function Post({postReRenderHelper}) {
   const onChangeCommentHandler = (e) => {
     setComment(e.target.value);
   };
+
+  useEffect(() => {
+    axiosInstance
+      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
+      .then((response) => {
+        setPost(oldData => [...oldData, ...response.data]);
+      })
+      .catch((error) => {
+        console.error("error in post get ", error);
+      });
+  }, [postReRenderHelper]);
+
+  useEffect(() => {
+    axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes`)
+    .then((response) => {
+       setNode(response.data);
+    })
+    .catch((error) => {
+      console.error("error in node get ", error);
+    })
+  }, [])
+
+  useEffect(() => {
+    node.map((item, index) => {
+      axiosInstance.get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
+      .then((response) => {
+        // console.log(response.data)
+        setPost(oldData => [...oldData, ...response.data.items]);
+      })
+      .catch((error) => {
+        // console.error("error in node get ", error);
+      })
+    })
+  }, [node])
 
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
@@ -190,17 +225,6 @@ export default function Post({postReRenderHelper}) {
     })
     setOpenShare(false);
   };
-
-  useEffect(() => {
-    axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
-      .then((response) => {
-        setPost(response.data);
-      })
-      .catch((error) => {
-        console.error("error in post get ", error);
-      });
-  }, [postReRenderHelper]);
 
   //handler for the edit button click
   const onClickPostEditHandler = (index_to_edit = -1) => {

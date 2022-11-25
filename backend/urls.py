@@ -54,6 +54,9 @@ urlpatterns = [
     # Inbox route to get everything (not only posts!)
     path("authors/<uuid:author_id>/inboxAll", views.getEntireInboxRequests),
 
+    #all node users,
+    path('authors/<uuid:author_id>/nodes', views.GetAllNodeUsers.as_view()),
+
     *router.urls,
 
 
