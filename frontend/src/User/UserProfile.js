@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
@@ -29,6 +29,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentIcon from "@mui/icons-material/Comment";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import EditIcon from '@mui/icons-material/Edit';
+import HomeIcon from '@mui/icons-material/Home';
+import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../utils/axiosInstance";
 
@@ -72,6 +74,7 @@ const UserProfile = ({userData}) => {
   // so when the user clicked on one of the search user's profile we send that data along with the 
   // navigation
   const {state} = useLocation(); 
+  const navigate = useNavigate();
   /**
    * this are the default user ids comes from the local storage or later we implement an user class
    */
@@ -132,6 +135,10 @@ const UserProfile = ({userData}) => {
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
+
+  const handleOnHomeClick = () => {
+    navigate('/');
+  }
 
   const handleFollowRequest = () => {
     axiosInstance
@@ -280,7 +287,11 @@ const UserProfile = ({userData}) => {
     <Box>
       <AppBar>
         <Toolbar>
-
+          <IconButton
+            size="large"
+              onClick={handleOnHomeClick}>
+            <HomeIcon/>
+          </IconButton>
         </Toolbar>
 
       </AppBar>
