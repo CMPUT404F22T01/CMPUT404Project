@@ -53,7 +53,8 @@ const Search = ({ searchValue }) => {
     return (
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
-          <Avatar src="https://i.picsum.photos/id/49/536/354.jpg?hmac=nHnd7iRJJCEu5ETUJ1utIrDqxG0pq_JrU_d_9zSnuL0"></Avatar>
+          {authorData.profileImage ?  <Avatar src={"http://localhost:8000"+authorData.profileImage}></Avatar>: <Avatar sx={{backgroundColor:"#fcb69f"}}>{authorData.username[0]}</Avatar>}
+          
           <Link
             onClick={()=>navigate('/profile', {state:{authorData}})}
             variant="body2"
