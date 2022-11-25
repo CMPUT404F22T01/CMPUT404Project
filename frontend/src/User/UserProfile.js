@@ -128,7 +128,7 @@ const UserProfile = ({userData}) => {
   // we allow delete only for current user profile
   const onClickDeletePost = (index) => { 
     axiosInstance
-      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}/`)
+      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}`)
       .then((response) => {
         console.log(response.status)
       })
@@ -157,7 +157,7 @@ const UserProfile = ({userData}) => {
           .catch( error => { console.log(error)});
     }
     if(newValue === 2){
-      axiosInstance.get(`authors/${localStorage.getItem("id")}/followers`)
+      axiosInstance.get(`authors/${localStorage.getItem("id")}/followers/`)
       .then((response) => {
         setFollowerData(response.data.items);
       })
@@ -192,7 +192,7 @@ const UserProfile = ({userData}) => {
         "username": localStorage.getItem('username'),
       }
       axiosInstance.post(
-        `authors/${authorData.id.split("authors/")[1]}/inbox`,
+        `authors/${authorData.id.split("authors/")[1]}/inbox/`,
         data
         ).then((response) => {
           console.log(response.data)
@@ -246,7 +246,7 @@ const UserProfile = ({userData}) => {
     axiosInstance
       .get(`authors/${authorID}/posts/`)
       .then((response) => {
-        setData(response.data);
+        setData(response.data.items);
       })
       .catch((error) => {
         console.error("error in post get ", error);

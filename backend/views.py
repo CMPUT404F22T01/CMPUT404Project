@@ -256,7 +256,11 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         queryset = POST.objects.filter(author__id=kwargs['uuidOfAuthor'])
         serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type" : "post",
+            "items": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
     # adding extra data to context object becoz we need to author to create the post
 
@@ -300,7 +304,11 @@ class PostDistinctView(generics.ListAPIView):
             elif obj.visibility == 'FRIENDS' and bool(Follower.objects.filter(follower__id=kwargs['uuidOfAuthor'], following__id=obj.author.id)):
                 all_post_objects.append(obj)
         serializer = self.serializer_class(all_post_objects, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type": 'post',
+            "items": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CommentPostView(generics.ListCreateAPIView):
@@ -342,7 +350,21 @@ class CommentPostView(generics.ListCreateAPIView):
         # edit
         queryset = self.get_queryset().filter(post__id=kwargs['uuidOfPost'])
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type":"comments",
+            "post": serializer.data[0]["post"]["id"],
+            "id": serializer.data[0]["post"]["id"] +"/comments",
+            "comments": []
+        }
+   
+        for x in serializer.data:
+            temp = {}
+            for key,item in x.items():
+                if(key != "type" and key != "post"):
+                     temp[key] = item
+            data["comments"].append(temp)
+ 
+        return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST", "DELETE"])

@@ -22,14 +22,14 @@ const useStyles = makeStyles({
   },
 });
 
-const Comment = ({ postData, reRenderHelper }) => {
-  console.log(postData)
+const Comment = ({ postData, reRenderHelper }) => { 
   const styleClasses = useStyles();
   const [commentData, setCommentData] = useState([]);
   const [openLikedBy, setOpenLikedBy] = useState(false);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
   const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false);
 
+  // postData.author.host becoz we want to consider forgein comments
   useEffect(() => {
     axiosInstance
       .get(
@@ -37,8 +37,8 @@ const Comment = ({ postData, reRenderHelper }) => {
           postData.id.split("posts/")[1]
         }/comments/`
       )
-      .then((response) => {
-        console.log(response.data)
+      .then((response) => { 
+        // console.log(response.data)
         setCommentData(response.data.comments);
       })
       .catch((error) => {
@@ -53,7 +53,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     };
     axiosInstance
       .post(
-        `authors/${commentData[index].author.id.split("authors/")[1]}/inbox`,
+        `authors/${commentData[index].author.id.split("authors/")[1]}/inbox/`,
         data
       )
       .then((response) => {

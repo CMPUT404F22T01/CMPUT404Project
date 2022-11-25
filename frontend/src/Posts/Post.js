@@ -122,15 +122,16 @@ export default function Post({postReRenderHelper}) {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
-        setPost(oldData => [...oldData, ...response.data]);
+        setPost(oldData => [...oldData, ...response.data.items]);
       })
       .catch((error) => {
         console.error("error in post get ", error);
       });
   }, [postReRenderHelper]);
 
+  // getting external node user to get the posts later
   useEffect(() => {
-    axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes`)
+    axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes/`)
     .then((response) => {
        setNode(response.data);
     })
@@ -139,15 +140,15 @@ export default function Post({postReRenderHelper}) {
     })
   }, [])
 
+  //getting all forgein server posts
   useEffect(() => {
     node.map((item, index) => {
       axiosInstance.get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
       .then((response) => {
-        // console.log(response.data)
         setPost(oldData => [...oldData, ...response.data.items]);
       })
       .catch((error) => {
-        // console.error("error in node get ", error);
+        console.error("error in node get ", error);
       })
     })
   }, [node])
@@ -155,11 +156,12 @@ export default function Post({postReRenderHelper}) {
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
     // doubt why does the useRef gives an empty value and why the ... warning
+    console.log(data)
     axiosInstance
       .post(
-        `authors/${localStorage.getItem("id")}/posts/${
+        `${data.author.host}/authors/${data.author.id.split("authors/")[1]}/posts/${
           data.id.split("posts/")[1]
-        }/comments`,
+        }/comments/`,
         {
           comment: comment,
         }
@@ -172,7 +174,7 @@ export default function Post({postReRenderHelper}) {
         axiosInstance.post(
           `authors/${
             response.post.id.split("authors/")[1].split("/posts/")[0]
-          }/inbox`,
+          }/inbox/`,
           response
         );
       })
@@ -189,7 +191,7 @@ export default function Post({postReRenderHelper}) {
       'data': post[index] 
     }
     axiosInstance.post(
-      `authors/${post[index].author.id.split("authors/")[1]}/inbox`,
+      `authors/${post[index].author.id.split("authors/")[1]}/inbox/`,
        data
       ).then((response)=>{
         console.log(response.data)
@@ -213,7 +215,7 @@ export default function Post({postReRenderHelper}) {
       // [0] becoz the view returns many = true 
       post[index].type = 'share';
       axiosInstance.post(
-        `authors/${response[0].id.split("authors/")[1]}/inbox`,
+        `authors/${response[0].id.split("authors/")[1]}/inbox/`,
         post[index],
         {  params: {
           'username':  localStorage.getItem("username")
@@ -289,7 +291,6 @@ export default function Post({postReRenderHelper}) {
             }
             title={data.author.username}
             subheader={data.title}
-             
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
           {(data.image || data.image_url) ? (
@@ -299,7 +300,13 @@ export default function Post({postReRenderHelper}) {
               alt="Post Image"
             />
           ) : (
-            ""
+             data.contentType === "image/png;base64" ? 
+             <CardMedia
+             component="img"
+             image={data.content}
+             alt="Post Image"
+           />
+           : ""
           )}
 
           <CardContent>
