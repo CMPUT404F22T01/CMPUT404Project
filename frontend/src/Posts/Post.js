@@ -272,11 +272,7 @@ export default function Post({postReRenderHelper}) {
             avatar={
               <Avatar 
               alt={data.author.username+": Post User's Profile Picture"}
-<<<<<<< HEAD
-              src={"https://c404t3.herokuapp.com/"+data.author.profileImage}
-=======
               src={isValidUrl(data.author.profileImage) ? data.author.profileImage : "https://c404t3.herokuapp.com"+data.author.profileImage}
->>>>>>> 738009e2240387577594025710bace25d6391e87
               />
               
             }
@@ -299,13 +295,8 @@ export default function Post({postReRenderHelper}) {
           {(data.image || data.image_url) ? (
             <CardMedia
               component="img"
-<<<<<<< HEAD
-              image={"https://c404t3.herokuapp.com/" + data.image}
-              alt="User Image"
-=======
               image={isValidUrl(data.image_url) ? data.image_url : "https://c404t3.herokuapp.com" + data.image}
               alt="Post Image"
->>>>>>> 738009e2240387577594025710bace25d6391e87
             />
           ) : (
             ""

@@ -259,7 +259,7 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}>
+                <Avatar src={isValidUrl(authorData.profileImage) ? "http://localhost:8000"+authorData.profileImage : "https://c404t3.herokuapp.com" + authorData.profileImage}>
                   
                 </Avatar>
               }
@@ -321,17 +321,12 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-            <Avatar
-              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}
-              className="profile-img"
-              sx={{ width: 150, height: 150, marginBottom: 2 }}
-            /> 
          
-          <Grid container direction="row" alignItems="center" spacing={8} >
+          <Grid container direction="row" alignItems="center" spacing={12} >
 
             <Grid item>
               <Avatar
-                src={"https://c404t3.herokuapp.com/"+authorData.profileImage}
+                src={isValidUrl(authorData.profileImage) ? "http://localhost:8000"+authorData.profileImage :  "https://c404t3.herokuapp.com" + authorData.profileImage}
                 className="profile-img"
                 sx={{ width: 150, height: 150, marginBottom: 2 }}
               /> 
