@@ -14,6 +14,10 @@ import {
   TextField,
   Tab,
   Tabs,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText
 } from "@mui/material";
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -85,6 +89,7 @@ const UserProfile = ({userData}) => {
   const [reRenderHelper, setReRenderHelper] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(1);
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
+  const [followerData, setFollowerData] = React.useState([]);
 
 
 
@@ -131,10 +136,6 @@ const UserProfile = ({userData}) => {
       });
       setReRenderHelper((prevState)=>!prevState); 
   };
-  // const url = 'http://127.0.0.1:8000/mainDB/user/data/'
-  // const config = {
-  //     headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
-  // };
 
   const handleOpenEditDialog = () => {
     setOpenDialog(true)
@@ -153,6 +154,13 @@ const UserProfile = ({userData}) => {
           .then(response => response.json())
           .then(data => { setGitHubData(data)})
           .catch( error => { console.log(error)});
+    }
+    if(newValue === 2){
+      axiosInstance.get(`authors/${localStorage.getItem("id")}/followers`)
+      .then((response) => {
+        setFollowerData(response.data.items);
+      })
+      .catch( error => { console.log(error)})
     }
     setTabValue(newValue);
   };
@@ -224,7 +232,6 @@ const UserProfile = ({userData}) => {
     axiosInstance
       .get(`authors/${authorID}/followers/${localStorage.getItem("id")}`)
       .then((response) => {
-        console.log(response.status)
          if(response.status === 200){
           setFollowing(true);
          }
@@ -244,6 +251,26 @@ const UserProfile = ({userData}) => {
         console.error("error in post get ", error);
       });
   }, [reRenderHelper]); 
+
+  const allfollowers = followerData.map((item) => {
+
+    return (
+      <Typography> 
+      <ListItem alignItems="flex-start">
+        <ListItemAvatar>
+          {item.profileImage ? (<Avatar alt="Remy Sharp" src={"http://localhost:8000"+item.profileImage} />) : ""}
+        </ListItemAvatar>
+        <ListItemText
+          primary={item.username}
+          secondary = {item.displayName}
+          sx={{cursor: "pointer"}}
+           
+        />
+      </ListItem>
+      <Divider variant="inset" component="li" />
+     </Typography>
+    )
+  });
 
 
 
@@ -273,12 +300,15 @@ const UserProfile = ({userData}) => {
               subheader={item.published}
             />
 
-            {/* <CardMedia
-                    component="img"
-                    height="394"
-                    image="https://mui.com/static/images/cards/paella.jpg"
-                    alt="Paella dish"
-                  /> */}
+        {item.image ? (
+            <CardMedia
+              component="img"
+              image={"http://localhost:8000" + item.image}
+              alt="User Image"
+            />
+          ) : (
+            ""
+          )}
             <CardContent>
               <Typography variant="body2" color="text.secondary">
                 {item.content}
@@ -364,7 +394,7 @@ const UserProfile = ({userData}) => {
           <Tab value={3} label="Github"/>
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
-
+      { tabValue===2 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>{allfollowers}</List>}
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 
