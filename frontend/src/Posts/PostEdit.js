@@ -16,6 +16,7 @@ import { makeStyles } from "@mui/styles";
 import "./postcreate.css";
 
 import axiosInstance from "../utils/axiosInstance"; 
+import isValidUrl from "../utils/urlValidator"
 import { useRef } from "react";
 
 /**
@@ -85,6 +86,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
   const contentTypeRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
+  const imageURLRef = useRef(null);
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
@@ -99,6 +101,9 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     } else {
       formData.append("unlisted", "false");
     }
+    if(isValidUrl(imageURLRef.current.value)){
+      formData.append("image_url", imageURLRef.current.value);
+    } 
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
     formData.append(
       "image",
@@ -246,6 +251,21 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
                 Upload Image
               </Fab>
             </label>
+            <br />
+            <TextField
+              defaultValue={data.image_url}
+              id="outlined-basic"
+              label="Image Url"
+              variant="outlined"
+              className={styleClasses.textfields}
+              InputProps={{
+                className: styleClasses.input,
+              }}
+              InputLabelProps={{
+                style: { color: "#fff" },
+              }}
+              inputRef={imageURLRef}
+            />
             <br />
             <TextField
               defaultValue={data.source}

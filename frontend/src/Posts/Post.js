@@ -36,6 +36,7 @@ import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
+import isValidUrl from "../utils/urlValidator"
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -247,7 +248,7 @@ export default function Post({postReRenderHelper}) {
             avatar={
               <Avatar 
               alt={data.author.username+": Post User's Profile Picture"}
-              src={"http://localhost:8000"+data.author.profileImage}
+              src={isValidUrl(data.author.profileImage) ? data.author.profileImage : "https://c404t3.herokuapp.com"+data.author.profileImage}
               />
               
             }
@@ -267,11 +268,11 @@ export default function Post({postReRenderHelper}) {
              
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
-          {data.image ? (
+          {(data.image || data.image_url) ? (
             <CardMedia
               component="img"
-              image={"http://localhost:8000" + data.image}
-              alt="User Image"
+              image={isValidUrl(data.image_url) ? data.image_url : "https://c404t3.herokuapp.com" + data.image}
+              alt="Post Image"
             />
           ) : (
             ""
