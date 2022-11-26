@@ -501,7 +501,7 @@ def getEntireInboxRequests(request, author_id):
             items = list(map(helperFunc, inboxObjects))
             resp = {
                 "type": "inbox",
-                "author": request.user.url(),
+                "author": request.user.get_url(),
                 "items": items,
             }
             return response.Response(resp, 200)
