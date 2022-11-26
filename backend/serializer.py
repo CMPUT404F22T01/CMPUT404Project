@@ -31,15 +31,21 @@ class LoginSerializer(TokenObtainPairSerializer):
  
         return data
 
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        fields = '__all__'
+
 class GetAuthorSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source="get_url", read_only=True)
     type = serializers.CharField(read_only=True)
     url = serializers.CharField(source="get_url",read_only=True)
     displayName = serializers.CharField(allow_null=True)
     github = serializers.URLField(allow_blank=True, allow_null=True)
+    node = NodeSerializer("node", read_only=True)
     class Meta:
         model = Author
-        fields = ["type","id","host","displayName","url","github","profileImage", "username"]
+        fields = ["type","id","host","displayName","url","github","profileImage", "username", "node"]
 
 class FollowerSerializer(serializers.ModelSerializer):
     follower = GetAuthorSerializer(read_only=True)

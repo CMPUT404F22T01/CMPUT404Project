@@ -41,7 +41,6 @@ const Comment = ({ postData, reRenderHelper }) => {
         }/comments/`
       )
       .then((response) => { 
-        // console.log(response.data)
         setCommentData(response.data.comments);
       })
       .catch((error) => {
