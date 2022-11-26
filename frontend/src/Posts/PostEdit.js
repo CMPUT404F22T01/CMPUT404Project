@@ -91,14 +91,15 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
   const originRef = useRef(null);
 
   const onSubmitHandler = (e) => {
+     
     let formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
-    formData.append("visibility", visibilityRef.current.value);
     if (visibilityRef.current.value === "UNLISTED") {
       formData.append("unlisted", "true");
     } else {
+      formData.append("visibility", visibilityRef.current.value);
       formData.append("unlisted", "false");
     }
     if(isValidUrl(imageURLRef.current.value)){
@@ -113,7 +114,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}/`, formData)
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}`, formData)
       .then((response) => {
         //temp need to save user id
         console.log(response.status);
@@ -121,7 +122,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
       .catch((err) => {
         console.error(err);
       });
-    this.forceUpdate();
+    // this.forceUpdate();
     onClickPostEditHandler();
   };
 

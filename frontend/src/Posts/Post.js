@@ -123,6 +123,7 @@ export default function Post({ postReRenderHelper }) {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
+        console.log(response.data);
         setPost((oldData) => [...oldData, ...response.data.items]);
       })
       .catch((error) => {
@@ -163,6 +164,7 @@ export default function Post({ postReRenderHelper }) {
       data.author.host += "/";
     }
     if (data.author.host === "https://c404t3.herokuapp.com/") {
+      console.log("hello:", data.author.host)
       axiosInstance
         .post(
           `authors/${localStorage.getItem("id")}/posts/${
@@ -239,10 +241,10 @@ export default function Post({ postReRenderHelper }) {
     if(post[index].author.host[post[index].author.host.length - 1] !== '/'){
       post[index].author.host += '/'
     }
-    if (post[index].author.host === "https://c404t3.herokuapp.com/"){
+    if (post[index].author.host == "https://c404t3.herokuapp.com/"){
       axiosInstance
       .post(
-        `authors/${post[index].author.id.split("authors/")[1]}/inbox/`,
+        `authors/${localStorage.getItem("id")}/inbox/`,
         data
       )
       .then((response) => {
@@ -270,9 +272,7 @@ export default function Post({ postReRenderHelper }) {
       .catch((error) => {
         console.log(error);
       });
-    }
-     
-
+    } 
     setReRenderLikeHelper((prevState) => !prevState);
   };
 
@@ -450,10 +450,9 @@ export default function Post({ postReRenderHelper }) {
                   Post
                 </Button>
               </Box>
-              {!(data.visibility === "FRIENDS") ||
-              data.author.id === localStorage.getItem("id") ? (
+         
                 <Comment postData={data} reRenderHelper={reRenderHelper} />
-              ) : null}
+    
             </CardContent>
           </Collapse>
 

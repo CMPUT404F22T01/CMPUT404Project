@@ -27,8 +27,7 @@ const Comment = ({ postData, reRenderHelper }) => {
   const [commentData, setCommentData] = useState([]);
   const [openLikedBy, setOpenLikedBy] = useState(false);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
-  const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false);
-
+  const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false); 
   // postData.author.host becoz we want to consider forgein comments
   useEffect(() => {
     if(postData.author.host[postData.author.host.length-1] !== '/'){
