@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 class LoginViewSet(viewsets.ModelViewSet, TokenObtainPairView):
     
     serializer_class = LoginSerializer
-    # permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
     # http_method_names = ['post']
 
     def create(self, request, *args, **kwargs):

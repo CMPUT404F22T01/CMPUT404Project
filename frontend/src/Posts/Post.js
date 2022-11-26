@@ -17,8 +17,8 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Box from "@mui/material/Box";
-import Button  from "@mui/material/Button";
-import Slide from '@mui/material/Slide';
+import Button from "@mui/material/Button";
+import Slide from "@mui/material/Slide";
 
 import { red } from "@mui/material/colors";
 
@@ -29,14 +29,15 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SendIcon from "@mui/icons-material/Send";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
-import { makeStyles } from "@mui/styles"; 
+import { makeStyles } from "@mui/styles";
 
 import AllPostLikes from "../Likes/AllPostLikes";
 import { useEffect, useState, useRef } from "react";
 import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
-import isValidUrl from "../utils/urlValidator"
+import isValidUrl from "../utils/urlValidator";
+import axios from "axios";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -91,14 +92,14 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Post({postReRenderHelper}) {
+export default function Post({ postReRenderHelper }) {
   const styleClasses = useStyles();
   const [post, setPost] = useState([]);
   const userToSharePostWithRef = useRef(null);
   const [node, setNode] = useState([]);
 
   const [comment, setComment] = useState(null);
-  const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
+  const [indexOfCollapse, setIndexOfCollapse] = useState(null);
   const [openLikedBy, setOpenLikedBy] = React.useState(false);
   const [openShare, setOpenShare] = React.useState(false);
   const [openComment, setOpenComment] = React.useState(false);
@@ -122,107 +123,186 @@ export default function Post({postReRenderHelper}) {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
-        setPost(oldData => [...oldData, ...response.data]);
+        console.log(response.data);
+        setPost((oldData) => [...oldData, ...response.data.items]);
       })
       .catch((error) => {
         console.error("error in post get ", error);
       });
   }, [postReRenderHelper]);
 
+  // getting external node user to get the posts later
   useEffect(() => {
-    axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes`)
-    .then((response) => {
-       setNode(response.data);
-    })
-    .catch((error) => {
-      console.error("error in node get ", error);
-    })
-  }, [])
-
-  useEffect(() => {
-    node.map((item, index) => {
-      axiosInstance.get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
+    axiosInstance
+      .get(`authors/${localStorage.getItem("id")}/nodes/`)
       .then((response) => {
-        // console.log(response.data)
-        setPost(oldData => [...oldData, ...response.data.items]);
+        setNode(response.data);
       })
       .catch((error) => {
-        // console.error("error in node get ", error);
-      })
-    })
-  }, [node])
+        console.error("error in node get ", error);
+      });
+  }, []);
+
+  //getting all forgein server posts
+  useEffect(() => {
+    node.map((item, index) => {
+      axiosInstance
+        .get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
+        .then((response) => {
+          setPost((oldData) => [...oldData, ...response.data.items]);
+        })
+        .catch((error) => {
+          console.error("error in node get ", error);
+        });
+    });
+  }, [node]);
 
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
     // doubt why does the useRef gives an empty value and why the ... warning
-    axiosInstance
-      .post(
-        `authors/${localStorage.getItem("id")}/posts/${
-          data.id.split("posts/")[1]
-        }/comments`,
-        {
-          comment: comment,
+    if (data.author.host[data.author.host.length - 1] !== "/") {
+      data.author.host += "/";
+    }
+    if (data.author.host === "https://c404t3.herokuapp.com/") {
+      console.log("hello:", data.author.host)
+      axiosInstance
+        .post(
+          `authors/${localStorage.getItem("id")}/posts/${
+            data.id.split("posts/")[1]
+          }/comments/`,
+          {
+            comment: comment,
+          }
+        )
+        .then((response) => {
+          return response.data;
+        })
+        .then((response) => {
+          // console.log(response.post.id.split("authors/")[1].split("/posts/")[0]);
+          axiosInstance.post(
+            `authors/${
+              response.post.id.split("authors/")[1].split("/posts/")[0]
+            }/inbox/`,
+            response
+          );
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else {
+      //temporary setup
+      var userInfo;
+      axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes/`)
+      .then((response) => {
+        for(let i = 0; i < response.data.length; i++) {
+          if(response.data[i].host == data.author.host){
+            userInfo = response.data[i];
+            break;
+          }
         }
-      )
-      .then((response) => {
-        return response.data;
-      })
-      .then((response) => {
-        // console.log(response.post.id.split("authors/")[1].split("/posts/")[0]);
-        axiosInstance.post(
-          `authors/${
-            response.post.id.split("authors/")[1].split("/posts/")[0]
-          }/inbox`,
-          response
-        );
-      })
-      .catch((error) => {
+        console.log(userInfo);
+        axiosInstance
+        .post(
+          `${data.author.host}authors/${data.author.id.split("authors/")[1]}/posts/${
+            data.id.split("posts/")[1]
+          }/comments/`,
+          {
+            comment : comment 
+          },
+          {
+            auth : {
+              username : userInfo.node.username,
+              password : userInfo.node.password
+            }
+          }
+        )
+        .then((response) => {
+          return response.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }).catch((error) => {
         console.log(error);
-      });
+      })
+      
+       
+    }
+
     setComment("");
     setReRenderHelper((prevState) => !prevState);
   };
 
-  const onClickLikeHandler = (index) => {  
+  const onClickLikeHandler = (index) => {
     const data = {
-      'type': 'like', 
-      'data': post[index] 
+      type: "like",
+      data: post[index],
+    }; 
+    if(post[index].author.host[post[index].author.host.length - 1] !== '/'){
+      post[index].author.host += '/'
     }
-    axiosInstance.post(
-      `authors/${post[index].author.id.split("authors/")[1]}/inbox`,
-       data
-      ).then((response)=>{
-        console.log(response.data)
-      }).catch((error)=>{
-        console.log(error)
+    if (post[index].author.host == "https://c404t3.herokuapp.com/"){
+      axiosInstance
+      .post(
+        `authors/${localStorage.getItem("id")}/inbox/`,
+        data
+      )
+      .then((response) => {
+        console.log(response.data);
       })
-
-      setReRenderLikeHelper((prevState) => !prevState);
-  }
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+    else{
+      axiosInstance
+      .post(
+        `${post[index].author.host}authors/${post[index].author.id.split("authors/")[1]}/inbox/`,
+        data,
+        {
+          auth: {
+            username: "team1and2",
+            password: "team1and2"
+          }
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    } 
+    setReRenderLikeHelper((prevState) => !prevState);
+  };
 
   // How to handle a share: find the user and use the found user's id to send post request to the inbox.
   const handleShare = (index) => {
-  
-    axiosInstance.get(`author/search/`, {
-      params: {
-        'username': userToSharePostWithRef.current.value
-      }
-    }).then(response => {
-      return response.data;
-    }).then(response => {
-      // [0] becoz the view returns many = true 
-      post[index].type = 'share';
-      axiosInstance.post(
-        `authors/${response[0].id.split("authors/")[1]}/inbox`,
-        post[index],
-        {  params: {
-          'username':  localStorage.getItem("username")
-        } }
-         
-      )
-    }).catch((error) => {
-      console.error(error)
-    })
+    axiosInstance
+      .get(`author/search/`, {
+        params: {
+          username: userToSharePostWithRef.current.value,
+        },
+      })
+      .then((response) => {
+        return response.data;
+      })
+      .then((response) => {
+        // [0] becoz the view returns many = true
+        post[index].type = "share";
+        axiosInstance.post(
+          `authors/${response[0].id.split("authors/")[1]}/inbox/`,
+          post[index],
+          {
+            params: {
+              username: localStorage.getItem("username"),
+            },
+          }
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     setOpenShare(false);
   };
 
@@ -232,7 +312,7 @@ export default function Post({postReRenderHelper}) {
       setIndexToEdit(index_to_edit);
     }
     setPostEdit((prevState) => !prevState);
-  }; 
+  };
 
   const handleClickOpenLikedBy = (index) => {
     setIndexOfCollapse(index);
@@ -267,21 +347,23 @@ export default function Post({postReRenderHelper}) {
       <Typography paragraph className={styleClasses.container}>
         <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
-             
             className={styleClasses.cardHeader}
             avatar={
-              <Avatar 
-              alt={data.author.username+": Post User's Profile Picture"}
-              src={isValidUrl(data.author.profileImage) ? data.author.profileImage : "https://c404t3.herokuapp.com"+data.author.profileImage}
+              <Avatar
+                alt={data.author.username + ": Post User's Profile Picture"}
+                src={
+                  isValidUrl(data.author.profileImage)
+                    ? data.author.profileImage
+                    : "https://c404t3.herokuapp.com" + data.author.profileImage
+                }
               />
-              
             }
             action={
               <IconButton aria-label="settings">
                 {/* to allow author to edit its own post */}
                 {data.author.id.split("authors/")[1] ===
                 localStorage.getItem("id") ? (
-                  <MoreVertIcon  onClick={() => onClickPostEditHandler(index)} />
+                  <MoreVertIcon onClick={() => onClickPostEditHandler(index)} />
                 ) : (
                   ""
                 )}
@@ -289,15 +371,20 @@ export default function Post({postReRenderHelper}) {
             }
             title={data.author.username}
             subheader={data.title}
-             
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
-          {(data.image || data.image_url) ? (
+          {data.image || data.image_url ? (
             <CardMedia
               component="img"
-              image={isValidUrl(data.image_url) ? data.image_url : "https://c404t3.herokuapp.com" + data.image}
+              image={
+                isValidUrl(data.image_url)
+                  ? data.image_url
+                  : "https://c404t3.herokuapp.com" + data.image
+              }
               alt="Post Image"
             />
+          ) : data.contentType === "image/png;base64" ? (
+            <CardMedia component="img" image={data.content} alt="Post Image" />
           ) : (
             ""
           )}
@@ -307,28 +394,43 @@ export default function Post({postReRenderHelper}) {
               {data.content}
             </Typography>
           </CardContent>
-          <CardActions disableSpacing sx={{backgroundColor: "#333"}}>
+          <CardActions disableSpacing sx={{ backgroundColor: "#333" }}>
             <IconButton
               aria-label="likedby"
-              onClick={() => handleClickOpenLikedBy(index)} 
+              onClick={() => handleClickOpenLikedBy(index)}
             >
-              <Diversity1Icon sx = {{color: "#fff"}} />
+              <Diversity1Icon sx={{ color: "#fff" }} />
             </IconButton>
             <IconButton
               aria-label="comment"
-              onClick={() => { handleExpandClick(index); }}
+              onClick={() => {
+                handleExpandClick(index);
+              }}
             >
-              <CommentIcon sx = {{color: "#fff"}} />
+              <CommentIcon sx={{ color: "#fff" }} />
             </IconButton>
-            {!(data.visibility === "UNLISTED") ? <IconButton
-              aria-label="share"
-              onClick={() => { handleClickOpenShare(index); }}
+            {!(data.visibility === "UNLISTED") ? (
+              <IconButton
+                aria-label="share"
+                onClick={() => {
+                  handleClickOpenShare(index);
+                }}
+              >
+                <SendIcon sx={{ color: "#fff" }} />
+              </IconButton>
+            ) : null}
+            <Typography
+              variant="body2"
+              sx={{ marginLeft: "auto", color: "#fff" }}
             >
-              <SendIcon sx = {{color: "#fff"}}/>
-            </IconButton>: null}
-            <Typography variant="body2" sx={{marginLeft:'auto', color: "#fff"}}>{data.published}</Typography>
+              {data.published}
+            </Typography>
           </CardActions>
-          <Collapse in={indexOfCollapse === index && openComment} timeout="auto" unmountOnExit>
+          <Collapse
+            in={indexOfCollapse === index && openComment}
+            timeout="auto"
+            unmountOnExit
+          >
             <CardContent>
               <Box className={styleClasses.commentContainer}>
                 {/* commentRef does not work */}
@@ -340,13 +442,17 @@ export default function Post({postReRenderHelper}) {
                   className={styleClasses.commentTextField}
                 />
                 <Button
-                  onClick={() => { onClickCreateCommentHandler(data); }}
+                  onClick={() => {
+                    onClickCreateCommentHandler(data);
+                  }}
                   className={styleClasses.commentButton}
                 >
                   Post
                 </Button>
               </Box>
-              {(!(data.visibility === "FRIENDS") || (data.author.id === localStorage.getItem("id"))) ? <Comment postData={data} reRenderHelper={reRenderHelper} />: null}
+         
+                <Comment postData={data} reRenderHelper={reRenderHelper} />
+    
             </CardContent>
           </Collapse>
 
@@ -383,13 +489,16 @@ export default function Post({postReRenderHelper}) {
                   aria-label="like"
                 >
                   {/* If the user has liked the item : style={{ color: "red" }} */}
-                  <FavoriteIcon style={{ color: redHeart ? 'red' : 'white'}}/>
+                  <FavoriteIcon style={{ color: redHeart ? "red" : "white" }} />
                 </IconButton>
               </Toolbar>
             </AppBar>
             <CardContent>
               {/* Should list all of the people who have liked the item */}
-              <AllPostLikes postData={post[indexOfCollapse]} reRenderLikeHelper={reRenderLikeHelper}/>
+              <AllPostLikes
+                postData={post[indexOfCollapse]}
+                reRenderLikeHelper={reRenderLikeHelper}
+              />
             </CardContent>
           </Dialog>
 
@@ -416,7 +525,7 @@ export default function Post({postReRenderHelper}) {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleCloseShare}>Cancel</Button>
-              <Button onClick={()=>handleShare(index)}>Share</Button>
+              <Button onClick={() => handleShare(index)}>Share</Button>
             </DialogActions>
           </Dialog>
         </Card>
