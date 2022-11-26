@@ -165,7 +165,7 @@ export default function Post({ postReRenderHelper }) {
     if (data.author.host === "https://c404t3.herokuapp.com/") {
       axiosInstance
         .post(
-          `http://localhost:8000/authors/${localStorage.getItem("id")}/posts/${
+          `authors/${localStorage.getItem("id")}/posts/${
             data.id.split("posts/")[1]
           }/comments/`,
           {
