@@ -13,7 +13,7 @@ const AllPostLikes = ({commentData, reRenderLikeHelper}) => {
  
     React.useEffect(() => {
         console.log("comment called")
-        axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.post.id.split("posts/")[1]}/comments/${commentData.id.split("comments/")[1]}/likes`)
+        axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.post.id.split("posts/")[1]}/comments/${commentData.id.split("comments/")[1]}/likes/`)
         .then((response) => {
             console.log(response.data);
             setLikeData(response.data)

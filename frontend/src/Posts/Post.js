@@ -156,14 +156,16 @@ export default function Post({postReRenderHelper}) {
   const onClickCreateCommentHandler = (data) => {
     // console.log(commentRef.current);
     // doubt why does the useRef gives an empty value and why the ... warning
-    console.log(data)
+    if(data.author.host[data.author.host.length-1] !== '/'){
+      data.author.host += '/';
+    }
     axiosInstance
       .post(
-        `${data.author.host}/authors/${data.author.id.split("authors/")[1]}/posts/${
+        `${data.author.host}authors/${localStorage.getItem("id")}/posts/${
           data.id.split("posts/")[1]
         }/comments/`,
         {
-          comment: comment,
+          "comment": comment,
         }
       )
       .then((response) => {
