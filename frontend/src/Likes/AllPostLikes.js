@@ -11,7 +11,6 @@ const AllPostLikes = ({postData, reRenderLikeHelper}) => {
     const [likeData, setLikeData] = React.useState([])
     
     React.useEffect(() => {
-        console.log("post called")
         axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${postData.id.split("posts/")[1]}/likes/`)
         .then((response) => {
             // console.log(response.data);

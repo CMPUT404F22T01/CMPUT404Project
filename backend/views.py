@@ -401,17 +401,18 @@ def handleInboxRequests(request, author_id):
                 if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
                 if postType == "like":
-
+                  
                     data = {
-                        "object_type": request.data["data"]["type"],
+                        "object_type": request.data["type"],
                         "author": request.data["data"]["author"],
                         "object_id": request.data["data"]["id"],
                     }
+                    
                     serializer = LikeSerializer(
                         data=data, partial=True)
                     if not serializer.is_valid(raise_exception=True):
                         raise KeyError("like object not valid!")
-
+                     
                     authorID, postID, commentID = utils.getAuthorIDandPostIDFromLikeURL(
                         serializer.data["object_id"])
 
@@ -426,6 +427,7 @@ def handleInboxRequests(request, author_id):
                     else:
                         raise KeyError("like object not valid!")
                     idOfItem = l[0].id
+                    print(idOfItem)
 
                 else:
                     idOfItem = utils.getUUID(request.data["id"])

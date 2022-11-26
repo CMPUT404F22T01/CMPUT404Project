@@ -37,6 +37,7 @@ import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
+import axios from "axios";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -164,7 +165,7 @@ export default function Post({ postReRenderHelper }) {
     if (data.author.host === "https://c404t3.herokuapp.com/") {
       axiosInstance
         .post(
-          `authors/${localStorage.getItem("id")}/posts/${
+          `http://localhost:8000/authors/${localStorage.getItem("id")}/posts/${
             data.id.split("posts/")[1]
           }/comments/`,
           {
@@ -187,20 +188,29 @@ export default function Post({ postReRenderHelper }) {
           console.log(error);
         });
     } else {
-      console.log(data.author)
-      axiosInstance
+      //temporary setup
+      var userInfo;
+      axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes/`)
+      .then((response) => {
+        for(let i = 0; i < response.data.length; i++) {
+          if(response.data[i].host == data.author.host){
+            userInfo = response.data[i];
+            break;
+          }
+        }
+        console.log(userInfo);
+        axiosInstance
         .post(
           `${data.author.host}authors/${data.author.id.split("authors/")[1]}/posts/${
             data.id.split("posts/")[1]
           }/comments/`,
           {
-            comment : comment
-            
+            comment : comment 
           },
           {
             auth : {
-              username : "team1and2",
-              password : "team1and2"
+              username : userInfo.node.username,
+              password : userInfo.node.password
             }
           }
         )
@@ -210,6 +220,11 @@ export default function Post({ postReRenderHelper }) {
         .catch((error) => {
           console.log(error);
         });
+      }).catch((error) => {
+        console.log(error);
+      })
+      
+       
     }
 
     setComment("");
@@ -220,8 +235,12 @@ export default function Post({ postReRenderHelper }) {
     const data = {
       type: "like",
       data: post[index],
-    };
-    axiosInstance
+    }; 
+    if(post[index].author.host[post[index].author.host.length - 1] !== '/'){
+      post[index].author.host += '/'
+    }
+    if (post[index].author.host === "https://c404t3.herokuapp.com/"){
+      axiosInstance
       .post(
         `authors/${post[index].author.id.split("authors/")[1]}/inbox/`,
         data
@@ -232,6 +251,27 @@ export default function Post({ postReRenderHelper }) {
       .catch((error) => {
         console.log(error);
       });
+    }
+    else{
+      axiosInstance
+      .post(
+        `${post[index].author.host}authors/${post[index].author.id.split("authors/")[1]}/inbox/`,
+        data,
+        {
+          auth: {
+            username: "team1and2",
+            password: "team1and2"
+          }
+        }
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    }
+     
 
     setReRenderLikeHelper((prevState) => !prevState);
   };

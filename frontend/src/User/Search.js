@@ -32,10 +32,10 @@ const Search = ({ searchValue }) => {
   const styles = useStyles();
   const navigate = useNavigate()
   const [searchData, setSearchData] = useState([]);
-
+  
     useEffect(() => {
         axiosInstance.get(
-            '/author/search/', 
+            'author/search/', 
             {
                 params: {
                     'username': searchValue

@@ -34,6 +34,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     if(postData.author.host[postData.author.host.length-1] !== '/'){
       postData.author.host += '/';
     }
+ 
     axiosInstance
       .get(
         `${postData.author.host}authors/${postData.author.id.split("authors/")[1]}/posts/${
