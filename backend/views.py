@@ -426,6 +426,8 @@ def handleInboxRequests(request, author_id):
                     else:
                         raise KeyError("like object not valid!")
                     idOfItem = l[0].id
+                    Inbox.objects.create(author_id=authorID,
+                                     object_type=postType, object_id=idOfItem, message=message)
 
                 else:
                     idOfItem = utils.getUUID(request.data["id"])
@@ -440,8 +442,9 @@ def handleInboxRequests(request, author_id):
                         postType = 'post'
                     elif type == "follow":
                         message = f'{request.data["username"]} send you a follow request.'
-                Inbox.objects.create(author_id=authorID,
+                    Inbox.objects.create(author_id=author_id,
                                      object_type=postType, object_id=idOfItem, message=message)
+                 
                 return response.Response({"message": message}, status.HTTP_201_CREATED)
             except Exception as e:
                 return response.Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
