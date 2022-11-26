@@ -400,7 +400,7 @@ def handleInboxRequests(request, author_id):
                 postType = str(request.data["type"]).lower()
                 if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
-                if postType == "like": 
+                if postType == "like":  
                     data = {
                         "object_type": request.data["type"],
                         "author": request.data["data"]["author"],
@@ -440,7 +440,7 @@ def handleInboxRequests(request, author_id):
                         postType = 'post'
                     elif type == "follow":
                         message = f'{request.data["username"]} send you a follow request.'
-                Inbox.objects.create(author_id=author_id,
+                Inbox.objects.create(author_id=authorID,
                                      object_type=postType, object_id=idOfItem, message=message)
                 return response.Response({"message": message}, status.HTTP_201_CREATED)
             except Exception as e:

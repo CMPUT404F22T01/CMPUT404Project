@@ -55,7 +55,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     };
     axiosInstance
       .post(
-        `authors/${commentData[index].author.id.split("authors/")[1]}/inbox/`,
+        `authors/${localStorage.getItem("id")}/inbox/`,
         data
       )
       .then((response) => {
