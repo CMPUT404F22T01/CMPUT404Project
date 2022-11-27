@@ -1,4 +1,0 @@
-1. After token refersh we need to manually reload (test it)
-2. Need to work on the UI make it better for editPost and createPost just need to someadd ons
-3. Need search bar
-4. when we post a comment in the view I edit the post so when i edit it the time also changes need to take care of it
