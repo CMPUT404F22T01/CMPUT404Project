@@ -13,12 +13,17 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import SinglePostDetailView from "../Posts/SinglePostDetailView";
+
 import axiosInstance from "../utils/axiosInstance";
 
 const Inbox = ({ onClickInboxHandler }) => {
   const navigate = useNavigate();
   const [inboxData, setInboxData] = useState([]);
   const [reRenderInbox, setReRenderInbox] = useState(false);
+
+  const [currentPost, setCurrentPost] = useState({}); 
+  // const [modelIsOpen, setModelIsOpen] = useState(false); 
 
   /**
    * on load loading the current user's inbox
@@ -74,7 +79,7 @@ const Inbox = ({ onClickInboxHandler }) => {
           button
           onClick={
             value.data.type === "post"
-              ? () => navigate(value.data.id)
+              ? () => setCurrentPost(value.data) 
               : () => navigate("/profile", { state: { authorData } })
           }
         >
@@ -123,6 +128,8 @@ const Inbox = ({ onClickInboxHandler }) => {
         </Toolbar>
       </AppBar>
       <List>{allMessages}</List>
+
+      <SinglePostDetailView post={currentPost} setPost={setCurrentPost} />
     </>
   );
 };
