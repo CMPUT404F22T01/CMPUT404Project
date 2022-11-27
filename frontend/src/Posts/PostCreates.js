@@ -124,12 +124,12 @@ export default function PostCreates({ onClickCreatePostHandler }) {
       });
 
       const followerData = await axiosInstance.get(
-        `authors/${localStorage.getItem("id")}/followers`
+        `authors/${localStorage.getItem("id")}/followers/`
       );
 
       await followerData.data.items.forEach((follower) => {
         axiosInstance.post(
-          `authors/${follower.id.split("authors/")[1]}/inbox`,
+          `authors/${follower.id.split("authors/")[1]}/inbox/`,
           postCreateResponse.data
         );
       });

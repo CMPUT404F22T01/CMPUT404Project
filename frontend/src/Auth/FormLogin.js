@@ -48,6 +48,7 @@ const FormLogin = () => {
 
         }).then((response) => {
             //temp need to save user id
+           
             localStorage.setItem('id', response.data.id);
             localStorage.setItem('username', response.data.username);
             localStorage.setItem('access_token', response.data.access);

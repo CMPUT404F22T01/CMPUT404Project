@@ -115,7 +115,7 @@ const UserProfile = ({userData}) => {
   // we allow delete only for current user profile
   const onClickDeletePost = (index) => { 
     axiosInstance
-      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}/`)
+      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}`)
       .then((response) => {
         console.log(response.status)
       })
@@ -168,7 +168,7 @@ const UserProfile = ({userData}) => {
         "username": localStorage.getItem('username'),
       }
       axiosInstance.post(
-        `authors/${authorData.id.split("authors/")[1]}/inbox`,
+        `authors/${authorData.id.split("authors/")[1]}/inbox/`,
         data
         ).then((response) => {
           console.log(response.data)
@@ -222,7 +222,7 @@ const UserProfile = ({userData}) => {
     axiosInstance
       .get(`authors/${authorID}/posts/`)
       .then((response) => {
-        setData(response.data);
+        setData(response.data.items);
       })
       .catch((error) => {
         console.error("error in post get ", error);
@@ -235,7 +235,7 @@ const UserProfile = ({userData}) => {
       <Typography> 
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
-          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : "http://localhost:8000"+item.profileImage} />) : ""}
+          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : `${item.host}`+item.profileImage} />) : ""}
         </ListItemAvatar>
         <ListItemText
           primary={item.username}
@@ -259,7 +259,7 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={isValidUrl(authorData.profileImage) ? "http://localhost:8000"+authorData.profileImage : "https://c404t3.herokuapp.com" + authorData.profileImage}>
+                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}>
                   
                 </Avatar>
               }
@@ -321,6 +321,11 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
+            <Avatar
+              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
+              className="profile-img"
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
+            /> 
          
           <Grid container direction="row" alignItems="center" spacing={12} >
 

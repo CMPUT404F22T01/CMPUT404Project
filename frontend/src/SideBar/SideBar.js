@@ -271,7 +271,7 @@ const SideBar = () => {
         >
           <Avatar
             alt={authorData.username+": User's Profile Picture"}
-            src={"https://c404t3.herokuapp.com/"+authorData.profileImage}
+            src={`${authorData.host}`+authorData.profileImage}
             sx={{ 
               width: open ? 90 : 40, 
               height: open ? 90 : 40,

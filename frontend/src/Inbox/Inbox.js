@@ -25,7 +25,7 @@ const Inbox = ({ onClickInboxHandler }) => {
    */
   useEffect(() => {
     axiosInstance
-      .get(`authors/${localStorage.getItem("id")}/inboxAll`)
+      .get(`authors/${localStorage.getItem("id")}/inboxAll/`)
       .then((response) => {
         setInboxData(response.data.items);
       })
@@ -36,7 +36,7 @@ const Inbox = ({ onClickInboxHandler }) => {
 
   const clearInboxFollowRequest = (id) => {
     axiosInstance
-    .delete(`authors/${localStorage.getItem("id")}/inboxAll`, {
+    .delete(`authors/${localStorage.getItem("id")}/inboxAll/`, {
       data: { id: id },
     })
     .then(() => {
