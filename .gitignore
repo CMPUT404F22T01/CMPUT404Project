@@ -4,4 +4,4 @@ venv/
 media/ 
 *.sqlite3
 *.pyc
- 
+.DS_Store
