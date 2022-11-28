@@ -33,25 +33,35 @@ export default function GitHubPage(props) {
       setGitFollowing(following);
       setFollowers(followers);
 
+    if (url != null && url != '') {
       let date = new Date(created_at);
       let dateToString = date.toDateString();
       let dateParts = dateToString.split(" ");
       let dateString = dateParts[1] + " " + dateParts[2] + " " + dateParts[3];
       setStartDate(dateString);
+    }
+    else {
+        setStartDate('');
+    }
   }
 
     useEffect( () => {
-        let gitUsername = url.split('github.com/')[1];
-        let apiURL = "https://api.github.com/users/" + gitUsername;
-        fetch(apiURL)
-          .then(response => response.json())
-          .then(data => {setGitHubData(data)})
-          .catch( error => { console.log(error)});
-
-        fetch(apiURL + "/events")
+        // handle null url
+        
+        if (url != null) {
+            let gitUsername = url.split('github.com/')[1];
+            let apiURL = "https://api.github.com/users/" + gitUsername;
+            fetch(apiURL)
             .then(response => response.json())
-            .then(data => {setEventData(data)})
-            .catch( error => {console.log(error)});
+            .then(data => {setGitHubData(data)})
+            .catch( error => { console.log(error)});
+
+            fetch(apiURL + "/events")
+                .then(response => response.json())
+                .then(data => {setEventData(data)})
+                .catch( error => {console.log(error)});
+        }
+
     }, []);
 
     const allEvents = eventData.map((event, index) => {
