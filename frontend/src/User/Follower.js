@@ -25,6 +25,8 @@ export default function Follower() {
         .delete(`authors/${localStorage.getItem("id")}/followers/${followerList[index].id.split("authors/")[1]}`)
         .then( (response) => {
             console.log(response);
+            let updatedList = followerList.splice(index);
+            setFollowList(updatedList);
         }).catch((error) => {
            console.log(error); 
         });
