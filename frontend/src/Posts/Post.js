@@ -354,7 +354,7 @@ export default function Post({ postReRenderHelper }) {
                 src={
                   isValidUrl(data.author.profileImage)
                     ? data.author.profileImage
-                    : "https://c404t3.herokuapp.com" + data.author.profileImage
+                    : `${data.author.host}`+ data.author.profileImage
                 }
               />
             }
@@ -379,7 +379,7 @@ export default function Post({ postReRenderHelper }) {
               image={
                 isValidUrl(data.image_url)
                   ? data.image_url
-                  : "https://c404t3.herokuapp.com" + data.image
+                  :  `${data.author.host}` + data.image
               }
               alt="Post Image"
             />
