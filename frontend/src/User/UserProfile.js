@@ -227,6 +227,7 @@ const UserProfile = ({userData}) => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
+
   }, [reRenderHelper]); 
 
   const allfollowers = followerData.map((item) => {
@@ -321,17 +322,12 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-            <Avatar
-              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
-              className="profile-img"
-              sx={{ width: 150, height: 150, marginBottom: 2 }}
-            /> 
-         
+
           <Grid container direction="row" alignItems="center" spacing={12} >
 
             <Grid item>
               <Avatar
-                src={isValidUrl(authorData.profileImage) ? "http://localhost:8000"+authorData.profileImage :  "https://c404t3.herokuapp.com" + authorData.profileImage}
+                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
                 className="profile-img"
                 sx={{ width: 150, height: 150, marginBottom: 2 }}
               /> 
@@ -387,7 +383,7 @@ const UserProfile = ({userData}) => {
           <Tab value={3} label="Github"/>
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
-      { tabValue===2 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>{allfollowers}</List>}
+      { tabValue===2 && <Follower></Follower>}
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 
