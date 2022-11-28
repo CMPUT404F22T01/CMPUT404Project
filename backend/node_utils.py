@@ -10,7 +10,7 @@ from .serializer import PostSerializer
 ## Add all authors
 def getRemoteContent():
     # Delete all old foreign authors
-    Author.objects.exclude(host=HOSTNAME).delete()
+    Author.objects.exclude(host=HOSTNAME).exclude(host="https://c404t3.herokuapp.com/").delete()
     
     for node in Node.objects.all():
         if not node.currentlyConnected:
