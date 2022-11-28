@@ -30,7 +30,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-NAME = "c404t3.herokuapp.com"
+NAME = "c404t3v1.herokuapp.com"
 HOSTNAME = "https://{}/".format(NAME)
 
 # Application definition
