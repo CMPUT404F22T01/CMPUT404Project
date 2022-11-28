@@ -39,7 +39,7 @@ const FormCreate = () => {
     const [passwordNotMatchError, setPasswordMatchError] = useState(false);
 
     //post url
-    const url = 'https://c404t3.herokuapp.com/register/'
+    const url = 'https://c404t3v1.herokuapp.com/register/'
 
     // for password show on and off handler
     const visibilityOnClick = (e) => {

@@ -304,7 +304,7 @@ const UserProfile = ({userData}) => {
         {(item.image || item.image_url) ? (
             <CardMedia
               component="img"
-              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3.herokuapp.com" + item.image}
+              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com/" + item.image}
               alt="User Image"
             />
           ) : (
