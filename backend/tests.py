@@ -4,9 +4,255 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from .models import *
 from datetime import date
+import json
 
 
-# Create your tests here.
+# contains views tests and models tests
+
+###### VIEWS TESTS ######
+class AuthorRoutesTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_tests = [
+            "631f3ebe-d976-4248-a808-db2442a22168",
+            "ca14e1e3-77ce-44e3-8529-85172744c45b",
+        ]
+        for i in range(len(uuid_tests)):
+            Author.objects.create(
+                username="Author User Name" + str(i),
+                displayName="Author Display Name " + str(i),
+                id=uuid_tests[i],
+            )
+
+    def testAuthorsEndpoint(self):
+        res = self.client.get("/authors/")
+        self.assertEqual(res.status_code, 200)
+
+    def testAuthorCount(self):
+        res = self.client.get("/authors/")
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 2)
+    
+    def testNotRealAuthor(self):
+        res = self.client.get("/author/282848/")
+        self.assertEqual(res.status_code, 404)
+    
+    def testRealAuthor(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/")
+        self.assertEqual(res.status_code, 200)
+ 
+class FollowersRoutesTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_tests = [
+            "631f3ebe-d976-4248-a808-db2442a22168",
+            "ca14e1e3-77ce-44e3-8529-85172744c45b",
+        ]
+        
+        authors = []
+        
+        for i in range(len(uuid_tests)):
+            authors.append(Author.objects.create(
+                username="Author User Name" + str(i),
+                displayName="Author Display Name " + str(i),
+                id=uuid_tests[i],
+            ))
+            
+        Follower.objects.create(
+        id = "5cdfd032-7d84-446f-9a60-c451212ad0a6",
+        follower = authors[0],
+        following = authors[1],
+        )
+
+    def testFollowersEndpoint(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/followers/")
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 0)
+        
+    def testIFFollwerExists(self):
+        res = self.client.get("/authors/ca14e1e3-77ce-44e3-8529-85172744c45b/followers/")
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1)
+    
+    def testForeignAuthorTest(self):
+        res = self.client.get("/authors/ca14e1e3-77ce-44e3-8529-85172744c45b/followers/631f3ebe-d976-4248-a808-db2442a22168")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(body["follower"]['id'], HOSTNAME+"authors/631f3ebe-d976-4248-a808-db2442a22168")
+        self.assertEqual(body["following"]['id'], HOSTNAME+"authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+
+class PostRoutesTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_tests = [
+            "631f3ebe-d976-4248-a808-db2442a22168",
+            "ca14e1e3-77ce-44e3-8529-85172744c45b",
+        ]
+        authors = []
+
+        for i in range(len(uuid_tests)):
+            authors.append(Author.objects.create(
+                username="Author User Name" + str(i),
+                displayName="Author Display Name " + str(i),
+                id=uuid_tests[i],
+            ))
+        POST.objects.create(
+            id="631f3ebe-d976-4248-a808-db2442a22169",
+            image_url="http://127.0.0.1:8000/author/631f3ebe-d976-4248-a808-db2442a22168/post/631f3ebe-d976-4248-a808-db2442a22169",
+            title="Post Title 1",
+            source="https://github.com/CMPUT404F22T01/",
+            origin="https://github.com/CMPUT404F22T01/",
+            description="Post description 1",
+            contentType="text/plain",
+            content="Post content 1",
+            author=authors[0],
+        )
+        
+        POST.objects.create(
+            id="631f3ebe-d976-4248-a808-db2442a22167",
+            image_url="http://127.0.0.1:8000/author/ca14e1e3-77ce-44e3-8529-85172744c45b/post/631f3ebe-d976-4248-a808-db2442a22167",
+            title="Post Title 2",
+            source="https://github.com/CMPUT404F22T01/",
+            origin="https://github.com/CMPUT404F22T01/",
+            description="Post description 2",
+            contentType="text/plain",
+            content="Post content 2",
+            author=authors[1],
+        )
+
+    def testallAuthorPosts(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/")
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["items"]), 1) # becuase only 1 post
+        self.assertEqual(body["items"][0]["id"], "https://github.com/CMPUT404F22T01/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169")
+        
+    def testSpecificPost(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169")
+        self.assertEqual(res.status_code, 200)
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEquals(body["id"], "https://github.com/CMPUT404F22T01/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169")
+     
+class CommentRoutesTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_tests = [
+            "631f3ebe-d976-4248-a808-db2442a22168",
+            "ca14e1e3-77ce-44e3-8529-85172744c45b",
+        ]
+        authors = []
+
+        for i in range(len(uuid_tests)):
+            authors.append(Author.objects.create(
+                username="Author User Name" + str(i),
+                displayName="Author Display Name " + str(i),
+                id=uuid_tests[i],
+            ))
+            
+        aPost = POST.objects.create(
+            id="631f3ebe-d976-4248-a808-db2442a22169",
+            image_url="http://127.0.0.1:8000/author/631f3ebe-d976-4248-a808-db2442a22168/post/631f3ebe-d976-4248-a808-db2442a22169",
+            title="Post Title 1",
+            source="https://github.com/CMPUT404F22T01/",
+            origin="https://github.com/CMPUT404F22T01/",
+            description="Post description 1",
+            contentType="text/plain",
+            content="Post content 1",
+            author=authors[0],
+        )
+        
+        Comment.objects.create(
+        id="77fce8fb-3439-4010-b854-0f6fd44c9c3f",
+        author = authors[1],
+        post = aPost,
+        comment = "Comment 1",
+        )
+    
+    def testCommentsEndPoint(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/comments/")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEqual(len(body["comments"]), 1)
+        self.assertEqual((body["comments"][0]["author"]["id"]), "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+        self.assertEqual((body["comments"][0]["author"]["displayName"]), "Author Display Name 1")
+        
+class LikesAndLikedTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        uuid_tests = [
+            "631f3ebe-d976-4248-a808-db2442a22168",
+            "ca14e1e3-77ce-44e3-8529-85172744c45b",
+        ]
+        authors = []
+
+        for i in range(len(uuid_tests)):
+            authors.append(Author.objects.create(
+                username="Author User Name" + str(i),
+                displayName="Author Display Name " + str(i),
+                id=uuid_tests[i],
+            ))
+        aPost = POST.objects.create(
+            id="631f3ebe-d976-4248-a808-db2442a22169",
+            image_url="http://127.0.0.1:8000/author/631f3ebe-d976-4248-a808-db2442a22168/post/631f3ebe-d976-4248-a808-db2442a22169",
+            title="Post Title 1",
+            source="https://github.com/CMPUT404F22T01/",
+            origin="https://github.com/CMPUT404F22T01/",
+            description="Post description 1",
+            contentType="text/plain",
+            content="Post content 1",
+            author=authors[0],
+        )
+        postLike = Like.objects.create(
+            id = "3a49d082-9b61-4972-8d22-0066e4aea309",
+            object_id = "631f3ebe-d976-4248-a808-db2442a22169",
+            author = authors[1],
+            object_type = "post",
+        )
+        
+        aComment = Comment.objects.create(
+        id="77fce8fb-3439-4010-b854-0f6fd44c9c3f",
+        author = authors[1],
+        post = aPost,
+        comment = "Comment 1",
+        )
+        
+        commentLike = Like.objects.create(
+            id = "4695f35e-9e01-4cc1-ba66-450c378b2b64",
+            object_id = aComment.id,
+            author = authors[1],
+            object_type = "comment",
+        )
+        
+    def testPostLike(self):
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/likes/")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
+        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+
+
+    def testCommentLike(self):
+        # non existent comment
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/comments/77fce8fb-3439-4010-b854-0f6fd44c9c3a/likes/")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEquals(len(body), 0)
+        
+        # existent comment
+        res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/comments/77fce8fb-3439-4010-b854-0f6fd44c9c3f/likes/")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEquals(len(body), 1)
+        self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
+        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+    
+    def testLiked(self):
+        res = self.client.get("/authors/ca14e1e3-77ce-44e3-8529-85172744c45b/liked/")
+        body = json.loads(res.content.decode("utf-8"))
+        self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
+        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+
+    
+###### MODEL TESTS ######
 class AuthorTests(APITestCase):
 
     @classmethod
