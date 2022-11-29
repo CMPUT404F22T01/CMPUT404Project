@@ -7,7 +7,7 @@ from datetime import date
 import json
 
 
-# contains views tests and models tests
+# contains views tests and models tests belos
 
 ###### VIEWS TESTS ######
 class AuthorRoutesTests(TestCase):
