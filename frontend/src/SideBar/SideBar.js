@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { styled, useTheme, alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import MuiDrawer from "@mui/material/Drawer";
 import MuiAppBar from "@mui/material/AppBar";
@@ -13,6 +14,9 @@ import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import InputBase from '@mui/material/InputBase';
 import Dialog from '@mui/material/Dialog'; 
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -179,6 +183,18 @@ const SideBar = () => {
 
   const [searchUser, setSearchUser] = useState(null);
   const [inboxOpen, setInboxOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = React.useState(false);
+
+  const handleLogout = () => {
+    // How to handle a logout?
+  };
+
+  const handleCloseLogout = () => {
+    setLogoutOpen(false);
+  };
+  const handleOpenLogout = () => {
+    setLogoutOpen(true);
+  };
 
   const onChangeSearchHandler = (e) => {
     setSearchUser(e.target.value);
@@ -332,7 +348,7 @@ const SideBar = () => {
                   {index % 2 === 0 ? (
                     <AddCircleOutlineIcon className="icon-color" onClick={onClickCreatePostHandler}/>
                   ) : (
-                    <LogoutIcon className="icon-color" />
+                    <LogoutIcon className="icon-color" onClick={handleOpenLogout}/>
                   )}
                 </ListItemIcon>
                 <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
@@ -342,19 +358,33 @@ const SideBar = () => {
         </List>
       </Drawer>
        
-      <Dialog open={createPost} >
+      <Dialog open={createPost}>
           <PostCreates onClickCreatePostHandler={onClickCreatePostHandler}/>
-       </Dialog>
-       {searchUser ? <Search searchValue={searchUser}></Search> : ""}
-       <Dialog
+      </Dialog>
+      {searchUser ? <Search searchValue={searchUser}></Search> : ""}
+      <Dialog
         fullScreen
         open={inboxOpen}
         TransitionComponent={Transition}
-        >
-          <Inbox onClickInboxHandler={onClickInboxHandler}/>
-         </Dialog>
-       <Post postReRenderHelper={createPost}></Post>
-       </Box>
+      >
+        <Inbox onClickInboxHandler={onClickInboxHandler}/>
+      </Dialog>
+      <Dialog
+            open={logoutOpen}
+            onClose={handleCloseLogout}
+            TransitionComponent={Transition}
+            unmountOnExit
+            timeout="auto"
+            aria-label="logout dialog"
+          >
+            <DialogTitle>Logout</DialogTitle>
+            <DialogActions>
+              <Button onClick={handleCloseLogout}>Cancel</Button>
+              <Button onClick={() => handleLogout()}>Confirm</Button>
+            </DialogActions>
+          </Dialog>
+      <Post postReRenderHelper={createPost}></Post>
+    </Box>
   );
 }
 

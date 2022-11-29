@@ -163,7 +163,7 @@ export default function Post({ postReRenderHelper }) {
     if (data.author.host[data.author.host.length - 1] !== "/") {
       data.author.host += "/";
     }
-    if (data.author.host === "https://c404t3.herokuapp.com/") {
+    if (data.author.host === "https://c404t3v1.herokuapp.com/") {
       console.log("hello:", data.author.host)
       axiosInstance
         .post(
@@ -241,7 +241,7 @@ export default function Post({ postReRenderHelper }) {
     if(post[index].author.host[post[index].author.host.length - 1] !== '/'){
       post[index].author.host += '/'
     }
-    if (post[index].author.host == "https://c404t3.herokuapp.com/"){
+    if (post[index].author.host == "https://c404t3v1.herokuapp.com/"){
       axiosInstance
       .post(
         `authors/${localStorage.getItem("id")}/inbox/`,
@@ -465,7 +465,7 @@ export default function Post({ postReRenderHelper }) {
             timeout="auto"
             aria-label="liked by dialog"
           >
-            <AppBar sx={{ position: "relative" }}>
+            <AppBar sx={{ position: "relative", backgroundColor: "#23395d"}}>
               <Toolbar>
                 <IconButton
                   edge="start"
