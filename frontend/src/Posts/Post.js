@@ -465,7 +465,7 @@ export default function Post({ postReRenderHelper }) {
             timeout="auto"
             aria-label="liked by dialog"
           >
-            <AppBar sx={{ position: "relative" }}>
+            <AppBar sx={{ position: "relative", backgroundColor: "#23395d"}}>
               <Toolbar>
                 <IconButton
                   edge="start"
