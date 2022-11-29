@@ -341,14 +341,14 @@ export default function Post({ postReRenderHelper }) {
     setIndexOfCollapse(null);
     setOpenShare(false);
   };
-
-  const allPost = post.map((data, index) => {
+ 
+const allPost = post.map((data, index) => {
     return (
       <Typography paragraph className={styleClasses.container}>
         <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
             className={styleClasses.cardHeader}
-            avatar={
+            avatar={  
               <Avatar
                 alt={data.author.username + ": Post User's Profile Picture"}
                 src={
@@ -357,6 +357,7 @@ export default function Post({ postReRenderHelper }) {
                     : `${data.author.host}`+ data.author.profileImage
                 }
               />
+ 
             }
             action={
               <IconButton aria-label="settings">
@@ -379,7 +380,7 @@ export default function Post({ postReRenderHelper }) {
               image={
                 isValidUrl(data.image_url)
                   ? data.image_url
-                  :  `${data.author.host}` + data.image
+                  :  `${data.author.host}` + data.image.substring(1)
               }
               alt="Post Image"
             />

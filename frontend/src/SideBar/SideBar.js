@@ -269,14 +269,24 @@ const SideBar = () => {
             // },
           }}
         >
-          <Avatar
+          { authorData.profileImage ? 
+            <Avatar
             alt={authorData.username+": User's Profile Picture"}
-            src={`${authorData.host}`+authorData.profileImage}
+            src={`${authorData.host}`+authorData.profileImage.substring(1)}
             sx={{ 
               width: open ? 90 : 40, 
               height: open ? 90 : 40,
             }}
           />
+           : <Avatar
+           alt={authorData.username+": User's Profile Picture"}
+           src={`${authorData.host}`+authorData.profileImage}
+           sx={{ 
+             width: open ? 90 : 40, 
+             height: open ? 90 : 40,
+           }}
+         />}
+           
           <h4>{open ?  localStorage.getItem("username") : ""}</h4>
         </Box>
         <List className="listArea-color">
