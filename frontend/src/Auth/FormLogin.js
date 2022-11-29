@@ -138,7 +138,7 @@ const FormLogin = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2, backgroundColor: "#23395d"}}
+                    sx={{ mt: 3, mb: 2, backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}}
                      
                   >
                     Sign In
