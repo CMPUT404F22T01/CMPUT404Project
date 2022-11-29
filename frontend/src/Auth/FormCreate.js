@@ -116,7 +116,7 @@ const FormCreate = () => {
                       required
                       fullWidth
                       id="username"
-                      label="UserName"
+                      label="Username"
                       name="username"
                       autoComplete="username"
                       inputRef={usernameRef}
