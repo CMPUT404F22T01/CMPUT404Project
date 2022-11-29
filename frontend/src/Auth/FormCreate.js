@@ -39,7 +39,7 @@ const FormCreate = () => {
     const [passwordNotMatchError, setPasswordMatchError] = useState(false);
 
     //post url
-    const url = 'http://127.0.0.1:8000/service/register/'
+    const url = 'https://c404t3v1.herokuapp.com/register/'
 
     // for password show on and off handler
     const visibilityOnClick = (e) => {
@@ -57,7 +57,7 @@ const FormCreate = () => {
           axios.post(url, { 
             'username': usernameRef.current.value,
             'password': passwordRef.current.value,
-            'display_name': display_nameRef.current.value,
+            'displayName': display_nameRef.current.value,
             'github_url': githubRef.current.value,
         }).then((response) => {
             console.log(response.data);

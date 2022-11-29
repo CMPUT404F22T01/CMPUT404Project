@@ -22,22 +22,26 @@ const useStyles = makeStyles({
   },
 });
 
-const Comment = ({ postData, reRenderHelper }) => {
+const Comment = ({ postData, reRenderHelper }) => { 
   const styleClasses = useStyles();
   const [commentData, setCommentData] = useState([]);
   const [openLikedBy, setOpenLikedBy] = useState(false);
   const [indexOfCollapse, setIndexOfCollapse] = useState(null); 
-  const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false);
-
+  const [reRenderLikeHelper, setReRenderLikeHelper] = useState(false); 
+  // postData.author.host becoz we want to consider forgein comments
   useEffect(() => {
+    if(postData.author.host[postData.author.host.length-1] !== '/'){
+      postData.author.host += '/';
+    }
+ 
     axiosInstance
       .get(
-        `authors/${localStorage.getItem("id")}/posts/${
+        `${postData.author.host}authors/${postData.author.id.split("authors/")[1]}/posts/${
           postData.id.split("posts/")[1]
-        }/comments`
+        }/comments/`
       )
-      .then((response) => {
-        setCommentData(response.data);
+      .then((response) => { 
+        setCommentData(response.data.comments);
       })
       .catch((error) => {
         console.error(error);
@@ -51,7 +55,7 @@ const Comment = ({ postData, reRenderHelper }) => {
     };
     axiosInstance
       .post(
-        `authors/${commentData[index].author.id.split("authors/")[1]}/inbox`,
+        `authors/${localStorage.getItem("id")}/inbox/`,
         data
       )
       .then((response) => {

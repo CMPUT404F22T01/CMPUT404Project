@@ -23,7 +23,7 @@ class LoginSerializer(TokenObtainPairSerializer):
  
     def validate(self, attrs):
         data =  super().validate(attrs)
-
+         
         data['username'] = self.user.username
         data['id'] = self.user.id
         data['github'] = self.user.github
@@ -31,15 +31,21 @@ class LoginSerializer(TokenObtainPairSerializer):
  
         return data
 
+class NodeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Node
+        fields = '__all__'
+
 class GetAuthorSerializer(serializers.ModelSerializer):
-    id = serializers.CharField(source="url", read_only=True)
+    id = serializers.CharField(source="get_url", read_only=True)
     type = serializers.CharField(read_only=True)
-    url = serializers.CharField(read_only=True)
+    url = serializers.CharField(source="get_url",read_only=True)
     displayName = serializers.CharField(allow_null=True)
     github = serializers.URLField(allow_blank=True, allow_null=True)
+    node = NodeSerializer("node", read_only=True)
     class Meta:
         model = Author
-        fields = ["type","id","host","displayName","url","github","profileImage", "username"]
+        fields = ["type","id","host","displayName","url","github","profileImage", "username", "node"]
 
 class FollowerSerializer(serializers.ModelSerializer):
     follower = GetAuthorSerializer(read_only=True)
@@ -72,33 +78,33 @@ class SingleFollowRequestSerializer(serializers.ModelSerializer):
 #     class Meta:
 #         model = POST
 #         fields = ["type", "id", "description"]
-    
-class PostSerializer(serializers.ModelSerializer):
-
-    #Method 1
-    type = serializers.SerializerMethodField()
-    #method 2
-    # type = serializers.ReadOnlyField(default=POST.type)
-    # read_only equals to true becoz we don't want users to edit the author data while changing post data
-    author = GetAuthorSerializer("author", read_only=True)
-    id = serializers.CharField(source="get_id", read_only=True)
-    class Meta:
-        model = POST
-        fields = "__all__"
-    
-    def get_type(self, obj):
-        return obj.type
-
-    #overding the default create method in the createAPI class
-    def create(self, validated_data):
-       #geeting author from the context we added it and adding to validated_data 
-
-       #check becoz for put needs it and the post method in the other post view does not need the id becoz we 
-       # have default id coming from the model when we create a new post
-       if self.context.get('id') is not None:
-            validated_data['id'] = self.context.get('id')
-       validated_data['author'] = self.context.get('author')
-       return super().create(validated_data)
+ 
+class PostSerializer(serializers.ModelSerializer):	
+	
+        #Method 1
+        type = serializers.SerializerMethodField()
+        #method 2
+        # type = serializers.ReadOnlyField(default=POST.type)
+        # read_only equals to true becoz we don't want users to edit the author data while changing post data
+        author = GetAuthorSerializer("author", read_only=True)
+        id = serializers.CharField(source="get_id", read_only=True)
+        class Meta:
+            model = POST
+            fields = "__all__"
+        
+        def get_type(self, obj):
+            return obj.type
+        
+        #overding the default create method in the createAPI class
+        def create(self, validated_data):
+        #geeting author from the context we added it and adding to validated_data
+	
+        #check becoz for put needs it and the post method in the other post view does not need the id becoz we
+        # have default id coming from the model when we create a new post
+            if self.context.get('id') is not None:
+                validated_data['id'] = self.context.get('id')
+            validated_data['author'] = self.context.get('author')
+            return super().create(validated_data)
 
 class CommentSerializer(serializers.ModelSerializer):
     author = GetAuthorSerializer("author", read_only=True)

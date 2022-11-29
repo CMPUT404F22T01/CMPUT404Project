@@ -16,6 +16,7 @@ import { makeStyles } from "@mui/styles";
 import "./postcreate.css";
 
 import axiosInstance from "../utils/axiosInstance"; 
+import isValidUrl from "../utils/urlValidator"
 import { useRef } from "react";
 
 /**
@@ -85,20 +86,25 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
   const contentTypeRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
+  const imageURLRef = useRef(null);
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
   const onSubmitHandler = (e) => {
+     
     let formData = new FormData();
     formData.append("title", titleRef.current.value);
     formData.append("content", contentRef.current.value);
     formData.append("contentType", contentTypeRef.current.value);
-    formData.append("visibility", visibilityRef.current.value);
     if (visibilityRef.current.value === "UNLISTED") {
       formData.append("unlisted", "true");
     } else {
+      formData.append("visibility", visibilityRef.current.value);
       formData.append("unlisted", "false");
     }
+    if(isValidUrl(imageURLRef.current.value)){
+      formData.append("image_url", imageURLRef.current.value);
+    } 
     //https://developer.mozilla.org/en-US/docs/Web/API/File_API/Using_files_from_web_applications
     formData.append(
       "image",
@@ -108,7 +114,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
     formData.append("origin", originRef.current.value);
     //authors/6661ee88-5209-45e9-a9ae-eec1434161d0/posts/291c3e11-592b-4a20-b433-e79c6ddc219f/
     axiosInstance
-      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}/`, formData)
+      .post(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}`, formData)
       .then((response) => {
         //temp need to save user id
         console.log(response.status);
@@ -116,7 +122,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
       .catch((err) => {
         console.error(err);
       });
-    this.forceUpdate();
+    // this.forceUpdate();
     onClickPostEditHandler();
   };
 
@@ -246,6 +252,21 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
                 Upload Image
               </Fab>
             </label>
+            <br />
+            <TextField
+              defaultValue={data.image_url}
+              id="outlined-basic"
+              label="Image Url"
+              variant="outlined"
+              className={styleClasses.textfields}
+              InputProps={{
+                className: styleClasses.input,
+              }}
+              InputLabelProps={{
+                style: { color: "#fff" },
+              }}
+              inputRef={imageURLRef}
+            />
             <br />
             <TextField
               defaultValue={data.source}

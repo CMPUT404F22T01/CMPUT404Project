@@ -1,17 +1,14 @@
-from functools import partial
-import json
-from re import A
-import re
 from . import utils
 from django.shortcuts import render
 from rest_framework import generics, mixins, response, status
 from .models import *
 from .serializer import *
-from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny, OR
+from .foreignServerPermission import ConnectedForeignServer, IsAuthenticatedORForeignServer
 from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
-from base64 import b64encode
+from . import node_utils as nu
 
 
 class AuthorCreate(
@@ -44,7 +41,7 @@ class GetAuthorData(generics.ListAPIView):
 
 @api_view(["GET"])
 def getAllAuthors(request):
-    allAuthors = Author.objects.all()
+    allAuthors = Author.objects.filter(host=HOSTNAME)
     serializer = GetAuthorSerializer(allAuthors, many=True)
     resp = {
         "type": "authors",
@@ -259,7 +256,11 @@ class PostMutipleDetailView(generics.ListCreateAPIView):
     def get(self, request, *args, **kwargs):
         queryset = POST.objects.filter(author__id=kwargs['uuidOfAuthor'])
         serializer = self.serializer_class(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type" : "post",
+            "items": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
     # adding extra data to context object becoz we need to author to create the post
 
@@ -303,7 +304,11 @@ class PostDistinctView(generics.ListAPIView):
             elif obj.visibility == 'FRIENDS' and bool(Follower.objects.filter(follower__id=kwargs['uuidOfAuthor'], following__id=obj.author.id)):
                 all_post_objects.append(obj)
         serializer = self.serializer_class(all_post_objects, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type": 'post',
+            "items": serializer.data
+        }
+        return Response(data, status=status.HTTP_200_OK)
 
 
 class CommentPostView(generics.ListCreateAPIView):
@@ -345,17 +350,34 @@ class CommentPostView(generics.ListCreateAPIView):
         # edit
         queryset = self.get_queryset().filter(post__id=kwargs['uuidOfPost'])
         serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        data = {
+            "type":"comments",
+            "post": serializer.data[0]["post"]["id"],
+            "id": serializer.data[0]["post"]["id"] +"/comments",
+            "comments": []
+        }
+   
+        for x in serializer.data:
+            temp = {}
+            for key,item in x.items():
+                if(key != "type" and key != "post"):
+                     temp[key] = item
+            data["comments"].append(temp)
+ 
+        return Response(data, status=status.HTTP_200_OK)
 
 
 @api_view(["GET", "POST", "DELETE"])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def handleInboxRequests(request, author_id):
+
+    request.user = Author.objects.get(id=author_id)
+
     if request.method == "GET":
         try:
             # Auth check
-            if not request.user.is_authenticated or request.user.id != author_id:
-                return response.Response({"message": "Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
+            # if not request.user.is_authenticated or request.user.id != author_id:
+            #     return response.Response({"message": "Unauthenticated!"}, status.HTTP_401_UNAUTHORIZED)
             # Retrieve all posts
             allPostIDsInThisAuthorsInbox = Inbox.objects.filter(
                 author__id=author_id, object_type="post")
@@ -364,7 +386,7 @@ def handleInboxRequests(request, author_id):
             items = PostSerializer(allPosts, many=True)
             resp = {
                 "type": "inbox",
-                "author": request.user.url(),
+                "author": request.user.get_url(),
                 "items": items.data
             }
             return response.Response(resp, 200)
@@ -378,18 +400,18 @@ def handleInboxRequests(request, author_id):
                 postType = str(request.data["type"]).lower()
                 if not postType in {"post", "comment", "like", "follow", "share"}:
                     raise KeyError("Invalid post type!")
-                if postType == "like":
-
+                if postType == "like":  
                     data = {
-                        "object_type": request.data["data"]["type"],
+                        "object_type": request.data["type"],
                         "author": request.data["data"]["author"],
                         "object_id": request.data["data"]["id"],
                     }
+                    
                     serializer = LikeSerializer(
                         data=data, partial=True)
                     if not serializer.is_valid(raise_exception=True):
                         raise KeyError("like object not valid!")
-
+                     
                     authorID, postID, commentID = utils.getAuthorIDandPostIDFromLikeURL(
                         serializer.data["object_id"])
 
@@ -404,6 +426,8 @@ def handleInboxRequests(request, author_id):
                     else:
                         raise KeyError("like object not valid!")
                     idOfItem = l[0].id
+                    Inbox.objects.create(author_id=authorID,
+                                     object_type=postType, object_id=idOfItem, message=message)
 
                 else:
                     idOfItem = utils.getUUID(request.data["id"])
@@ -418,9 +442,9 @@ def handleInboxRequests(request, author_id):
                         postType = 'post'
                     elif type == "follow":
                         message = f'{request.data["username"]} send you a follow request.'
-                        print(idOfItem)
-                Inbox.objects.create(author_id=author_id,
+                    Inbox.objects.create(author_id=author_id,
                                      object_type=postType, object_id=idOfItem, message=message)
+                 
                 return response.Response({"message": message}, status.HTTP_201_CREATED)
             except Exception as e:
                 return response.Response({"message": str(e)}, status.HTTP_400_BAD_REQUEST)
@@ -479,7 +503,7 @@ def getEntireInboxRequests(request, author_id):
             items = list(map(helperFunc, inboxObjects))
             resp = {
                 "type": "inbox",
-                "author": request.user.url(),
+                "author": request.user.get_url(),
                 "items": items,
             }
             return response.Response(resp, 200)
@@ -507,3 +531,31 @@ class AuthorSearchView(generics.ListAPIView):
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+@api_view(["GET"])
+def update(request):
+    nu.getRemoteContent()
+    return response.Response(None, 200)
+
+@api_view(["GET"])
+# @permission_classes([IsAuthenticatedORForeignServer])
+def functiontester(request):
+    
+    # u = UUID("f2136e19-65e8-43aa-8d45-c5072babc0b7")
+    # post = POST.objects.get(id=u)
+    # nu.sendPostToAllForeignAuthors(post)
+    print(request.user, request.user.is_authenticated)
+    return response.Response(None, 200)
+
+class GetAllNodeUsers(generics.ListAPIView):
+
+    serializer_class = GetAuthorSerializer
+    queryset = Author.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        queryset = Author.objects.exclude(node=None)
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data, 200)

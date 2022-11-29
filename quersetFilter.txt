@@ -1,2 +1,0 @@
-1. exclude -> to exculed data
-2. you can have mutiple chaning i.e db.objects.filter(...).exclude(...).filter(...)

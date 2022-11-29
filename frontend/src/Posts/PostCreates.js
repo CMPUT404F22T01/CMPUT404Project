@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { makeStyles } from "@mui/styles";
 import axiosInstance from "../utils/axiosInstance";
+import isValidUrl from "../utils/urlValidator"
 
 const useStyles = makeStyles({
   submit_btn: {
@@ -73,6 +74,7 @@ export default function PostCreates({ onClickCreatePostHandler }) {
   const categoriesRef = useRef(null);
   const visibilityRef = useRef(null);
   const imageRef = useRef(null);
+  const imageURLRef = useRef(null);
   const sourceRef = useRef(null);
   const originRef = useRef(null);
 
@@ -108,6 +110,9 @@ export default function PostCreates({ onClickCreatePostHandler }) {
     } else {
       formData.append("unlisted", "false");
     }
+    if(isValidUrl(imageURLRef.current.value)){
+      formData.append("image_url", imageURLRef.current.value);
+    }
     formData.append("source", sourceRef.current.value);
     formData.append("origin", originRef.current.value);
 
@@ -119,44 +124,18 @@ export default function PostCreates({ onClickCreatePostHandler }) {
       });
 
       const followerData = await axiosInstance.get(
-        `authors/${localStorage.getItem("id")}/followers`
+        `authors/${localStorage.getItem("id")}/followers/`
       );
 
       await followerData.data.items.forEach((follower) => {
         axiosInstance.post(
-          `authors/${follower.id.split("authors/")[1]}/inbox`,
+          `authors/${follower.id.split("authors/")[1]}/inbox/`,
           postCreateResponse.data
         );
       });
     } catch (error) {
       console.error(error);
-    }
-    
-    // axiosInstance({ method: method, url: url, data: formData })
-    //   .then((response) => {
-    //     //temp need to save user id
-    //     // uses the return repsonse to send a success message (Do same in PostEdit.js)
-    //     return response.data
-    //   }).then((postresponse) => {
-    //     axiosInstance.get(`authors/${localStorage.getItem("id")}/followers`)
-    //     .then((response) => {
-    //       for (let  follower of response.data.items){
-    //           axiosInstance.post(
-    //             `authors/${follower.id.split("authors/")[1]}/inbox`,
-    //              postresponse
-    //           )
-    //           .then((response) => {
-    //             console.log(response.data)
-    //           }).catch((error) => {
-    //             console.error(error)
-    //           })
-    //       }
-    //     })
-    //   })
-    //   .catch((err) => {
-    //     console.error(err);
-    //   });
-
+    } 
     onClickCreatePostHandler();
   };
 
@@ -312,6 +291,20 @@ export default function PostCreates({ onClickCreatePostHandler }) {
               Upload Image
             </Fab>
           </label>
+          <br />
+          <TextField
+            id="outlined-basic"
+            label="Image URL"
+            variant="outlined"
+            className={styleClasses.textfields}
+            InputProps={{
+              className: styleClasses.input,
+            }}
+            InputLabelProps={{
+              style: { color: "#fff" },
+            }}
+            inputRef={imageURLRef}
+          />
           <br />
           <TextField
             id="outlined-basic"

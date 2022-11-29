@@ -9,5 +9,6 @@ admin.site.register(models.Like)
 admin.site.register(models.Follower)
 admin.site.register(models.FollowRequest)
 admin.site.register(models.Inbox)
+admin.site.register(models.Node)
 
 
