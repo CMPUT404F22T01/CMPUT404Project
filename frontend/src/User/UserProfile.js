@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
@@ -14,6 +14,8 @@ import {
   TextField,
   Tab,
   Tabs,
+  AppBar,
+  Toolbar,
   List,
   ListItem,
   ListItemAvatar,
@@ -31,6 +33,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CommentIcon from "@mui/icons-material/Comment";
 import GitHubIcon from '@mui/icons-material/GitHub';
 import EditIcon from '@mui/icons-material/Edit';
+import HomeIcon from '@mui/icons-material/Home';
+import { useNavigate } from "react-router-dom";
 
 import axiosInstance from "../utils/axiosInstance";
 
@@ -41,6 +45,7 @@ import Collapse from "@mui/material/Collapse";
 import { width } from "@mui/system";
 import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
+import Follower from "./Follower";
 import isValidUrl from "../utils/urlValidator"
 /**
  * The edit part appears on the very top of the page need to deal with it too
@@ -74,6 +79,7 @@ const UserProfile = ({userData}) => {
   // so when the user clicked on one of the search user's profile we send that data along with the 
   // navigation
   const {state} = useLocation(); 
+  const navigate = useNavigate();
   /**
    * this are the default user ids comes from the local storage or later we implement an user class
    */
@@ -92,25 +98,6 @@ const UserProfile = ({userData}) => {
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
   const [followerData, setFollowerData] = React.useState([]);
 
-
-
-
-  // used to pull github information from github API
-  const [gitName, setGithubName] = useState('')
-  const [gitProfileImage, setProfileImage] = useState('')
-  const [gitRepos, setRepos] = useState('')
-  const [gitFollowers, setFollowers] = useState('')
-  const [gitFollowing, setGitFollowing] = useState('')
-  const [gitStartDate, setStartDate] = useState('')
-
-  const setGitHubData = ({login, followers, following, public_repos, avatar_url, created_at}) => {
-      setGithubName(login);
-      setProfileImage(avatar_url);
-      setRepos(public_repos);
-      setGitFollowing(following);
-      setFollowers(followers);
-      setStartDate(created_at);
-  }
 
   // when the show other user's profile
   if(state !== null){
@@ -148,23 +135,12 @@ const UserProfile = ({userData}) => {
 
 
   const handleTabChange = (event, newValue) => {
-    if (newValue === 3) {
-      let gitUsername = authorData.github.split('github.com/')[1];
-      let url = "https://api.github.com/users/" + gitUsername;
-      fetch(url)
-          .then(response => response.json())
-          .then(data => { setGitHubData(data)})
-          .catch( error => { console.log(error)});
-    }
-    if(newValue === 2){
-      axiosInstance.get(`authors/${localStorage.getItem("id")}/followers/`)
-      .then((response) => {
-        setFollowerData(response.data.items);
-      })
-      .catch( error => { console.log(error)})
-    }
     setTabValue(newValue);
   };
+
+  const handleOnHomeClick = () => {
+    navigate('/');
+  }
 
   const handleFollowRequest = () => {
     axiosInstance
@@ -251,6 +227,7 @@ const UserProfile = ({userData}) => {
       .catch((error) => {
         console.error("error in post get ", error);
       });
+
   }, [reRenderHelper]); 
 
   const allfollowers = followerData.map((item) => {
@@ -332,39 +309,44 @@ const UserProfile = ({userData}) => {
   );
 
   return (
-    <>
+    <Box>
+      <AppBar>
+        <Toolbar>
+          <IconButton
+            size="large"
+              onClick={handleOnHomeClick}>
+            <HomeIcon/>
+          </IconButton>
+        </Toolbar>
+
+      </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-          
             <Avatar
-            src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
-            className="profile-img"
-            sx={{ width: 150, height: 150, marginBottom: 2 }}
-          />  
-           
+              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
+              className="profile-img"
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
+            /> 
          
-       
-       
-             
           <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
-              <Typography
-                variant="h5"
-                component="h2"
-                className="user-name"
-              >{authorData.displayName}</Typography>
-            </Grid>
+              <Avatar
+                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
+                className="profile-img"
+                sx={{ width: 150, height: 150, marginBottom: 2 }}
+              /> 
+              </Grid>
 
-            {isMyProfile ?
+              {isMyProfile ?
               <Grid item>
                 <Button 
                     variant="outlined" 
                     size="small"
-                    sx = {{borderRadius: 10}}
+                    sx = {{borderRadius: 2}}
                     startIcon={<EditIcon/>}
                     onClick={handleOpenEditDialog}> 
-                    Edit
+                    Edit Profile
                   </Button>
               </Grid>
               :
@@ -378,8 +360,14 @@ const UserProfile = ({userData}) => {
                   </Button>
               </Grid>
             }
-
           </Grid>
+         
+            <Typography
+              variant="h5"
+              component="h2"
+              className="user-name"
+            >{authorData.displayName}</Typography>
+                     
           <Grid container direction="row" alignItems="center" className="github">
             <Grid item>
               <GitHubIcon></GitHubIcon>
@@ -400,7 +388,7 @@ const UserProfile = ({userData}) => {
           <Tab value={3} label="Github"/>
       </Tabs>
       { tabValue===1 && <div className="post">{allpost}</div>}
-      { tabValue===2 && <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>{allfollowers}</List>}
+      { tabValue===2 && <Follower></Follower>}
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 
         openDialog={openDialog} 
@@ -408,7 +396,7 @@ const UserProfile = ({userData}) => {
         displayName = {authorData.displayName}
         githubURL={authorData.github}>
        </ProfileEdit>
-    </>
+    </Box>
   );
 };
 
