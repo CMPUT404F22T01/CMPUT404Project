@@ -37,7 +37,7 @@ import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
-import axios from "axios";
+import ReactMarkdown from 'react-markdown';
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -248,11 +248,12 @@ export default function Post({ postReRenderHelper }) {
         data
       )
       .then((response) => {
-        console.log(response.data);
+        setReRenderLikeHelper((prevState) => !prevState);
       })
       .catch((error) => {
         console.log(error);
       });
+      
     }
     else{
       axiosInstance
@@ -273,7 +274,7 @@ export default function Post({ postReRenderHelper }) {
         console.log(error);
       });
     } 
-    setReRenderLikeHelper((prevState) => !prevState);
+     
   };
 
   // How to handle a share: find the user and use the found user's id to send post request to the inbox.
@@ -371,7 +372,7 @@ const allPost = post.map((data, index) => {
               </IconButton>
             }
             title={data.author.username}
-            subheader={data.title}
+            subheader={<ReactMarkdown>{data.title}</ReactMarkdown>}
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
           {data.image || data.image_url ? (
@@ -392,7 +393,7 @@ const allPost = post.map((data, index) => {
 
           <CardContent>
             <Typography variant="body2" color="text.secondary">
-              {data.content}
+              {<ReactMarkdown>{data.content}</ReactMarkdown>}
             </Typography>
           </CardContent>
           <CardActions disableSpacing sx={{ backgroundColor: "#333" }}>

@@ -14,6 +14,7 @@ import axiosInstance from "../utils/axiosInstance";
 import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AllCommentLikes from "../Likes/AllCommentLikes";
+import ReactMarkdown from 'react-markdown';
 
 const useStyles = makeStyles({
   allCommentsContainer: {
@@ -59,12 +60,12 @@ const Comment = ({ postData, reRenderHelper }) => {
         data
       )
       .then((response) => {
-        console.log(response.data);
+        setReRenderLikeHelper((prevState) => !prevState);
       })
       .catch((error) => {
         console.error(error);
       });
-      setReRenderLikeHelper((prevState) => !prevState);
+       
   };
 
   const handleClickOpenLikedBy = (index) => {
@@ -85,7 +86,7 @@ const Comment = ({ postData, reRenderHelper }) => {
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {data.author.displayName}
           </Typography>
-          <Typography variant="body2">{data.comment}</Typography>
+          <ReactMarkdown variant="body2">{data.comment}</ReactMarkdown>
         </CardContent>
 
         <CardActions>

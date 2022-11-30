@@ -47,6 +47,7 @@ import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
 import Follower from "./Follower";
 import isValidUrl from "../utils/urlValidator"
+import ReactMarkdown from 'react-markdown';
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -142,24 +143,6 @@ const UserProfile = ({userData}) => {
     navigate('/');
   }
 
-  const handleFollowRequest = () => {
-    axiosInstance
-      .put(`authors/${localStorage.getItem("id")}/followrequest/${authorID}`,
-        {
-          "sender": localStorage.getItem("id"),
-          "receiver": authorID
-        }
-      )
-      .then((response) => {
-        alert(response.status)
-        console.log(response.status)
-      })
-      .catch((error) => {
-        alert(error)
-        console.log(error);
-      });
-
-  };
   const onClickSendFollowRequestHandler = () => {
     if(following === false){
       const data = {
@@ -230,27 +213,6 @@ const UserProfile = ({userData}) => {
 
   }, [reRenderHelper]); 
 
-  const allfollowers = followerData.map((item) => {
-
-    return (
-      <Typography> 
-      <ListItem alignItems="flex-start">
-        <ListItemAvatar>
-          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : `${item.host}`+item.profileImage} />) : ""}
-        </ListItemAvatar>
-        <ListItemText
-          primary={item.username}
-          secondary = {item.displayName}
-          sx={{cursor: "pointer"}}
-           
-        />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-     </Typography>
-    )
-  });
-
-
 
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
@@ -274,7 +236,7 @@ const UserProfile = ({userData}) => {
                 </IconButton>
                : ""
               }
-              title={item.title}
+              title={<ReactMarkdown>{item.title}</ReactMarkdown>}
               subheader={item.published}
             />
 
@@ -289,7 +251,7 @@ const UserProfile = ({userData}) => {
           )}
             <CardContent>
               <Typography variant="body2" color="text.secondary">
-                {item.content}
+                {<ReactMarkdown>{item.content}</ReactMarkdown>}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
