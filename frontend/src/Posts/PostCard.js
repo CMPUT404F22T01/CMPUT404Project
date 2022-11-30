@@ -84,6 +84,7 @@ export default function SinglePost({ data }){
     const [likeOpen, setLikeOpen] = useState(false);
     const [commentOpen, setCommentOpen] = useState(false);
     const [currComment, setCurrComment] = useState("");
+    const [redHeart, setRedHeart] = useState(false);
 
     const onClickCreateCommentHandler = () => {
         // console.log(commentRef.current);
@@ -159,6 +160,52 @@ export default function SinglePost({ data }){
     
         setCurrComment("");
         
+    };
+
+    const onClickLikeHandler = () => {
+      if (redHeart) return;
+      const payloaddata = {
+        type: "like",
+        data: data,
+      }; 
+      if(data.author.host[data.author.host.length - 1] !== '/'){
+        data.author.host += '/'
+      }
+      if (data.author.host == "https://c404t3.herokuapp.com/"){
+        axiosInstance
+        .post(
+          `authors/${localStorage.getItem("id")}/inbox/`,
+          payloaddata
+        )
+        .then((response) => {
+          console.log(response.data);
+          setRedHeart(true);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+      else{
+        axiosInstance
+        .post(
+          `${data.author.host}authors/${data.author.id.split("authors/")[1]}/inbox/`,
+          payloaddata,
+          {
+            auth: {
+              username: "team1and2",
+              password: "team1and2"
+            }
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          setRedHeart(true);
+
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
     };
 
     return (
@@ -282,16 +329,16 @@ export default function SinglePost({ data }){
                 <IconButton
                   edge="end"
                   color="inherit"
-                //   onClick={() => onClickLikeHandler(index)}
+                  onClick={() => onClickLikeHandler()}
                   aria-label="like"
                 >
-                  <FavoriteIcon style={{ color: "red" }} />
+                  <FavoriteIcon style={{ color: redHeart ? "red" : "grey" }} />
                 </IconButton>
               </Toolbar>
             </AppBar>
             <CardContent>
               <AllPostLikes
-                postData={data}
+                postData={data} reRenderLikeHelper={redHeart} alreadyLikedSetter={setRedHeart}
               />
             </CardContent>
           </Dialog>

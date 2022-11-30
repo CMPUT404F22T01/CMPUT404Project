@@ -5,7 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate } from "react-router-dom";
 
-const AllPostLikes = ({postData, reRenderLikeHelper}) => {
+const AllPostLikes = ({postData, reRenderLikeHelper, alreadyLikedSetter}) => {
 
     const navigate = useNavigate();
     const [likeData, setLikeData] = React.useState([])
@@ -15,6 +15,12 @@ const AllPostLikes = ({postData, reRenderLikeHelper}) => {
         .then((response) => {
             // console.log(response.data);
             setLikeData(response.data)
+            let localUserName = localStorage.getItem("username");
+            for (let likeObj of response.data){
+                if (likeObj.author.username == localUserName){
+                    if (alreadyLikedSetter) alreadyLikedSetter(true);
+                }
+            }
         }).catch((error) => {
             console.error(error)
         })
