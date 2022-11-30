@@ -112,7 +112,7 @@ const Inbox = ({ onClickInboxHandler }) => {
 
   return (
     <>
-      <AppBar sx={{ position: "relative" }}>
+      <AppBar sx={{ position: "relative", backgroundColor: "#23395d"}}>
         <Toolbar>
           <IconButton
             edge="start"
