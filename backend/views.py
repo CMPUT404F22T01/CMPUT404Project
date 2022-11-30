@@ -406,7 +406,7 @@ def handleInboxRequests(request, author_id):
                         "author": request.data["data"]["author"],
                         "object_id": request.data["data"]["id"],
                     }
-                    
+                   
                     serializer = LikeSerializer(
                         data=data, partial=True)
                     if not serializer.is_valid(raise_exception=True):
@@ -512,7 +512,6 @@ def getEntireInboxRequests(request, author_id):
             return response.Response({"message": str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     if request.method == "DELETE":
-        print(request.data)
         id = utils.getUUID(request.data["id"])
         try:
             Inbox.objects.filter(author__id=author_id, object_id=id).delete()
@@ -559,3 +558,15 @@ class GetAllNodeUsers(generics.ListAPIView):
         serializer = self.serializer_class(queryset, many=True)
 
         return Response(serializer.data, 200)
+
+# class CheckIfPostLikeExists(generics.ListAPIView):
+#     queryset = Inbox.objects.all()
+#     serializer_class = LikeSerializer
+
+#     def get(self, request, *args, **kwargs):
+#         queryset = Inbox.objects.filter(author__id=kwargs['uuidOfAuthor'], object_type="like", object_id=kwargs['uuidOfPostOrComment'])
+#         if queryset:
+#             return response.Response(status_code=200)
+#         else:
+#             return response.Response(status_code=404)
+

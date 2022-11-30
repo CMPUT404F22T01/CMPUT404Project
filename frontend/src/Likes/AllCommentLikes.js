@@ -10,7 +10,6 @@ const AllPostLikes = ({commentData, reRenderLikeHelper}) => {
     const navigate = useNavigate();
     const [likeData, setLikeData] = React.useState([])
     
-    console.log(commentData)
     React.useEffect(() => {
         axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.id.split("posts/")[1].split("/")[0]}/comments/${commentData.id.split("comments/")[1]}/likes/`)
         .then((response) => {

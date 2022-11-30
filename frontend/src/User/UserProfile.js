@@ -47,6 +47,8 @@ import ProfileEdit from "./ProfileEdit.js";
 import GitHubPage from "./GitHubPage";
 import Follower from "./Follower";
 import isValidUrl from "../utils/urlValidator"
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from "rehype-raw";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -142,24 +144,6 @@ const UserProfile = ({userData}) => {
     navigate('/');
   }
 
-  const handleFollowRequest = () => {
-    axiosInstance
-      .put(`authors/${localStorage.getItem("id")}/followrequest/${authorID}`,
-        {
-          "sender": localStorage.getItem("id"),
-          "receiver": authorID
-        }
-      )
-      .then((response) => {
-        alert(response.status)
-        console.log(response.status)
-      })
-      .catch((error) => {
-        alert(error)
-        console.log(error);
-      });
-
-  };
   const onClickSendFollowRequestHandler = () => {
     if(following === false){
       const data = {
@@ -230,27 +214,6 @@ const UserProfile = ({userData}) => {
 
   }, [reRenderHelper]); 
 
-  const allfollowers = followerData.map((item) => {
-
-    return (
-      <Typography> 
-      <ListItem alignItems="flex-start">
-        <ListItemAvatar>
-          {item.profileImage ? (<Avatar alt="User Profile Pic" src={isValidUrl(item.profileImage) ? item.profileImage : `${item.host}`+item.profileImage} />) : ""}
-        </ListItemAvatar>
-        <ListItemText
-          primary={item.username}
-          secondary = {item.displayName}
-          sx={{cursor: "pointer"}}
-           
-        />
-      </ListItem>
-      <Divider variant="inset" component="li" />
-     </Typography>
-    )
-  });
-
-
 
   const allpost = data.map((item, index) => {
     // return a uri therefore need to split it 
@@ -260,8 +223,10 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}>
-                  
+                authorData.profileImage ?
+                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}>    
+                </Avatar>
+                : <Avatar src={authorData.displayName}>    
                 </Avatar>
               }
               action={
@@ -274,14 +239,14 @@ const UserProfile = ({userData}) => {
                 </IconButton>
                : ""
               }
-              title={item.title}
+              title={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.title}</ReactMarkdown>}
               subheader={item.published}
             />
 
         {(item.image || item.image_url) ? (
             <CardMedia
               component="img"
-              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com/" + item.image}
+              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com" + item.image}
               alt="User Image"
             />
           ) : (
@@ -289,7 +254,7 @@ const UserProfile = ({userData}) => {
           )}
             <CardContent>
               <Typography variant="body2" color="text.secondary">
-                {item.content}
+                {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.content}</ReactMarkdown>}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
@@ -322,15 +287,23 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-
-          <Grid container direction="row" alignItems="center" spacing={12} >
+    
+          <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
-              <Avatar
-                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
+              { authorData.profileImage ? 
+                <Avatar
+                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}
                 className="profile-img"
                 sx={{ width: 150, height: 150, marginBottom: 2 }}
               /> 
+              :     <Avatar
+              src={authorData.displayName}
+              className="profile-img"
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
+            /> 
+              }
+               
               </Grid>
 
               {isMyProfile ?

@@ -91,26 +91,6 @@ export default function CustomizedDialogs(props) {
     })
      
     setOpenDialog(false);
-
-
-    /*
-    var newDisplay = display.current.value;
-    var newGithub = github.current.value;
-    axiosInstance
-    .post(`authors/${localStorage.getItem("id")}/`, {
-      "displayName": newDisplay, 
-      "github": newGithub,
-      //"profileImage": image
-    })
-    .then((response) => {
-      alert(response.data)
-      console.log(response.status);
-    })
-    .catch((error) => {
-      alert(error)
-      console.log(error);      
-    });
-    */
   }
 
 
