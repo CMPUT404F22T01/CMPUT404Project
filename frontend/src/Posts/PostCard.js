@@ -33,7 +33,7 @@ import { makeStyles } from "@mui/styles";
 
 import AllPostLikes from "../Likes/AllPostLikes";
 import { useEffect, useState, useRef } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, { baseURL } from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
@@ -92,7 +92,7 @@ export default function SinglePost({ data }){
         if (data.author.host[data.author.host.length - 1] !== "/") {
           data.author.host += "/";
         }
-        if (data.author.host === "https://c404t3.herokuapp.com/") {
+        if (data.author.host === baseURL) {
           console.log("hello:", data.author.host)
           axiosInstance
             .post(
@@ -171,7 +171,7 @@ export default function SinglePost({ data }){
       if(data.author.host[data.author.host.length - 1] !== '/'){
         data.author.host += '/'
       }
-      if (data.author.host == "https://c404t3.herokuapp.com/"){
+      if (data.author.host == baseURL){
         axiosInstance
         .post(
           `authors/${localStorage.getItem("id")}/inbox/`,
