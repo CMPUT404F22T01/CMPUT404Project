@@ -15,6 +15,8 @@ import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AllCommentLikes from "../Likes/AllCommentLikes";
 import ReactMarkdown from 'react-markdown';
+//for html in content
+import rehypeRaw from "rehype-raw";
 
 const useStyles = makeStyles({
   allCommentsContainer: {
@@ -86,7 +88,7 @@ const Comment = ({ postData, reRenderHelper }) => {
           <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
             {data.author.displayName}
           </Typography>
-          <ReactMarkdown variant="body2">{data.comment}</ReactMarkdown>
+          <ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.comment}</ReactMarkdown>
         </CardContent>
 
         <CardActions>

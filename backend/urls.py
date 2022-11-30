@@ -53,6 +53,8 @@ urlpatterns = [
 
     # Inbox route to get everything (not only posts!)
     path("authors/<uuid:author_id>/inboxAll/", views.getEntireInboxRequests),
+    # path("authors/<uuid:uuidOfAuthor>/post/<uuid:uuidOfPostOrComment>/like/", views.CheckIfPostLikeExists.as_view()),
+    # path("authors/<uuid:uuidOfAuthor>/comment/<uuid:uuidOfComment>/like/")
 
     #all node users,
     path('authors/<uuid:author_id>/nodes/', views.GetAllNodeUsers.as_view()),

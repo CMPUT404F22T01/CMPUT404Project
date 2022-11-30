@@ -33,10 +33,11 @@ import { makeStyles } from "@mui/styles";
 
 import AllPostLikes from "../Likes/AllPostLikes";
 import { useEffect, useState, useRef } from "react";
-import axiosInstance, { baseURL } from "../utils/axiosInstance";
-import PostEdit from "./PostEdit";
+import axiosInstance, { baseURL } from "../utils/axiosInstance"; 
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from "rehype-raw";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -219,12 +220,12 @@ export default function SinglePost({ data }){
                 src={
                   isValidUrl(data.author.profileImage)
                     ? data.author.profileImage
-                    : "https://c404t3.herokuapp.com" + data.author.profileImage
+                    : "https://c404t3v1.herokuapp.com" + data.author.profileImage
                 }
               />
             }
             title={data.author.username}
-            subheader={data.title}
+            subheader={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.title}</ReactMarkdown>}
           />
           {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
           {data.image || data.image_url ? (
@@ -233,7 +234,7 @@ export default function SinglePost({ data }){
               image={
                 isValidUrl(data.image_url)
                   ? data.image_url
-                  : "https://c404t3.herokuapp.com" + data.image
+                  : "https://c404t3v1.herokuapp.com" + data.image
               }
               alt="Post Image"
             />
@@ -244,9 +245,7 @@ export default function SinglePost({ data }){
           )}
 
           <CardContent>
-            <Typography variant="body2" color="text.secondary">
-              {data.content}
-            </Typography>
+          {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.content}</ReactMarkdown>}
           </CardContent>
           <CardActions disableSpacing sx={{ backgroundColor: "#333" }}>
             <IconButton

@@ -48,6 +48,7 @@ import GitHubPage from "./GitHubPage";
 import Follower from "./Follower";
 import isValidUrl from "../utils/urlValidator"
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from "rehype-raw";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -222,8 +223,10 @@ const UserProfile = ({userData}) => {
           <Card sx={{ maxWidth: 1000 }} className="card-view">
             <CardHeader
               avatar={
-                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}>
-                  
+                authorData.profileImage ?
+                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}>    
+                </Avatar>
+                : <Avatar src={authorData.displayName}>    
                 </Avatar>
               }
               action={
@@ -236,14 +239,14 @@ const UserProfile = ({userData}) => {
                 </IconButton>
                : ""
               }
-              title={<ReactMarkdown>{item.title}</ReactMarkdown>}
+              title={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.title}</ReactMarkdown>}
               subheader={item.published}
             />
 
         {(item.image || item.image_url) ? (
             <CardMedia
               component="img"
-              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com/" + item.image.substring(1)}
+              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com" + item.image}
               alt="User Image"
             />
           ) : (
@@ -251,7 +254,7 @@ const UserProfile = ({userData}) => {
           )}
             <CardContent>
               <Typography variant="body2" color="text.secondary">
-                {<ReactMarkdown>{item.content}</ReactMarkdown>}
+                {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.content}</ReactMarkdown>}
               </Typography>
             </CardContent>
             <CardActions disableSpacing>
@@ -284,20 +287,23 @@ const UserProfile = ({userData}) => {
       </AppBar>
       <Card className="user-profile-card" sx={{backgroundColor: '#23395d'}}>
         <CardContent>
-            <Avatar
-              src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
-              className="profile-img"
-              sx={{ width: 150, height: 150, marginBottom: 2 }}
-            /> 
-         
+    
           <Grid container direction="row" alignItems="center" spacing={8} >
 
             <Grid item>
-              <Avatar
-                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage}
+              { authorData.profileImage ? 
+                <Avatar
+                src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}
                 className="profile-img"
                 sx={{ width: 150, height: 150, marginBottom: 2 }}
               /> 
+              :     <Avatar
+              src={authorData.displayName}
+              className="profile-img"
+              sx={{ width: 150, height: 150, marginBottom: 2 }}
+            /> 
+              }
+               
               </Grid>
 
               {isMyProfile ?

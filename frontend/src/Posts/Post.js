@@ -38,6 +38,7 @@ import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
 import ReactMarkdown from 'react-markdown';
+import rehypeRaw from "rehype-raw";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -350,14 +351,21 @@ const allPost = post.map((data, index) => {
           <CardHeader
             className={styleClasses.cardHeader}
             avatar={  
+              data.author.profileImage ? 
               <Avatar
                 alt={data.author.username + ": Post User's Profile Picture"}
                 src={
                   isValidUrl(data.author.profileImage)
                     ? data.author.profileImage
-                    : `${data.author.host}`+ data.author.profileImage
+                    : `${data.author.host}`+ data.author.profileImage.substring(1)
                 }
               />
+              :  <Avatar
+              alt={data.author.username + ": Post User's Profile Picture"}
+              src={
+                 data.author.displayName
+              }
+            />
  
             }
             action={
@@ -372,9 +380,9 @@ const allPost = post.map((data, index) => {
               </IconButton>
             }
             title={data.author.username}
-            subheader={<ReactMarkdown>{data.title}</ReactMarkdown>}
+            subheader={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.title}</ReactMarkdown>}
           />
-          {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
+           
           {data.image || data.image_url ? (
             <CardMedia
               component="img"
@@ -393,7 +401,7 @@ const allPost = post.map((data, index) => {
 
           <CardContent>
             <Typography variant="body2" color="text.secondary">
-              {<ReactMarkdown>{data.content}</ReactMarkdown>}
+              {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.content}</ReactMarkdown>}
             </Typography>
           </CardContent>
           <CardActions disableSpacing sx={{ backgroundColor: "#333" }}>
@@ -531,6 +539,7 @@ const allPost = post.map((data, index) => {
             </DialogActions>
           </Dialog>
         </Card>
+
       </Typography>
     );
   });
@@ -549,6 +558,7 @@ const allPost = post.map((data, index) => {
           data={post[indexToEdit]}
         />
       </Dialog>
+       
     </Box>
   );
 }
