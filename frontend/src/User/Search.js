@@ -55,7 +55,7 @@ const Search = ({ searchValue }) => {
     return (
       <Card className={styles.card}>
         <CardContent className={styles.cardContent}>
-          {authorData.profileImage ?  <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : "http://localhost:8000"+authorData.profileImage}></Avatar>: <Avatar sx={{backgroundColor:"#fcb69f"}}>{authorData.username[0]}</Avatar>}
+          {authorData.profileImage ?  <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}></Avatar>: <Avatar sx={{backgroundColor:"#fcb69f"}}>{authorData.username[0]}</Avatar>}
           
           <Link
             onClick={()=>navigate('/profile', {state:{authorData}})}

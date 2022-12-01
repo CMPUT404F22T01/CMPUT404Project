@@ -85,7 +85,7 @@ const FormLogin = () => {
               sm={4}
               md={7}
               sx={{
-                backgroundImage: 'url(https://source.unsplash.com/random)',
+                backgroundImage: 'url(https://picsum.photos/1920/1080/)',
                 backgroundRepeat: 'no-repeat',
                 backgroundColor: (t) =>
                   t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
@@ -103,8 +103,8 @@ const FormLogin = () => {
                   alignItems: 'center',
                 }}
               >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                  <LockOutlinedIcon />
+                <Avatar sx={{ m: 1, backgroundColor: "#23395d" }}>
+                  <LockOutlinedIcon/>
                 </Avatar>
                 <Typography component="h1" variant="h5">
                   Sign in
@@ -116,7 +116,7 @@ const FormLogin = () => {
                     required
                     fullWidth
                     id="username"
-                    label="User Name"
+                    label="Username"
                     name="email"
                     autoComplete="username"
                     autoFocus 
@@ -138,7 +138,7 @@ const FormLogin = () => {
                     type="submit"
                     fullWidth
                     variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{ mt: 3, mb: 2, backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}}
                      
                   >
                     Sign In

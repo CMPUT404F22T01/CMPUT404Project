@@ -5,7 +5,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import { useNavigate } from "react-router-dom";
 
-const AllPostLikes = ({postData, reRenderLikeHelper}) => {
+const AllPostLikes = ({postData, reRenderLikeHelper, alreadyLikedSetter}) => {
 
     const navigate = useNavigate();
     const [likeData, setLikeData] = React.useState([])
@@ -15,21 +15,16 @@ const AllPostLikes = ({postData, reRenderLikeHelper}) => {
         .then((response) => {
             // console.log(response.data);
             setLikeData(response.data)
+            let localUserName = localStorage.getItem("username");
+            for (let likeObj of response.data){
+                if (likeObj.author.username == localUserName){
+                    if (alreadyLikedSetter) alreadyLikedSetter(true);
+                }
+            }
         }).catch((error) => {
             console.error(error)
         })
-    }, [reRenderLikeHelper])
-
-    // React.useEffect(() => {
-    //     console.log("comment called")
-    //     axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${commentData.post.id.split("posts/")[1]}/comments/${commentData.id.split("comments/")[1]}/likes`)
-    //     .then((response) => {
-    //         console.log(response.data);
-    //         setLikeData(response.data)
-    //     }).catch((error) => {
-    //         console.error(error)
-    //     })
-    // }, [commentData])
+    }, [reRenderLikeHelper]) 
 
     const allLikes = likeData.map((value) =>{
         const authorData = value.author

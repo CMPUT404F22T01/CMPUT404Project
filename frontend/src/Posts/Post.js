@@ -37,7 +37,8 @@ import axiosInstance from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
-import axios from "axios";
+import ReactMarkdown from 'react-markdown';
+import rehypeRaw from "rehype-raw";
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -248,11 +249,12 @@ export default function Post({ postReRenderHelper }) {
         data
       )
       .then((response) => {
-        console.log(response.data);
+        setReRenderLikeHelper((prevState) => !prevState);
       })
       .catch((error) => {
         console.log(error);
       });
+      
     }
     else{
       axiosInstance
@@ -273,7 +275,7 @@ export default function Post({ postReRenderHelper }) {
         console.log(error);
       });
     } 
-    setReRenderLikeHelper((prevState) => !prevState);
+     
   };
 
   // How to handle a share: find the user and use the found user's id to send post request to the inbox.
@@ -341,22 +343,30 @@ export default function Post({ postReRenderHelper }) {
     setIndexOfCollapse(null);
     setOpenShare(false);
   };
-
-  const allPost = post.map((data, index) => {
+ 
+const allPost = post.map((data, index) => {
     return (
       <Typography paragraph className={styleClasses.container}>
         <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
             className={styleClasses.cardHeader}
-            avatar={
+            avatar={  
+              data.author.profileImage ? 
               <Avatar
                 alt={data.author.username + ": Post User's Profile Picture"}
                 src={
                   isValidUrl(data.author.profileImage)
                     ? data.author.profileImage
-                    : `${data.author.host}`+ data.author.profileImage
+                    : `${data.author.host}`+ data.author.profileImage.substring(1)
                 }
               />
+              :  <Avatar
+              alt={data.author.username + ": Post User's Profile Picture"}
+              src={
+                 data.author.displayName
+              }
+            />
+ 
             }
             action={
               <IconButton aria-label="settings">
@@ -370,16 +380,16 @@ export default function Post({ postReRenderHelper }) {
               </IconButton>
             }
             title={data.author.username}
-            subheader={data.title}
+            subheader={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.title}</ReactMarkdown>}
           />
-          {/* HardedCoded host need to change later ==============http://localhost:8000=========================*/}
+           
           {data.image || data.image_url ? (
             <CardMedia
               component="img"
               image={
                 isValidUrl(data.image_url)
                   ? data.image_url
-                  :  `${data.author.host}` + data.image
+                  :  `${data.author.host}` + data.image.substring(1)
               }
               alt="Post Image"
             />
@@ -391,7 +401,7 @@ export default function Post({ postReRenderHelper }) {
 
           <CardContent>
             <Typography variant="body2" color="text.secondary">
-              {data.content}
+              {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{data.content}</ReactMarkdown>}
             </Typography>
           </CardContent>
           <CardActions disableSpacing sx={{ backgroundColor: "#333" }}>
@@ -465,7 +475,7 @@ export default function Post({ postReRenderHelper }) {
             timeout="auto"
             aria-label="liked by dialog"
           >
-            <AppBar sx={{ position: "relative" }}>
+            <AppBar sx={{ position: "relative", backgroundColor: "#23395d"}}>
               <Toolbar>
                 <IconButton
                   edge="start"
@@ -529,6 +539,7 @@ export default function Post({ postReRenderHelper }) {
             </DialogActions>
           </Dialog>
         </Card>
+
       </Typography>
     );
   });
@@ -547,6 +558,7 @@ export default function Post({ postReRenderHelper }) {
           data={post[indexToEdit]}
         />
       </Dialog>
+       
     </Box>
   );
 }
