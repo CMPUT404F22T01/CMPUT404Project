@@ -309,7 +309,7 @@ const UserProfile = ({userData}) => {
               {isMyProfile ?
               <Grid item>
                 <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     size="small"
                     sx = {{borderRadius: 2}}
                     startIcon={<EditIcon/>}
@@ -320,7 +320,7 @@ const UserProfile = ({userData}) => {
               :
               <Grid item>
                 <Button 
-                    variant="outlined" 
+                    variant="contained" 
                     size="small"
                     sx = {{borderRadius: 10}}
                     onClick={onClickSendFollowRequestHandler}> 

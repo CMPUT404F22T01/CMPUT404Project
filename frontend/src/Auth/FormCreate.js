@@ -58,7 +58,7 @@ const FormCreate = () => {
             'username': usernameRef.current.value,
             'password': passwordRef.current.value,
             'displayName': display_nameRef.current.value,
-            'github_url': githubRef.current.value,
+            'github': githubRef.current.value,
         }).then((response) => {
             console.log(response.data);
             //if successful route to different page
@@ -138,10 +138,10 @@ const FormCreate = () => {
                   <Grid item xs={12}>
                     <TextField 
                       fullWidth
-                      id="github_url"
+                      id="github"
                       label="Github Url"
-                      name="github_url"
-                      autoComplete="github_url"
+                      name="github"
+                      autoComplete="github"
                       inputRef={githubRef}
                     /> 
                   </Grid>

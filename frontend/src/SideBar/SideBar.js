@@ -386,12 +386,17 @@ const SideBar = () => {
             unmountOnExit
             timeout="auto"
             aria-label="logout dialog"
+            fullWidth
+            maxWidth="xs"
           >
-            <DialogTitle>Logout</DialogTitle>
+            <DialogTitle sx = {{textAlign: "center", backgroundColor: "#23395d", color: 'white' }}>Logout</DialogTitle>
+            <DialogContent sx={{backgroundColor: "#23395d" }}>
+
             <DialogActions>
-              <Button onClick={handleCloseLogout}>Cancel</Button>
-              <Button onClick={() => handleLogout()}>Confirm</Button>
+              <Button sx = {{width: "50%"}} variant="contained" onClick={handleCloseLogout}>Cancel</Button>
+              <Button sx = {{width: "50%"}} variant="contained" onClick={() => handleLogout()}>Confirm</Button>
             </DialogActions>
+            </DialogContent>
           </Dialog>
       <Post postReRenderHelper={createPost}></Post>
     </Box>
