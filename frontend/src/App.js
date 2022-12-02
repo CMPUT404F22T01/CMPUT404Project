@@ -3,6 +3,7 @@ import FormCreate from './Auth/FormCreate';
 import FormLogin from './Auth/FormLogin';
 import UserProfile from './User/UserProfile';
 import Main from './Main';
+import ProtectedRoute from './utils/ProtectedRoute';
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
  
 
@@ -11,10 +12,18 @@ function App() {
      <>
         <BrowserRouter>
          <Routes>
-            <Route element={<Main/>} path="/" />
+            <Route element={
+               <ProtectedRoute>
+                  <Main/>
+               </ProtectedRoute>
+            } path="/" />
             <Route element={<FormLogin/>} path="/login" />
             <Route element={<FormCreate/>} path="/register" /> 
-            <Route element={<UserProfile/>} path="/profile" />
+            <Route element={
+               <ProtectedRoute>
+                  <UserProfile/>
+               </ProtectedRoute>
+            } path="/profile" />
          </Routes>
         </BrowserRouter>
      </>
