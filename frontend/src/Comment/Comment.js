@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useEffect, useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, {baseURL} from "../utils/axiosInstance";
 import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AllCommentLikes from "../Likes/AllCommentLikes";
@@ -38,19 +38,52 @@ const Comment = ({ postData, reRenderHelper }) => {
     if(postData.author.host[postData.author.host.length-1] !== '/'){
       postData.author.host += '/';
     }
- 
-    axiosInstance
+    if(postData.author.host === baseURL){
+      axiosInstance
       .get(
         `${postData.author.host}authors/${postData.author.id.split("authors/")[1]}/posts/${
           postData.id.split("posts/")[1]
-        }/comments/`
+        }/comments/`,
       )
       .then((response) => { 
+        console.log(response.status)
         setCommentData(response.data.comments);
       })
       .catch((error) => {
         console.error(error);
       });
+    }else{
+      var userInfo;
+      axiosInstance.get(`authors/${localStorage.getItem("id")}/nodes/`)
+      .then((response) => {
+        for(let i = 0; i < response.data.length; i++) {
+          if(response.data[i].host == postData.author.host){
+            userInfo = response.data[i];
+            break;
+          }
+     }
+    axiosInstance
+      .get(
+        `${postData.id.split('authors/')[0]}authors/${postData.author.id.split("authors/")[1]}/posts/${
+          postData.id.split("posts/")[1]
+        }/comments/`,
+        {
+          auth : {
+            username : userInfo.node.username,
+            password : userInfo.node.password
+          }
+        }
+      )
+      .then((response) => {  
+        setCommentData(response.data.comments);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    }).catch((error) => {
+      console.error(error);
+    })
+    }
   }, [reRenderHelper]);
 
   const onClickLikeHandler = (index) => {
