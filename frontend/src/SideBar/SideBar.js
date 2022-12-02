@@ -187,6 +187,8 @@ const SideBar = () => {
 
   const handleLogout = () => {
     // How to handle a logout?
+    localStorage.clear();
+    navigate('/login');
   };
 
   const handleCloseLogout = () => {
