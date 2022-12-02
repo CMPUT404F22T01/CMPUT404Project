@@ -49,11 +49,12 @@ import Follower from "./Follower";
 import isValidUrl from "../utils/urlValidator"
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from "rehype-raw";
+import Post from '../Posts/Post'
+
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
  * 
- * Problem in reRenderHelper for last post deletion
  */
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -95,7 +96,6 @@ const UserProfile = ({userData}) => {
   const [authorData, setAuthorData] = useState([]);
   const [following, setFollowing] = React.useState(false);
   const [openDialog, setOpenDialog] = useState(false)
-  const [reRenderHelper, setReRenderHelper] = React.useState(false);
   const [tabValue, setTabValue] = React.useState(1);
   const [reRenderFollowHelper, setReRenderFollowHelper] = React.useState(false);
   const [followerData, setFollowerData] = React.useState([]);
@@ -111,22 +111,6 @@ const UserProfile = ({userData}) => {
 
   }
   
-  
-
-
-  // we allow delete only for current user profile
-  const onClickDeletePost = (index) => { 
-    axiosInstance
-      .delete(`authors/${localStorage.getItem("id")}/posts/${data[index].id.split("posts/")[1]}`)
-      .then((response) => {
-        console.log(response.status)
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-      setReRenderHelper((prevState)=>!prevState); 
-  };
-
   const handleOpenEditDialog = () => {
     setOpenDialog(true)
   };
@@ -201,77 +185,6 @@ const UserProfile = ({userData}) => {
         setFollowing(false);
       });
   }, [reRenderFollowHelper])
-
-  useEffect(() => {
-    axiosInstance
-      .get(`authors/${authorID}/posts/`)
-      .then((response) => {
-        setData(response.data.items);
-      })
-      .catch((error) => {
-        console.error("error in post get ", error);
-      });
-
-  }, [reRenderHelper]); 
-
-
-  const allpost = data.map((item, index) => {
-    // return a uri therefore need to split it 
-   
-      return (
-        <Typography paragraph className="card-container">
-          <Card sx={{ maxWidth: 1000 }} className="card-view">
-            <CardHeader
-              avatar={
-                authorData.profileImage ?
-                <Avatar src={isValidUrl(authorData.profileImage) ? authorData.profileImage : `${authorData.host}`+authorData.profileImage.substring(1)}>    
-                </Avatar>
-                : <Avatar src={authorData.displayName}>    
-                </Avatar>
-              }
-              action={
-                // this if statement helps to avoid other user deleting current user post when they visit other user profiles
-               item.author.id.split('authors/')[1] === localStorage.getItem("id") ?
-                <IconButton aria-label="delete">
-                  {/* to allow author to edit its own post */} 
-                  <DeleteIcon onClick={() => onClickDeletePost(index)} />
-                  
-                </IconButton>
-               : ""
-              }
-              title={<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.title}</ReactMarkdown>}
-              subheader={item.published}
-            />
-
-        {(item.image || item.image_url) ? (
-            <CardMedia
-              component="img"
-              image={isValidUrl(item.image_url) ? item.image_url : "https://c404t3v1.herokuapp.com" + item.image}
-              alt="User Image"
-            />
-          ) : (
-            ""
-          )}
-            <CardContent>
-              <Typography variant="body2" color="text.secondary">
-                {<ReactMarkdown rehypePlugins={[rehypeRaw]}>{item.content}</ReactMarkdown>}
-              </Typography>
-            </CardContent>
-            <CardActions disableSpacing>
-              <IconButton aria-label="add to favorites">
-                <FavoriteIcon />
-              </IconButton>
-              <IconButton aria-label="share">
-                <CommentIcon />
-              </IconButton>
-              
-            </CardActions>
-             
-          </Card>
-        </Typography>
-      );
-    }
-  );
 
   return (
     <Box>
@@ -355,7 +268,7 @@ const UserProfile = ({userData}) => {
           <Tab value={2} label="Followers"/>
           <Tab value={3} label="Github"/>
       </Tabs>
-      { tabValue===1 && <div className="post">{allpost}</div>}
+      { tabValue===1 && <div className="post">{<Post userID={authorID} getAll={false}></Post>}</div>}
       { tabValue===2 && <Follower></Follower>}
       { tabValue===3 && <GitHubPage url={authorData.github}></GitHubPage> }
       <ProfileEdit 

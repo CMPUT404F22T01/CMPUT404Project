@@ -95,7 +95,8 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Post({ postReRenderHelper }) {
+export default function Post({ postReRenderHelper, getAll, userID }) {
+
   const styleClasses = useStyles();
   const [post, setPost] = useState([]);
   const userToSharePostWithRef = useRef(null);
@@ -355,7 +356,8 @@ export default function Post({ postReRenderHelper }) {
 const allPost = post.map((data, index) => {
     return (
       <Typography paragraph className={styleClasses.container}>
-        <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
+        {(data.author.id.split("authors/")[1] ===
+        userID || getAll) ? (<Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
             className={styleClasses.cardHeader}
             avatar={  
@@ -551,7 +553,9 @@ const allPost = post.map((data, index) => {
               <Button sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => handleShare(index)}>Share</Button>
             </DialogActions>
           </Dialog>
-        </Card>
+        </Card> ) : (
+                  ""
+                )}
 
       </Typography>
     );

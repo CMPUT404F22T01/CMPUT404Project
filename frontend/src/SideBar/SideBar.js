@@ -400,7 +400,7 @@ const SideBar = () => {
             </DialogActions>
             </DialogContent>
           </Dialog>
-      <Post postReRenderHelper={createPost}></Post>
+      <Post postReRenderHelper={createPost} getAll={true}></Post>
     </Box>
   );
 }
