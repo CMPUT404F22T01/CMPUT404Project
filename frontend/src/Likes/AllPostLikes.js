@@ -13,7 +13,6 @@ const AllPostLikes = ({postData, reRenderLikeHelper, alreadyLikedSetter}) => {
     React.useEffect(() => {
         axiosInstance.get(`authors/${localStorage.getItem("id")}/posts/${postData.id.split("posts/")[1]}/likes/`)
         .then((response) => {
-            // console.log(response.data);
             setLikeData(response.data)
             let localUserName = localStorage.getItem("username");
             for (let likeObj of response.data){

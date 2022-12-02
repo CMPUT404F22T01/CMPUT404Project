@@ -33,12 +33,14 @@ import { makeStyles } from "@mui/styles";
 
 import AllPostLikes from "../Likes/AllPostLikes";
 import { useEffect, useState, useRef } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import axiosInstance, {baseURL} from "../utils/axiosInstance";
 import PostEdit from "./PostEdit";
 import Comment from "../Comment/Comment";
 import isValidUrl from "../utils/urlValidator";
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from "rehype-raw";
+import {v4 as uuidv4} from 'uuid';
+ 
 /**
  * The edit part appears on the very top of the page need to deal with it too
  * Deal with images
@@ -124,7 +126,6 @@ export default function Post({ postReRenderHelper }) {
     axiosInstance
       .get(`authors/${localStorage.getItem("id")}/posts/distinct/`)
       .then((response) => {
-        console.log(response.data);
         setPost((oldData) => [...oldData, ...response.data.items]);
       })
       .catch((error) => {
@@ -146,9 +147,15 @@ export default function Post({ postReRenderHelper }) {
 
   //getting all forgein server posts
   useEffect(() => {
-    node.map((item, index) => {
+    node.map((item, index) => { 
       axiosInstance
-        .get(`${item.host}authors/${item.id.split("authors/")[1]}/posts/`)
+        .get(`${item.node.host}authors/${item.id.split("authors/")[1]}/posts/`, 
+        {
+          auth : {
+            username : item.node.username,
+            password : item.node.password
+          }
+        })
         .then((response) => {
           setPost((oldData) => [...oldData, ...response.data.items]);
         })
@@ -159,13 +166,12 @@ export default function Post({ postReRenderHelper }) {
   }, [node]);
 
   const onClickCreateCommentHandler = (data) => {
-    // console.log(commentRef.current);
-    // doubt why does the useRef gives an empty value and why the ... warning
+    console.log(data.id);
+     
     if (data.author.host[data.author.host.length - 1] !== "/") {
       data.author.host += "/";
     }
-    if (data.author.host === "https://c404t3v1.herokuapp.com/") {
-      console.log("hello:", data.author.host)
+    if (data.author.host === baseURL) { 
       axiosInstance
         .post(
           `authors/${localStorage.getItem("id")}/posts/${
@@ -201,14 +207,16 @@ export default function Post({ postReRenderHelper }) {
             break;
           }
         }
-        
         axiosInstance
         .post(
-          `${data.author.host}authors/${data.author.id.split("authors/")[1]}/posts/${
+          `${userInfo.node.host}authors/${data.author.id.split("authors/")[1]}/posts/${
             data.id.split("posts/")[1]
           }/comments/`,
           {
-            comment : comment 
+            comment : comment,
+            author: axiosInstance.get(`authors/${localStorage.getItem("id")}/`).then((response) => {return response.data}),
+            id: data.id+'/comments/'+uuidv4().toString(),
+            object: data.id,
           },
           {
             auth : {
@@ -389,7 +397,10 @@ const allPost = post.map((data, index) => {
               image={
                 isValidUrl(data.image_url)
                   ? data.image_url
-                  :  `${data.author.host}` + data.image.substring(1)
+                  : 
+                  data.author.host === "https://c404t3v1.herokuapp.com/" 
+                  ? `${data.author.host}` + data.image.substring(1) 
+                  : data.image
               }
               alt="Post Image"
             />
