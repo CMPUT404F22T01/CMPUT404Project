@@ -90,15 +90,11 @@ const Inbox = ({ onClickInboxHandler }) => {
         </ListItem>
         {value.data.type === "author" ? (
           <Box>
-            <Button
-              onClick={() => onClickFollowRequestAcceptHandler(value.data.id)}
-            >
-              Accept
-            </Button>
-            <Button
-              onClick={() => onClickFollowRequestDeclineHandler(value.data.id)}
-            >
+            <Button sx = {{color: "#15172b", '&:hover': { backgroundColor: '#e6ebf5'}}} onClick={() => onClickFollowRequestDeclineHandler(value.data.id)}>
               Decline
+            </Button>
+            <Button sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => onClickFollowRequestAcceptHandler(value.data.id)}>
+              Accept
             </Button>
           </Box>
         ) : (

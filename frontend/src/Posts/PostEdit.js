@@ -303,7 +303,7 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
 
           <DialogActions>
             <Button type="submit" className={styleClasses.submit_btn}>
-              Edit
+              Confirm Edit
             </Button>
           </DialogActions>
         </Box>

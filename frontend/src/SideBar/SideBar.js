@@ -391,12 +391,12 @@ const SideBar = () => {
             fullWidth
             maxWidth="xs"
           >
-            <DialogTitle sx = {{textAlign: "center", backgroundColor: "#23395d", color: 'white' }}>Logout</DialogTitle>
-            <DialogContent sx={{backgroundColor: "#23395d" }}>
+            <DialogTitle sx = {{textAlign: "center"}}>Logout</DialogTitle>
+            <DialogContent>
 
             <DialogActions>
-              <Button sx = {{width: "50%"}} variant="contained" onClick={handleCloseLogout}>Cancel</Button>
-              <Button sx = {{width: "50%"}} variant="contained" onClick={() => handleLogout()}>Confirm</Button>
+              <Button sx = {{width: "50%", color: "#15172b", '&:hover': { backgroundColor: '#e6ebf5'}}}  onClick={handleCloseLogout}>Cancel</Button>
+              <Button sx = {{width: "50%", color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => handleLogout()}>Confirm</Button>
             </DialogActions>
             </DialogContent>
           </Dialog>

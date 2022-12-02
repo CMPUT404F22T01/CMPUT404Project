@@ -77,7 +77,7 @@ const useStyles = makeStyles({
   },
   commentTextField: {
     height: 40,
-    width: "90%",
+    width: "88%",
   },
   commentButton: {
     width: "10%",
@@ -447,7 +447,7 @@ const allPost = post.map((data, index) => {
                 <TextField
                   value={comment}
                   size="small"
-                  label="comment"
+                  label="Comment"
                   onChange={onChangeCommentHandler}
                   className={styleClasses.commentTextField}
                 />
@@ -456,6 +456,8 @@ const allPost = post.map((data, index) => {
                     onClickCreateCommentHandler(data);
                   }}
                   className={styleClasses.commentButton}
+                  variant="contained"
+                  sx={{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}}
                 >
                   Post
                 </Button>
@@ -534,8 +536,8 @@ const allPost = post.map((data, index) => {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseShare}>Cancel</Button>
-              <Button onClick={() => handleShare(index)}>Share</Button>
+              <Button sx = {{color: "#15172b", '&:hover': { backgroundColor: '#e6ebf5'}}} onClick={handleCloseShare}>Cancel</Button>
+              <Button sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => handleShare(index)}>Share</Button>
             </DialogActions>
           </Dialog>
         </Card>

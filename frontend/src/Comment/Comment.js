@@ -15,6 +15,8 @@ import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AllCommentLikes from "../Likes/AllCommentLikes";
 import ReactMarkdown from 'react-markdown';
+import Diversity1Icon from "@mui/icons-material/Diversity1";
+
 //for html in content
 import rehypeRaw from "rehype-raw";
 
@@ -97,7 +99,7 @@ const Comment = ({ postData, reRenderHelper }) => {
             aria-label="like"
             onClick={() => handleClickOpenLikedBy(index)}
           >
-            <FavoriteIcon />
+            <Diversity1Icon />
           </IconButton>
         </CardActions>
         <Dialog
