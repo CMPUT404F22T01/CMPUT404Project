@@ -37,6 +37,15 @@ const useStyles = makeStyles({
     width: "100%",
   },
 
+  delete_btn: {
+    border: 0,
+    borderRadius: 3,
+    color: "white",
+    height: 45,
+    padding: "0 30px",
+    width: "100%",
+  },
+
   textfields: {
     width: "100%",
     marginLeft: "auto",
@@ -124,6 +133,18 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
       });
     // this.forceUpdate();
     onClickPostEditHandler();
+  };
+
+  const onClickDeletePost = () => { 
+    axiosInstance
+      .delete(`authors/${localStorage.getItem("id")}/posts/${data.id.split("posts/")[1]}`)
+      .then((response) => {
+        console.log(response.status)
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    onClickPostEditHandler()
   };
 
   return (
@@ -300,10 +321,12 @@ const PostEdit = ({ onClickPostEditHandler, data }) => {
             <br />
          
           <br />
-
+          <DialogActions>
+          <Button className={styleClasses.delete_btn} sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => onClickDeletePost()}>Delete Post</Button>
+          </DialogActions>
           <DialogActions>
             <Button type="submit" className={styleClasses.submit_btn}>
-              Edit
+              Confirm Edit
             </Button>
           </DialogActions>
         </Box>

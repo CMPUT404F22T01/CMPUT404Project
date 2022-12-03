@@ -79,7 +79,7 @@ const useStyles = makeStyles({
   },
   commentTextField: {
     height: 40,
-    width: "90%",
+    width: "88%",
   },
   commentButton: {
     width: "10%",
@@ -95,7 +95,8 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Post({ postReRenderHelper }) {
+export default function Post({ postReRenderHelper, getAll, userID }) {
+
   const styleClasses = useStyles();
   const [post, setPost] = useState([]);
   const userToSharePostWithRef = useRef(null);
@@ -355,7 +356,8 @@ export default function Post({ postReRenderHelper }) {
 const allPost = post.map((data, index) => {
     return (
       <Typography paragraph className={styleClasses.container}>
-        <Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
+        {(data.author.id.split("authors/")[1] ===
+        userID || getAll) ? (<Card sx={{ maxWidth: 1000 }} className={styleClasses.cardContainer}>
           <CardHeader
             className={styleClasses.cardHeader}
             avatar={  
@@ -458,7 +460,7 @@ const allPost = post.map((data, index) => {
                 <TextField
                   value={comment}
                   size="small"
-                  label="comment"
+                  label="Comment"
                   onChange={onChangeCommentHandler}
                   className={styleClasses.commentTextField}
                 />
@@ -467,6 +469,8 @@ const allPost = post.map((data, index) => {
                     onClickCreateCommentHandler(data);
                   }}
                   className={styleClasses.commentButton}
+                  variant="contained"
+                  sx={{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}}
                 >
                   Post
                 </Button>
@@ -545,11 +549,13 @@ const allPost = post.map((data, index) => {
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleCloseShare}>Cancel</Button>
-              <Button onClick={() => handleShare(index)}>Share</Button>
+              <Button sx = {{color: "#15172b", '&:hover': { backgroundColor: '#e6ebf5'}}} onClick={handleCloseShare}>Cancel</Button>
+              <Button sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" onClick={() => handleShare(index)}>Share</Button>
             </DialogActions>
           </Dialog>
-        </Card>
+        </Card> ) : (
+                  ""
+                )}
 
       </Typography>
     );

@@ -148,7 +148,7 @@ export default function CustomizedDialogs(props) {
        
         </DialogContent>
         <DialogActions>
-          <Button autoFocus onClick={handleOnClickSubmit}>
+        <Button sx = {{color: "#fff", backgroundColor: "#23395d", '&:hover': { backgroundColor: '#2f4c7d'}}} variant="contained" autoFocus onClick={handleOnClickSubmit}>
             Save changes
           </Button>
         </DialogActions>

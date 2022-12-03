@@ -15,6 +15,8 @@ import { makeStyles } from "@mui/styles";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import AllCommentLikes from "../Likes/AllCommentLikes";
 import ReactMarkdown from 'react-markdown';
+import Diversity1Icon from "@mui/icons-material/Diversity1";
+
 //for html in content
 import rehypeRaw from "rehype-raw";
 
@@ -130,7 +132,7 @@ const Comment = ({ postData, reRenderHelper }) => {
             aria-label="like"
             onClick={() => handleClickOpenLikedBy(index)}
           >
-            <FavoriteIcon />
+            <Diversity1Icon />
           </IconButton>
         </CardActions>
         <Dialog
@@ -140,7 +142,7 @@ const Comment = ({ postData, reRenderHelper }) => {
           timeout="auto"
           aria-label="liked by dialog"
         >
-          <AppBar sx={{ position: "relative" }}>
+          <AppBar sx={{ position: "relative", backgroundColor: "#23395d" }}>
             <Toolbar>
               <IconButton
                 edge="start"

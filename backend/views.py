@@ -441,7 +441,7 @@ def handleInboxRequests(request, author_id):
                         message = f'{request.GET.get("username")} shared a post with you.'
                         postType = 'post'
                     elif type == "follow":
-                        message = f'{request.data["username"]} send you a follow request.'
+                        message = f'{request.data["username"]} sent you a follow request.'
                     Inbox.objects.create(author_id=author_id,
                                      object_type=postType, object_id=idOfItem, message=message)
                  

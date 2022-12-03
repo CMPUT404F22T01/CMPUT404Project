@@ -169,6 +169,9 @@ export default function PostCreates({ onClickCreatePostHandler }) {
             InputLabelProps={{
               style: { color: "#fff" },
             }}
+            sx={{ 
+              input: { color: '#fff' }
+            }}
             inputRef={customPostIdRef}
           />
           <br />
