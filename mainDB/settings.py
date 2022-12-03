@@ -182,7 +182,8 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOWED_ORIGINS = [ 
-    "http://localhost:3000", 
+    "http://localhost:3000",
+    "https://c404t3v1.netlify.app"
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
