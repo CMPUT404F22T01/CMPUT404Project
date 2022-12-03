@@ -6,8 +6,7 @@ from .models import *
 from datetime import date
 import json
 
-
-# contains views tests and models tests belos
+# Run the following to test: python manage.py test
 
 ###### VIEWS TESTS ######
 class AuthorRoutesTests(TestCase):
@@ -175,7 +174,7 @@ class CommentRoutesTests(TestCase):
         res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/comments/")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEqual(len(body["comments"]), 1)
-        self.assertEqual((body["comments"][0]["author"]["id"]), "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+        self.assertEqual((body["comments"][0]["author"]["id"]), HOSTNAME+"authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
         self.assertEqual((body["comments"][0]["author"]["displayName"]), "Author Display Name 1")
         
 class LikesAndLikedTests(TestCase):
@@ -229,7 +228,7 @@ class LikesAndLikedTests(TestCase):
         res = self.client.get("/authors/631f3ebe-d976-4248-a808-db2442a22168/posts/631f3ebe-d976-4248-a808-db2442a22169/likes/")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
-        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+        self.assertEquals(body[0]["author"]["id"], HOSTNAME+"authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
 
 
     def testCommentLike(self):
@@ -243,13 +242,13 @@ class LikesAndLikedTests(TestCase):
         body = json.loads(res.content.decode("utf-8"))
         self.assertEquals(len(body), 1)
         self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
-        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+        self.assertEquals(body[0]["author"]["id"], HOSTNAME+"authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
     
     def testLiked(self):
         res = self.client.get("/authors/ca14e1e3-77ce-44e3-8529-85172744c45b/liked/")
         body = json.loads(res.content.decode("utf-8"))
         self.assertEquals(body[0]["author"]["displayName"], "Author Display Name 1")
-        self.assertEquals(body[0]["author"]["id"], "https://c404t3.herokuapp.com/authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
+        self.assertEquals(body[0]["author"]["id"], HOSTNAME+"authors/ca14e1e3-77ce-44e3-8529-85172744c45b")
 
     
 ###### MODEL TESTS ######
@@ -282,25 +281,26 @@ class AuthorTests(APITestCase):
 
     def testUrl(self):
         author = Author.objects.get(id="ca14e1e3-77ce-44e3-8529-85172744c45b")
-        self.assertEqual(author.url(), HOSTNAME +
+        self.assertEqual(author.get_url(), HOSTNAME +
                          'authors/ca14e1e3-77ce-44e3-8529-85172744c45b')
         author = Author.objects.get(id="631f3ebe-d976-4248-a808-db2442a22168")
-        self.assertEqual(author.url(), HOSTNAME +
+        self.assertEqual(author.get_url(), HOSTNAME +
                          'authors/631f3ebe-d976-4248-a808-db2442a22168')
 
     def testUserRegistration(self):
         data = {
-            'username': 'TestUserRegistration',
+            'username': 'Random123456712',
+            'password': '123456789',
             'displayName': 'TestUserRegistration',
-            'password': '12345678',
-            "github": "https://github.com/moxil-shah"
+            'github':'https://github.com/moxil-shah'
+            
         }
         response = self.client.post(
-            'http://127.0.0.1:8000/service/register/', data)
+            'http://127.0.0.1:8000/register/', data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Author.objects.get(
-            username="TestUserRegistration").username, 'TestUserRegistration')
-        self.assertEqual(Author.objects.get(username="TestUserRegistration").github,
+            username="Random123456712").username, 'Random123456712')
+        self.assertEqual(Author.objects.get(username="Random123456712").github,
                          'https://github.com/moxil-shah')
 
         tooShortPassword = {
@@ -312,7 +312,7 @@ class AuthorTests(APITestCase):
         response = self.client.post(
             'http://127.0.0.1:8000/service/register/', tooShortPassword)
         # becuase password too short
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class PostsTests(APITestCase):
 
@@ -587,8 +587,18 @@ class InboxTest(APITestCase):
     
 class LoginTestCase(APITestCase):
 
+    def test_register(self):
+        userData = {
+            'username': "RandomUserName1",
+            'password': '123456789',
+            "displayName": "RandomDisplayName1",
+        }
+        response = self.client.post(
+            'http://127.0.0.1:8000/register/', userData)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    
     def test_login(self):
-
         self.user = Author.objects.create_user(
             username='TestUserLogin', password='12345678')
         # Author object does not return password so we need to add password manually
@@ -597,7 +607,7 @@ class LoginTestCase(APITestCase):
             'password': '12345678'
         }
         response = self.client.post(
-            'http://127.0.0.1:8000/service/login/', userData)
+            'http://127.0.0.1:8000/login/', userData)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 # class AuthorTest(APITestCase):
