@@ -183,10 +183,14 @@ SIMPLE_JWT = {
 
 CORS_ALLOWED_ORIGINS = [ 
     "http://localhost:3000",
+<<<<<<< HEAD
     "https://cmput-404-team-1.herokuapp.com",
     "https://c404t3v1.netlify.app",
     "https://cs404-project.herokuapp.com",
     "https://cmput404-t04.herokuapp.com"
+=======
+    "https://c404t3v1.netlify.app"
+>>>>>>> c595f3e0eb12d6df6e8ccdfcb649b480112c51c2
 ]
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
