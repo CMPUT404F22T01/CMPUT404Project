@@ -9,4 +9,6 @@ Team members:<br />- anthony3<br />- malhar<br />- mfdavies<br />- moxil<br />- 
 
 [Demo Video](https://youtu.be/UnHJLtOloaU)
 
-[Our Wireframes and planning](https://whimsical.com/404-TunZA8YZQgrG3Bjj9wz3UU) 
+
+Just download the image for high-quality!
+<img src="wireframes.png" size="50px">
